@@ -1,0 +1,65 @@
+<nav class="primary-nav" aria-label="Primary">
+    <div class="primary-nav-desktop">
+        @if (!IsCollapsed)
+        {
+            <div class="primary-nav-links" role="menubar">
+                <MudButton Variant="Variant.Text">Hub</MudButton>
+
+                <MudMenu Label="Bed Management" ActivationEvent="MouseEvent.LeftClick">
+                    <MudMenuItem>Facility View</MudMenuItem>
+                    <MudMenuItem>Ward View</MudMenuItem>
+                    <MudMenuItem>List View</MudMenuItem>
+                    <MudMenuItem>Grid View</MudMenuItem>
+                </MudMenu>
+
+                <MudMenu Label="Delayed Discharge" ActivationEvent="MouseEvent.LeftClick">
+                    <MudMenuItem>Patient List</MudMenuItem>
+                    <MudMenuItem>Barrier Review</MudMenuItem>
+                    <MudMenuItem>Trends</MudMenuItem>
+                </MudMenu>
+
+                <MudButton Variant="Variant.Text">Scenario Mapping</MudButton>
+
+                <MudMenu Label="Reporting" ActivationEvent="MouseEvent.LeftClick">
+                    <MudMenuItem>Operational Reports</MudMenuItem>
+                    <MudMenuItem>Data Quality</MudMenuItem>
+                    <MudMenuItem>Export Centre</MudMenuItem>
+                </MudMenu>
+
+                <MudMenu Label="Admin" ActivationEvent="MouseEvent.LeftClick">
+                    <MudMenuItem>User Access</MudMenuItem>
+                    <MudMenuItem>Configuration</MudMenuItem>
+                    <MudMenuItem>Reference Data</MudMenuItem>
+                </MudMenu>
+            </div>
+        }
+        else
+        {
+            @* Desktop collapsed navigation is scaffold only. Final pill behaviour and visual design to be defined later. *@
+            <MudChip T="string" Variant="Variant.Outlined" Color="Color.Default">Menu</MudChip>
+        }
+
+        <MudIconButton Icon="@Icons.Material.Filled.UnfoldLess"
+                       AriaLabel="Collapse primary navigation"
+                       Color="Color.Default"
+                       OnClick="OnToggleCollapsed"
+                       Class="nav-collapse-trigger" />
+    </div>
+
+    @* Mobile navigation is scaffold only. Final adaptive mobile UX to be designed separately. *@
+    <div class="primary-nav-mobile">
+        <MudMenu Icon="@Icons.Material.Filled.Menu" Label="Navigation" AriaLabel="Open mobile navigation">
+            <MudMenuItem>Hub</MudMenuItem>
+            <MudMenuItem>Bed Management</MudMenuItem>
+            <MudMenuItem>Delayed Discharge</MudMenuItem>
+            <MudMenuItem>Scenario Mapping</MudMenuItem>
+            <MudMenuItem>Reporting</MudMenuItem>
+            <MudMenuItem>Admin</MudMenuItem>
+        </MudMenu>
+    </div>
+</nav>
+
+@code {
+    [Parameter] public bool IsCollapsed { get; set; }
+    [Parameter] public EventCallback OnToggleCollapsed { get; set; }
+}

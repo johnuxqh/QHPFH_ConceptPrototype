@@ -1,0 +1,25 @@
+@inherits LayoutComponentBase
+
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<div class="app-shell">
+    <HeaderShell IsPrimaryNavCollapsed="@_isPrimaryNavCollapsed" OnTogglePrimaryNavCollapse="TogglePrimaryNavCollapse" />
+
+    <MainContentShell>
+        @Body
+    </MainContentShell>
+
+    <BottomUtilityNavigation />
+</div>
+
+@code {
+    private bool _isPrimaryNavCollapsed;
+
+    private void TogglePrimaryNavCollapse()
+    {
+        _isPrimaryNavCollapsed = !_isPrimaryNavCollapsed;
+    }
+}

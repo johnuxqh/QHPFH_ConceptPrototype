@@ -1,0 +1,36 @@
+<header class="app-header" role="banner">
+    <div class="top-header-row">
+        <div class="logo-placeholder" aria-label="Application logo placeholder">Logo</div>
+
+        <MudTextField T="string"
+                      Placeholder="Search hub, pages, patients, facilities..."
+                      Variant="Variant.Outlined"
+                      Class="header-search"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      Immediate="false"
+                      Dense="true"
+                      InputMode="InputMode.Search" />
+
+        <MudMenu Label="Facility Coordinator"
+                 StartIcon="@Icons.Material.Filled.AccountCircle"
+                 Variant="Variant.Outlined"
+                 Dense="true"
+                 AriaLabel="Profile menu">
+            <MudMenuItem>Profile</MudMenuItem>
+            <MudMenuItem>Preferences</MudMenuItem>
+            <MudMenuItem>Notifications settings</MudMenuItem>
+            <MudMenuItem>Accessibility</MudMenuItem>
+            <MudDivider />
+            <MudMenuItem>Sign out</MudMenuItem>
+        </MudMenu>
+    </div>
+
+    <PrimaryNavigation IsCollapsed="IsPrimaryNavCollapsed"
+                       OnToggleCollapsed="OnTogglePrimaryNavCollapse" />
+</header>
+
+@code {
+    [Parameter] public bool IsPrimaryNavCollapsed { get; set; }
+    [Parameter] public EventCallback OnTogglePrimaryNavCollapse { get; set; }
+}
