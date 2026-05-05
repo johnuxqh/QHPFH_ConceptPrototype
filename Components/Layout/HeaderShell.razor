@@ -1,37 +1,52 @@
-<header class="app-header" role="banner">
-    <div class="top-header-row">
-        <div class="logo-placeholder" aria-label="Application logo placeholder">Logo</div>
+<header class="app-header @(IsDarkMode ? "theme-dark" : "theme-light")" role="banner">
+    <div class="qld-header-row">
+        <div class="qld-brand" aria-label="Queensland Health Patient Flow Hub">
+            <img class="qld-logo"
+                 src="@(IsDarkMode ? DarkLogoPath : LightLogoPath)"
+                 alt="Queensland Government" />
+            <div class="qld-divider" aria-hidden="true"></div>
+            <h1 class="qld-title"><strong>QH</strong> Patient Flow Hub</h1>
+        </div>
 
-        <MudTextField T="string"
-                      Placeholder="Search hub, pages, patients, facilities..."
-                      Variant="Variant.Outlined"
-                      Class="header-search"
-                      Adornment="Adornment.Start"
-                      AdornmentIcon="@Icons.Material.Filled.Search"
-                      Immediate="false"
-                      Dense="true"
-                      InputType="InputType.Search"
-                      AriaLabel="Search" />
+        <div class="qld-actions">
+            <div class="qld-search" role="search" aria-label="Header search">
+                <MudIcon Icon="@Icons.Material.Filled.Search" Size="Size.Small" Class="qld-search-icon" />
+                <input type="search" class="qld-search-input" aria-label="Search" />
+                <button type="button" class="qld-search-button">Search</button>
+            </div>
 
-        <MudMenu Label="Facility Coordinator"
-                 StartIcon="@Icons.Material.Filled.AccountCircle"
-                 Variant="Variant.Outlined"
-                 Dense="true"
-                 AriaLabel="Profile menu">
-            <MudMenuItem>Profile</MudMenuItem>
-            <MudMenuItem>Preferences</MudMenuItem>
-            <MudMenuItem>Notifications settings</MudMenuItem>
-            <MudMenuItem>Accessibility</MudMenuItem>
-            <MudDivider />
-            <MudMenuItem>Sign out</MudMenuItem>
-        </MudMenu>
+            <div class="qld-profile">
+                <button class="qld-profile-trigger" type="button" @onclick="ToggleProfilePanel" aria-expanded="@_isProfileOpen">
+                    <div class="qld-avatar" aria-hidden="true"></div>
+                    <span class="qld-profile-name">Dr Steven Strange</span>
+                    <MudIcon Icon="@(_isProfileOpen ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)" Size="Size.Small" />
+                </button>
+
+                <div class="qld-profile-panel @(_isProfileOpen ? "open" : null)">
+                    <button class="qld-profile-item" type="button">Profile</button>
+                    <button class="qld-profile-item" type="button">Preferences</button>
+                    <button class="qld-profile-item" type="button" @onclick="ToggleTheme">Switch to @(IsDarkMode ? "Light" : "Dark") mode</button>
+                    <button class="qld-profile-item" type="button">Sign out</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <PrimaryNavigation IsCollapsed="IsPrimaryNavCollapsed"
+                       IsDarkMode="IsDarkMode"
                        OnToggleCollapsed="OnTogglePrimaryNavCollapse" />
 </header>
 
 @code {
+    private bool _isProfileOpen;
+    private bool IsDarkMode { get; set; }
+
+    private const string LightLogoPath = "images/logos/CoAlight.svg";
+    private const string DarkLogoPath = "images/logos/CoAdark.svg";
+
     [Parameter] public bool IsPrimaryNavCollapsed { get; set; }
     [Parameter] public EventCallback OnTogglePrimaryNavCollapse { get; set; }
+
+    private void ToggleProfilePanel() => _isProfileOpen = !_isProfileOpen;
+    private void ToggleTheme() => IsDarkMode = !IsDarkMode;
 }
