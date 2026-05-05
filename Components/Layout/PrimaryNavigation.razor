@@ -7,7 +7,7 @@
         @foreach (var item in PrimaryItems)
         {
             var isActive = item.Key == _activePrimaryKey;
-            <button type="button" class="nav-link @(isActive ? "selected" : null)" @onclick="() => SelectPrimary(item.Key)">
+            <button type="button" class="nav-link nav-link-@item.Key @(isActive ? "selected" : null)" @onclick="() => SelectPrimary(item.Key)">
                 <span>@item.Label</span>
                 @if (item.HasSubMenu)
                 {
@@ -23,7 +23,7 @@
             @foreach (var subItem in CurrentSubItems)
             {
                 var isSubActive = subItem == _activeSubItem;
-                <button type="button" class="sub-nav-link @(isSubActive ? "selected" : null)" @onclick="() => _activeSubItem = subItem">@subItem</button>
+                <button type="button" class="sub-nav-link @(isSubActive ? "selected" : null)" @onclick="() => _activeSubItem = subItem"><span>@subItem</span></button>
             }
         </div>
     }
