@@ -39,6 +39,11 @@ jobs:
       - name: List publish directory
         run: ls -R publish | head -100
 
+      - name: Diagnostic publish paths
+        run: |
+          find publish -maxdepth 4 -type d -print
+          find publish -maxdepth 5 -type f | head -100
+
       - name: Verify published static assets
         run: |
           test -f publish/wwwroot/index.html
