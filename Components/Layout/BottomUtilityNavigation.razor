@@ -1,41 +1,21 @@
 <footer class="utility-shell" aria-label="Utility navigation">
-    @if (!_isMinimized)
-    {
-        <div class="utility-bar">
-            <MudMenu Label="On Call" ActivationEvent="MouseEvent.LeftClick">
-                <MudText Class="utility-popup-content">On call details placeholder</MudText>
-            </MudMenu>
-            <MudMenu Label="FAQ / Support" ActivationEvent="MouseEvent.LeftClick">
-                <MudText Class="utility-popup-content">Support options placeholder</MudText>
-            </MudMenu>
-            <MudMenu Label="Notifications" ActivationEvent="MouseEvent.LeftClick">
-                <MudText Class="utility-popup-content">Notifications placeholder</MudText>
-            </MudMenu>
-            <MudMenu Label="System Status" ActivationEvent="MouseEvent.LeftClick">
-                <MudText Class="utility-popup-content">System status placeholder</MudText>
-            </MudMenu>
-            <MudMenu Label="Help" ActivationEvent="MouseEvent.LeftClick">
-                <MudText Class="utility-popup-content">Help placeholder</MudText>
-            </MudMenu>
-            <MudIconButton Icon="@Icons.Material.Filled.ExpandMore"
-                           AriaLabel="Minimize utility navigation"
-                           OnClick="ToggleMinimized" />
-        </div>
-    }
-    else
-    {
-        @* Bottom utility minimise pattern is scaffold only. Final behaviour and visual design to be defined later. *@
-        <MudButton Variant="Variant.Outlined" OnClick="ToggleMinimized" Class="utility-restore-pill">Utilities</MudButton>
-    }
-
-    @* Overlay/drawer interaction model is scaffold only. Final application rules to be defined later. *@
+    <div class="utility-bar" role="tablist" aria-label="Footer utilities">
+        @foreach (var item in Items)
+        {
+            <button type="button"
+                    class="utility-tab @(item == _activeItem ? "selected" : null)"
+                    role="tab"
+                    aria-selected="@(item == _activeItem)"
+                    @onclick="() => _activeItem = item">
+                @item
+            </button>
+        }
+    </div>
 </footer>
 
 @code {
-    private bool _isMinimized;
+    private readonly string[] Items = ["On Call", "Support", "Notifications"];
+    private string _activeItem = "On Call";
 
-    private void ToggleMinimized()
-    {
-        _isMinimized = !_isMinimized;
-    }
+    [Parameter] public bool IsDarkMode { get; set; }
 }
