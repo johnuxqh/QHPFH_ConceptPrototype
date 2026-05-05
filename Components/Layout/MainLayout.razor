@@ -5,21 +5,21 @@
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-<div class="app-shell">
-    <HeaderShell IsPrimaryNavCollapsed="@_isPrimaryNavCollapsed" OnTogglePrimaryNavCollapse="TogglePrimaryNavCollapse" />
+<div class="app-shell @( _isDarkMode ? "theme-dark" : "theme-light")">
+    <HeaderShell IsDarkMode="_isDarkMode" OnToggleTheme="ToggleTheme" />
 
     <MainContentShell>
         @Body
     </MainContentShell>
 
-    <BottomUtilityNavigation />
+    <BottomUtilityNavigation IsDarkMode="_isDarkMode" />
 </div>
 
 @code {
-    private bool _isPrimaryNavCollapsed;
+    private bool _isDarkMode;
 
-    private void TogglePrimaryNavCollapse()
+    private void ToggleTheme()
     {
-        _isPrimaryNavCollapsed = !_isPrimaryNavCollapsed;
+        _isDarkMode = !_isDarkMode;
     }
 }
