@@ -1,6 +1,7 @@
 <footer class="utility-shell" aria-label="Utility navigation">
     @if (_isOnCallOpen)
     {
+        <button type="button" class="utility-overlay" aria-label="Close on call drawer" @onclick="CloseOnCall"></button>
         <section class="oncall-drawer" aria-label="Who's currently on call">
             <header class="oncall-header">
                 <h3>Who’s Currently On Call</h3>
