@@ -24,7 +24,7 @@
                 <button class="qld-profile-trigger" type="button" @onclick="ToggleProfile" aria-expanded="@_isProfileOpen">
                     <div class="qld-avatar" aria-hidden="true"></div>
                     <span class="qld-profile-name">Dr Steven Strange</span>
-                    <MudIcon Icon="@Icons.Material.Outlined.ExpandMore" Size="Size.Small" Class="qld-profile-chevron" />
+                    <MudIcon Icon="@(_isProfileOpen ? Icons.Material.Outlined.ExpandLess : Icons.Material.Outlined.ExpandMore)" Size="Size.Small" Class="qld-profile-chevron" />
                 </button>
 
                 @if (_isProfileOpen)
