@@ -34,7 +34,13 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: Publish
-        run: dotnet publish -c Release -o publish
+        run: dotnet publish -c Release -o ${{ github.workspace }}/publish
+
+      - name: Verify published static assets
+        run: |
+          test -f ${{ github.workspace }}/publish/wwwroot/index.html
+          test -d ${{ github.workspace }}/publish/wwwroot/_framework
+          test -d ${{ github.workspace }}/publish/wwwroot/css
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -42,7 +48,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: publish/wwwroot
+          path: ${{ github.workspace }}/publish/wwwroot
 
   deploy:
     needs: build
