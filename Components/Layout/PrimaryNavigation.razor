@@ -1,42 +1,26 @@
-<nav class="primary-nav" aria-label="Primary">
+<nav class="primary-nav @(IsDarkMode ? "theme-dark" : "theme-light")" aria-label="Primary">
     <div class="primary-nav-desktop">
         @if (!IsCollapsed)
         {
-            <div class="primary-nav-links" role="menubar">
-                <MudButton Variant="Variant.Text">Hub</MudButton>
+            <div class="primary-nav-track" role="menubar">
+                <button type="button" class="home-link" aria-label="Home">
+                    <MudIcon Icon="@Icons.Material.Outlined.Home" Size="Size.Small" />
+                </button>
 
-                <MudMenu Label="Bed Management" ActivationEvent="MouseEvent.LeftClick">
-                    <MudMenuItem>Facility View</MudMenuItem>
-                    <MudMenuItem>Ward View</MudMenuItem>
-                    <MudMenuItem>List View</MudMenuItem>
-                    <MudMenuItem>Grid View</MudMenuItem>
-                </MudMenu>
-
-                <MudMenu Label="Delayed Discharge" ActivationEvent="MouseEvent.LeftClick">
-                    <MudMenuItem>Patient List</MudMenuItem>
-                    <MudMenuItem>Barrier Review</MudMenuItem>
-                    <MudMenuItem>Trends</MudMenuItem>
-                </MudMenu>
-
-                <MudButton Variant="Variant.Text">Scenario Mapping</MudButton>
-
-                <MudMenu Label="Reporting" ActivationEvent="MouseEvent.LeftClick">
-                    <MudMenuItem>Operational Reports</MudMenuItem>
-                    <MudMenuItem>Data Quality</MudMenuItem>
-                    <MudMenuItem>Export Centre</MudMenuItem>
-                </MudMenu>
-
-                <MudMenu Label="Admin" ActivationEvent="MouseEvent.LeftClick">
-                    <MudMenuItem>User Access</MudMenuItem>
-                    <MudMenuItem>Configuration</MudMenuItem>
-                    <MudMenuItem>Reference Data</MudMenuItem>
-                </MudMenu>
+                @foreach (var item in PrimaryItems)
+                {
+                    var isActive = item.Key == _activePrimaryKey;
+                    <button type="button"
+                            class="nav-link @(isActive ? "selected" : null)"
+                            @onclick="() => SelectPrimary(item.Key)">
+                        <span>@item.Label</span>
+                        @if (item.HasSubMenu)
+                        {
+                            <MudIcon Icon="@Icons.Material.Outlined.ExpandMore" Size="Size.Small" Class="nav-caret" />
+                        }
+                    </button>
+                }
             </div>
-        }
-        else
-        {
-            @* Desktop collapsed navigation is scaffold only. Final pill behaviour and visual design to be defined later. *@
-            <MudChip T="string" Variant="Variant.Outlined" Color="Color.Default">Menu</MudChip>
         }
 
         <MudIconButton Icon="@Icons.Material.Filled.UnfoldLess"
@@ -46,20 +30,53 @@
                        Class="nav-collapse-trigger" />
     </div>
 
-    @* Mobile navigation is scaffold only. Final adaptive mobile UX to be designed separately. *@
+    @if (CurrentSubItems.Count > 0 && !IsCollapsed)
+    {
+        <div class="sub-nav-track" role="menubar" aria-label="Secondary">
+            @foreach (var subItem in CurrentSubItems)
+            {
+                var isSubActive = subItem == _activeSubItem;
+                <button type="button" class="sub-nav-link @(isSubActive ? "selected" : null)" @onclick="() => _activeSubItem = subItem">@subItem</button>
+            }
+        </div>
+    }
+
     <div class="primary-nav-mobile">
         <MudMenu Icon="@Icons.Material.Filled.Menu" Label="Navigation" AriaLabel="Open mobile navigation">
-            <MudMenuItem>Hub</MudMenuItem>
-            <MudMenuItem>Bed Management</MudMenuItem>
-            <MudMenuItem>Delayed Discharge</MudMenuItem>
-            <MudMenuItem>Scenario Mapping</MudMenuItem>
-            <MudMenuItem>Reporting</MudMenuItem>
-            <MudMenuItem>Admin</MudMenuItem>
+            @foreach (var item in PrimaryItems)
+            {
+                <MudMenuItem>@item.Label</MudMenuItem>
+            }
         </MudMenu>
     </div>
 </nav>
 
 @code {
+    private readonly List<PrimaryNavItem> PrimaryItems =
+    [
+        new("myhub", "MyHub", false, []),
+        new("hospital", "Hospital Overview", false, []),
+        new("dd", "Delayed Discharge", true, ["DD Hub", "Patient Management", "Census Management", "DDP Census"]),
+        new("bed", "Bed & Ward", true, ["Bed Hub", "Bed Management"]),
+        new("scenario", "Scenario Mapping", false, []),
+        new("journey", "Patient Journey", false, []),
+        new("apps", "Connected Apps", false, [])
+    ];
+
+    private string _activePrimaryKey = "myhub";
+    private string _activeSubItem = string.Empty;
+
+    private IReadOnlyList<string> CurrentSubItems => PrimaryItems.First(x => x.Key == _activePrimaryKey).SubItems;
+
     [Parameter] public bool IsCollapsed { get; set; }
+    [Parameter] public bool IsDarkMode { get; set; }
     [Parameter] public EventCallback OnToggleCollapsed { get; set; }
+
+    private void SelectPrimary(string key)
+    {
+        _activePrimaryKey = key;
+        _activeSubItem = CurrentSubItems.FirstOrDefault() ?? string.Empty;
+    }
+
+    private sealed record PrimaryNavItem(string Key, string Label, bool HasSubMenu, List<string> SubItems);
 }
