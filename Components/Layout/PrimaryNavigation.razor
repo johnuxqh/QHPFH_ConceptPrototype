@@ -1,41 +1,18 @@
-<nav class="primary-nav" aria-label="Primary">
+<nav class="primary-nav @(IsDarkMode ? "theme-dark" : "theme-light")" aria-label="Primary">
     <div class="primary-nav-desktop">
         @if (!IsCollapsed)
         {
             <div class="primary-nav-links" role="menubar">
-                <MudButton Variant="Variant.Text">Hub</MudButton>
-
-                <MudMenu Label="Bed Management" ActivationEvent="MouseEvent.LeftClick">
-                    <MudMenuItem>Facility View</MudMenuItem>
-                    <MudMenuItem>Ward View</MudMenuItem>
-                    <MudMenuItem>List View</MudMenuItem>
-                    <MudMenuItem>Grid View</MudMenuItem>
-                </MudMenu>
-
-                <MudMenu Label="Delayed Discharge" ActivationEvent="MouseEvent.LeftClick">
-                    <MudMenuItem>Patient List</MudMenuItem>
-                    <MudMenuItem>Barrier Review</MudMenuItem>
-                    <MudMenuItem>Trends</MudMenuItem>
-                </MudMenu>
-
-                <MudButton Variant="Variant.Text">Scenario Mapping</MudButton>
-
-                <MudMenu Label="Reporting" ActivationEvent="MouseEvent.LeftClick">
-                    <MudMenuItem>Operational Reports</MudMenuItem>
-                    <MudMenuItem>Data Quality</MudMenuItem>
-                    <MudMenuItem>Export Centre</MudMenuItem>
-                </MudMenu>
-
-                <MudMenu Label="Admin" ActivationEvent="MouseEvent.LeftClick">
-                    <MudMenuItem>User Access</MudMenuItem>
-                    <MudMenuItem>Configuration</MudMenuItem>
-                    <MudMenuItem>Reference Data</MudMenuItem>
-                </MudMenu>
+                <button type="button" class="nav-link active">Hub</button>
+                <button type="button" class="nav-link">Bed Management</button>
+                <button type="button" class="nav-link">Delayed Discharge</button>
+                <button type="button" class="nav-link">Scenario Mapping</button>
+                <button type="button" class="nav-link">Reporting</button>
+                <button type="button" class="nav-link">Admin</button>
             </div>
         }
         else
         {
-            @* Desktop collapsed navigation is scaffold only. Final pill behaviour and visual design to be defined later. *@
             <MudChip T="string" Variant="Variant.Outlined" Color="Color.Default">Menu</MudChip>
         }
 
@@ -46,7 +23,6 @@
                        Class="nav-collapse-trigger" />
     </div>
 
-    @* Mobile navigation is scaffold only. Final adaptive mobile UX to be designed separately. *@
     <div class="primary-nav-mobile">
         <MudMenu Icon="@Icons.Material.Filled.Menu" Label="Navigation" AriaLabel="Open mobile navigation">
             <MudMenuItem>Hub</MudMenuItem>
@@ -61,5 +37,6 @@
 
 @code {
     [Parameter] public bool IsCollapsed { get; set; }
+    [Parameter] public bool IsDarkMode { get; set; }
     [Parameter] public EventCallback OnToggleCollapsed { get; set; }
 }
