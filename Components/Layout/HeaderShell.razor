@@ -1,32 +1,33 @@
 <header class="app-header @(IsDarkMode ? "theme-dark" : "theme-light")" role="banner">
-    <div class="top-header-row">
-        <div class="brand-shell" aria-label="Queensland Health Patient Flow Hub">
-            <div class="brand-logo-wrap">
-                <img class="brand-logo" src="@(IsDarkMode ? DarkLogoPath : LightLogoPath)" alt="Queensland Government" />
+    <div class="qld-header-row">
+        <div class="qld-brand" aria-label="Queensland Health Patient Flow Hub">
+            <img class="qld-logo"
+                 src="@(IsDarkMode ? DarkLogoPath : LightLogoPath)"
+                 alt="Queensland Government" />
+            <div class="qld-divider" aria-hidden="true"></div>
+            <h1 class="qld-title"><strong>QH</strong> Patient Flow Hub</h1>
+        </div>
+
+        <div class="qld-actions">
+            <div class="qld-search" role="search" aria-label="Header search">
+                <MudIcon Icon="@Icons.Material.Filled.Search" Size="Size.Small" Class="qld-search-icon" />
+                <input type="search" class="qld-search-input" aria-label="Search" />
+                <button type="button" class="qld-search-button">Search</button>
             </div>
-            <div class="brand-title"><strong>QH</strong> Patient Flow Hub</div>
-        </div>
 
-        <div class="header-search-shell" role="search" aria-label="Header search">
-            <MudIcon Icon="@Icons.Material.Filled.Search" Size="Size.Small" Class="header-search-icon" />
-            <input class="header-search-input" type="search" aria-label="Search" />
-            <button class="header-search-button" type="button">Search</button>
-        </div>
-
-        <div class="profile-shell">
-            <button class="profile-trigger" type="button" @onclick="ToggleProfilePanel" aria-expanded="@_isProfileOpen" aria-label="Open profile menu">
-                <div class="profile-avatar" aria-hidden="true">SS</div>
-                <span class="profile-name">Dr Steven Strange</span>
-                <MudIcon Icon="@(_isProfileOpen ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)" Size="Size.Small" />
-            </button>
-
-            <div class="profile-panel @(_isProfileOpen ? "open" : null)">
-                <button class="profile-panel-item" type="button">Profile</button>
-                <button class="profile-panel-item" type="button">Preferences</button>
-                <button class="profile-panel-item" type="button" @onclick="ToggleTheme">
-                    Theme: @(IsDarkMode ? "Dark" : "Light")
+            <div class="qld-profile">
+                <button class="qld-profile-trigger" type="button" @onclick="ToggleProfilePanel" aria-expanded="@_isProfileOpen">
+                    <div class="qld-avatar" aria-hidden="true"></div>
+                    <span class="qld-profile-name">Dr Steven Strange</span>
+                    <MudIcon Icon="@(_isProfileOpen ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)" Size="Size.Small" />
                 </button>
-                <button class="profile-panel-item" type="button">Sign out</button>
+
+                <div class="qld-profile-panel @(_isProfileOpen ? "open" : null)">
+                    <button class="qld-profile-item" type="button">Profile</button>
+                    <button class="qld-profile-item" type="button">Preferences</button>
+                    <button class="qld-profile-item" type="button" @onclick="ToggleTheme">Switch to @(IsDarkMode ? "Light" : "Dark") mode</button>
+                    <button class="qld-profile-item" type="button">Sign out</button>
+                </div>
             </div>
         </div>
     </div>
@@ -38,14 +39,13 @@
 
 @code {
     private bool _isProfileOpen;
+    private bool IsDarkMode { get; set; }
 
-    private const string LightLogoPath = "images/header/qld-logo-light.png";
-    private const string DarkLogoPath = "images/header/qld-logo-dark.png";
+    private const string LightLogoPath = "images/logos/CoAlight.svg";
+    private const string DarkLogoPath = "images/logos/CoAdark.svg";
 
     [Parameter] public bool IsPrimaryNavCollapsed { get; set; }
     [Parameter] public EventCallback OnTogglePrimaryNavCollapse { get; set; }
-
-    private bool IsDarkMode { get; set; }
 
     private void ToggleProfilePanel() => _isProfileOpen = !_isProfileOpen;
     private void ToggleTheme() => IsDarkMode = !IsDarkMode;
