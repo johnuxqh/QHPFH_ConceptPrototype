@@ -1,12 +1,45 @@
 <footer class="utility-shell" aria-label="Utility navigation">
+    @if (_isOnCallOpen)
+    {
+        <button type="button" class="utility-overlay" aria-label="Close on call drawer" @onclick="CloseOnCall"></button>
+        <section class="oncall-drawer" aria-label="Who's currently on call">
+            <header class="oncall-header">
+                <h3>Who’s Currently On Call</h3>
+                <button type="button" class="oncall-close" aria-label="Close" @onclick="CloseOnCall">×</button>
+            </header>
+
+            @foreach (var group in OnCallGroups)
+            {
+                <article class="oncall-group">
+                    <div class="oncall-table-header">
+                        <span>@group.Name</span>
+                        <span>Ext</span>
+                        <span>Mobile</span>
+                        <span>Pager</span>
+                    </div>
+                    @foreach (var person in group.People)
+                    {
+                        <div class="oncall-row">
+                            <span>@person.Name</span>
+                            <span>@person.Ext</span>
+                            <span>@person.Mobile</span>
+                            <span>@person.Pager</span>
+                        </div>
+                    }
+                </article>
+            }
+        </section>
+    }
+
     <div class="utility-bar" role="tablist" aria-label="Footer utilities">
         @foreach (var item in Items)
         {
+            var isSelected = item == _activeItem;
             <button type="button"
-                    class="utility-tab @(item == _activeItem ? "selected" : null)"
+                    class="utility-tab @(isSelected ? "selected" : null)"
                     role="tab"
-                    aria-selected="@(item == _activeItem)"
-                    @onclick="() => _activeItem = item">
+                    aria-selected="@isSelected"
+                    @onclick="() => SelectItem(item)">
                 @item
             </button>
         }
@@ -16,6 +49,32 @@
 @code {
     private readonly string[] Items = ["On Call", "Support", "Notifications"];
     private string _activeItem = "On Call";
+    private bool _isOnCallOpen;
+
+    private readonly List<OnCallGroup> OnCallGroups =
+    [
+        new("Emergency Doctors", [
+            new("Dr. Bruce Wayne", "4567", "041 234 5678", "001 234 5678"),
+            new("Dr. Diana Prince", "9876", "041 987 6543", "001 987 6543")
+        ]),
+        new("ICU", [
+            new("Dr. Stephen Strange", "1234", "041 567 5678", "001 191 5678")
+        ]),
+        new("Surgery", [
+            new("NP. Pepper Potts", "3567", "041 293 7244", "001 659 8375")
+        ])
+    ];
 
     [Parameter] public bool IsDarkMode { get; set; }
+
+    private void SelectItem(string item)
+    {
+        _activeItem = item;
+        _isOnCallOpen = item == "On Call";
+    }
+
+    private void CloseOnCall() => _isOnCallOpen = false;
+
+    private sealed record OnCallGroup(string Name, List<OnCallPerson> People);
+    private sealed record OnCallPerson(string Name, string Ext, string Mobile, string Pager);
 }
