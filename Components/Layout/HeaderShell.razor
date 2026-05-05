@@ -5,12 +5,12 @@
                  src="@(IsDarkMode ? DarkLogoPath : LightLogoPath)"
                  alt="Queensland Government" />
             <div class="qld-divider" aria-hidden="true"></div>
-            <h1 class="qld-title"><strong>QH</strong> Patient Flow Hub</h1>
+            <div class="qld-title"><strong>QH</strong> Patient Flow Hub</div>
         </div>
 
         <div class="qld-actions">
             <div class="qld-search" role="search" aria-label="Header search">
-                <MudIcon Icon="@Icons.Material.Filled.Search" Size="Size.Small" Class="qld-search-icon" />
+                <span class="qld-search-icon" aria-hidden="true">⌕</span>
                 <input type="search" class="qld-search-input" aria-label="Search" />
                 <button type="button" class="qld-search-button">Search</button>
             </div>

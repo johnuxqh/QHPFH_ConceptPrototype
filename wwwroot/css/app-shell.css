@@ -23,7 +23,7 @@ html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
 .app-header.theme-dark { background: linear-gradient(95deg, #1a273b 0%, #2a3749 100%); color: #f3f7ff; border-bottom: 1px solid #31455e; }
 
 .qld-header-row {
-  height: var(--pfh-header-top-height);
+  height: 60px;
   max-height: 60px;
   display: flex;
   align-items: center;
@@ -34,20 +34,21 @@ html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
 .qld-brand { display:flex; align-items:center; gap: 1rem; min-width: 0; }
 .qld-logo { width: 110px; max-height: 34px; object-fit: contain; }
 .qld-divider { width: 1px; height: 38px; background: rgba(114,131,157,.55); }
-.qld-title { margin: 0; font-size: 2.5rem; line-height: 1; font-weight: 400; white-space: nowrap; }
+.qld-title { margin: 0; font-size: 2rem; line-height: 1; font-weight: 400; white-space: nowrap; font-family: "Segoe UI", Arial, sans-serif; color: #162348; }
 .qld-title strong { font-weight: 700; }
 
 .qld-actions { display:flex; align-items:center; gap: 1rem; }
-.qld-search { display:flex; align-items:center; min-width: 380px; border: 1px solid #d7dfeb; background: #fff; }
+.qld-search { display:flex; align-items:center; min-width: 350px; max-width: 420px; border: 1px solid #d7dfeb; background: #fff; }
+.theme-dark .qld-title { color: #e6edf8; }
 .theme-dark .qld-search { border-color: #415572; background: #0f1e35; }
-.qld-search-icon { margin: 0 0.55rem; }
+.qld-search-icon { margin: 0 0.55rem; font-size: 1.1rem; line-height: 1; opacity: .72; }
 .qld-search-input { flex:1; border:0; padding: 0.56rem 0.3rem; background: transparent; color: inherit; outline:none; }
 .qld-search-button { border:0; background:#1458dd; color:#fff; font-size: .72rem; padding: .62rem .95rem; cursor:pointer; }
 
 .qld-profile { position: relative; }
 .qld-profile-trigger { border:0; background:transparent; color:inherit; display:flex; align-items:center; gap:.5rem; cursor:pointer; }
 .qld-avatar { width:34px; height:34px; border-radius:50%; background: radial-gradient(circle at 35% 35%, #d39075 0 28%, #7d3124 65%); }
-.qld-profile-name { white-space: nowrap; font-size: 1.55rem; line-height: 1; }
+.qld-profile-name { white-space: nowrap; font-size: 0.95rem; line-height: 1; font-family: "Segoe UI", Arial, sans-serif; }
 .qld-profile-panel { position:absolute; right:0; top:calc(100% + .45rem); width:220px; background:#fff; border:1px solid #d2dae7; border-radius:8px; overflow:hidden; opacity:0; transform: translateY(-8px); pointer-events:none; transition: all 160ms; }
 .qld-profile-panel.open { opacity:1; transform: translateY(0); pointer-events:auto; }
 .qld-profile-item { width:100%; border:0; background:transparent; text-align:left; padding:.68rem .8rem; cursor:pointer; }
@@ -56,7 +57,7 @@ html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
 .primary-nav { padding: 0 1.25rem; }
 .primary-nav.theme-light { background: #f3f4f6; border-top: 1px solid #d7dce5; }
 .primary-nav.theme-dark { background: linear-gradient(95deg, #1b2435 0%, #1d2434 100%); border-top: 1px solid #33455f; }
-.primary-nav-desktop { display:flex; align-items:center; justify-content:space-between; min-height: 40px; }
+.primary-nav-desktop { display:flex; align-items:center; justify-content:space-between; min-height: 38px; }
 
 .primary-nav-track,
 .sub-nav-track { display:flex; align-items:stretch; border-left: 1px solid rgba(125, 140, 165, 0.2); }
