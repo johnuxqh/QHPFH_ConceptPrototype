@@ -1,4 +1,9 @@
 <header class="app-header" role="banner">
+    @if (_isProfileOpen)
+    {
+        <button class="profile-overlay" type="button" aria-label="Close profile menu" @onclick="CloseProfile"></button>
+    }
+
     <div class="qld-header-row">
         <div class="qld-brand" aria-label="Queensland Health Patient Flow Hub">
             <img class="qld-logo" src="@(IsDarkMode ? DarkLogoPath : LightLogoPath)" alt="Queensland Government" />
@@ -15,11 +20,37 @@
                 <button type="button" class="qld-search-button">Search</button>
             </div>
 
-            <button class="qld-profile-trigger" type="button" @onclick="OnToggleTheme">
-                <div class="qld-avatar" aria-hidden="true"></div>
-                <span class="qld-profile-name">Dr Steven Strange</span>
-                <MudIcon Icon="@Icons.Material.Outlined.ExpandMore" Size="Size.Small" />
-            </button>
+            <div class="qld-profile">
+                <button class="qld-profile-trigger" type="button" @onclick="ToggleProfile" aria-expanded="@_isProfileOpen">
+                    <div class="qld-avatar" aria-hidden="true"></div>
+                    <span class="qld-profile-name">Dr Steven Strange</span>
+                    <MudIcon Icon="@Icons.Material.Outlined.ExpandMore" Size="Size.Small" Class="qld-profile-chevron" />
+                </button>
+
+                @if (_isProfileOpen)
+                {
+                    <section class="qld-profile-panel" aria-label="User profile menu">
+                        <div class="qld-profile-panel-header">
+                            <h2>User Profile</h2>
+                            <button type="button" class="qld-profile-close" aria-label="Close" @onclick="CloseProfile">×</button>
+                        </div>
+                        <div class="qld-profile-card">
+                            <div class="qld-profile-row qld-profile-identity">
+                                <div class="qld-avatar small" aria-hidden="true"></div>
+                                <span>Dr Steven Strange</span>
+                            </div>
+                            <div class="qld-profile-data"><span>Email:</span><span>dr.strange@hospital.qld.gov.au</span></div>
+                            <div class="qld-profile-data"><span>Department:</span><span>Emergency Medicine</span></div>
+                            <div class="qld-profile-data"><span>Role:</span><span>Senior Consultant</span></div>
+                        </div>
+                        <div class="qld-profile-card">
+                            <div class="qld-profile-data"><span>Theme:</span><button type="button" class="qld-theme-toggle" @onclick="OnToggleTheme">Switch to @(IsDarkMode ? "Light" : "Dark") Mode</button></div>
+                        </div>
+                        <button type="button" class="qld-profile-action">Change Password</button>
+                        <button type="button" class="qld-profile-action">Sign Out</button>
+                    </section>
+                }
+            </div>
         </div>
     </div>
 
@@ -27,9 +58,13 @@
 </header>
 
 @code {
+    private bool _isProfileOpen;
     private const string LightLogoPath = "images/logos/CoAlight.svg";
     private const string DarkLogoPath = "images/logos/CoAdark.svg";
 
     [Parameter] public bool IsDarkMode { get; set; }
     [Parameter] public EventCallback OnToggleTheme { get; set; }
+
+    private void ToggleProfile() => _isProfileOpen = !_isProfileOpen;
+    private void CloseProfile() => _isProfileOpen = false;
 }
