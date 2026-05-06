@@ -1,8 +1,6 @@
 <footer class="utility-shell" aria-label="Utility navigation">
     @if (_isOnCallOpen)
     {
-        <button type="button" class="utility-overlay" aria-label="Close on call drawer" @onclick="CloseOnCall"></button>
-
         <section class="oncall-drawer" aria-label="Who's currently on call">
             <header class="oncall-header">
                 <h3>Who’s Currently On Call</h3>
@@ -18,7 +16,6 @@
                         <span>Mobile</span>
                         <span>Pager</span>
                     </div>
-
                     @foreach (var person in group.People)
                     {
                         <div class="oncall-row">
@@ -55,13 +52,11 @@
                 @foreach (var item in FaqItems)
                 {
                     var isOpen = _openFaqId == item.Id;
-
                     <article class="faq-item @(isOpen ? "open" : null)">
                         <button type="button" class="faq-trigger" @onclick="() => ToggleFaq(item.Id)">
                             <span>@item.Question</span>
                             <MudIcon Icon="@(isOpen ? Icons.Material.Outlined.ExpandLess : Icons.Material.Outlined.ExpandMore)" Size="Size.Small" />
                         </button>
-
                         @if (isOpen)
                         {
                             <div class="faq-answer">@item.Answer</div>
@@ -73,7 +68,7 @@
             <footer class="support-footer">
                 <p>Still need help?</p>
                 <div class="support-actions">
-                    <button type="button" class="standard-btn selected">Contact Support</button>
+                    <button type="button" class="standard-btn">Contact Support</button>
                     <button type="button" class="standard-btn">Start Live Chat</button>
                 </div>
             </footer>
@@ -84,7 +79,6 @@
         @foreach (var item in Items)
         {
             var isSelected = item == _activeItem;
-
             <button type="button"
                     class="utility-tab @(isSelected ? "selected" : null)"
                     role="tab"
@@ -114,16 +108,9 @@
 
     private readonly List<OnCallGroup> OnCallGroups =
     [
-        new("Emergency Doctors", [
-            new("Dr. Bruce Wayne", "4567", "041 234 5678", "001 234 5678"),
-            new("Dr. Diana Prince", "9876", "041 987 6543", "001 987 6543")
-        ]),
-        new("ICU", [
-            new("Dr. Stephen Strange", "1234", "041 567 5678", "001 191 5678")
-        ]),
-        new("Surgery", [
-            new("NP. Pepper Potts", "3567", "041 293 7244", "001 659 8375")
-        ])
+        new("Emergency Doctors", [new("Dr. Bruce Wayne", "4567", "041 234 5678", "001 234 5678"), new("Dr. Diana Prince", "9876", "041 987 6543", "001 987 6543")]),
+        new("ICU", [new("Dr. Stephen Strange", "1234", "041 567 5678", "001 191 5678")]),
+        new("Surgery", [new("NP. Pepper Potts", "3567", "041 293 7244", "001 659 8375")])
     ];
 
     [Parameter] public bool IsDarkMode { get; set; }
@@ -133,23 +120,10 @@
         _activeItem = item;
         _isOnCallOpen = item == "On Call";
         _isSupportOpen = item == "Support";
-
-        if (item != "Support")
-        {
-            _openFaqId = null;
-        }
     }
 
-    private void CloseOnCall()
-    {
-        _isOnCallOpen = false;
-    }
-
-    private void CloseSupport()
-    {
-        _isSupportOpen = false;
-        _openFaqId = null;
-    }
+    private void CloseOnCall() => _isOnCallOpen = false;
+    private void CloseSupport() => _isSupportOpen = false;
 
     private void ToggleFaq(string id)
     {
