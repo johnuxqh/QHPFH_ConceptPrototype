@@ -117,13 +117,31 @@
 
     private void SelectItem(string item)
     {
+        if (item == "On Call")
+        {
+            var next = !_isOnCallOpen;
+            _isOnCallOpen = next;
+            _isSupportOpen = false;
+            _activeItem = next ? "On Call" : string.Empty;
+            return;
+        }
+
+        if (item == "Support")
+        {
+            var next = !_isSupportOpen;
+            _isSupportOpen = next;
+            _isOnCallOpen = false;
+            _activeItem = next ? "Support" : string.Empty;
+            return;
+        }
+
+        _isOnCallOpen = false;
+        _isSupportOpen = false;
         _activeItem = item;
-        _isOnCallOpen = item == "On Call";
-        _isSupportOpen = item == "Support";
     }
 
-    private void CloseOnCall() => _isOnCallOpen = false;
-    private void CloseSupport() => _isSupportOpen = false;
+    private void CloseOnCall() { _isOnCallOpen = false; if (_activeItem == "On Call") _activeItem = string.Empty; }
+    private void CloseSupport() { _isSupportOpen = false; if (_activeItem == "Support") _activeItem = string.Empty; }
 
     private void ToggleFaq(string id)
     {
