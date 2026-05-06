@@ -156,6 +156,17 @@ button, input { font: inherit; }
   font-size: 2rem;
   line-height: 1;
   cursor: pointer;
+  position: relative;
+}
+.filter-dropdown summary::-webkit-details-marker { display:none; }
+.filter-dropdown summary::after {
+  content: "⌄";
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.9rem;
+  color: var(--pfh-primary-blue);
 }
 .oncall-group {
   margin-top: 0.45rem;
