@@ -1,7 +1,10 @@
 <footer class="utility-shell" aria-label="Utility navigation">
     @if (_isOnCallOpen)
     {
+<<<<<<< codex/refactor-header,-navigation,-and-footer-components-qaqas4
+=======
         <button type="button" class="utility-overlay" aria-label="Close on call drawer" @onclick="CloseOnCall"></button>
+>>>>>>> main
         <section class="oncall-drawer" aria-label="Who's currently on call">
             <header class="oncall-header">
                 <h3>Who’s Currently On Call</h3>
@@ -29,6 +32,54 @@
                 </article>
             }
         </section>
+<<<<<<< codex/refactor-header,-navigation,-and-footer-components-qaqas4
+    }
+
+    @if (_isSupportOpen)
+    {
+        <section class="support-drawer" aria-label="FAQ support drawer">
+            <header class="support-header">
+                <h3>FAQ’s</h3>
+                <div class="support-search">
+                    <span><MudIcon Icon="@Icons.Material.Outlined.Search" Size="Size.Small" /></span>
+                    <input type="search" aria-label="Search FAQs" />
+                    <button type="button">Search</button>
+                </div>
+                <button type="button" class="oncall-close" aria-label="Close" @onclick="CloseSupport">×</button>
+            </header>
+
+            <div class="support-summary">
+                <p>Start by searching for your question in the search box above. Alternatively, you can browse the most common FAQs below.</p>
+                <button type="button" class="standard-btn selected">All FAQs</button>
+            </div>
+
+            <div class="support-list">
+                @foreach (var item in FaqItems)
+                {
+                    var isOpen = _openFaqId == item.Id;
+                    <article class="faq-item @(isOpen ? "open" : null)">
+                        <button type="button" class="faq-trigger" @onclick="() => ToggleFaq(item.Id)">
+                            <span>@item.Question</span>
+                            <MudIcon Icon="@(isOpen ? Icons.Material.Outlined.ExpandLess : Icons.Material.Outlined.ExpandMore)" Size="Size.Small" />
+                        </button>
+                        @if (isOpen)
+                        {
+                            <div class="faq-answer">@item.Answer</div>
+                        }
+                    </article>
+                }
+            </div>
+
+            <footer class="support-footer">
+                <p>Still need help?</p>
+                <div class="support-actions">
+                    <button type="button" class="standard-btn selected">Contact Support</button>
+                    <button type="button" class="standard-btn">Start Live Chat</button>
+                </div>
+            </footer>
+        </section>
+=======
+>>>>>>> main
     }
 
     <div class="utility-bar" role="tablist" aria-label="Footer utilities">
@@ -50,6 +101,25 @@
     private readonly string[] Items = ["On Call", "Support", "Notifications"];
     private string _activeItem = "On Call";
     private bool _isOnCallOpen;
+<<<<<<< codex/refactor-header,-navigation,-and-footer-components-qaqas4
+    private bool _isSupportOpen;
+    private string? _openFaqId;
+
+    private readonly List<FaqItem> FaqItems =
+    [
+        new("password", "How do I go to change my password?", "Open your profile menu and select Change Password. Enter your current password and then your new password."),
+        new("refresh", "How often is the data updated?", "Data refresh rates vary by source. Most operational data updates regularly throughout the day."),
+        new("mismatch", "Why doesn’t my data match what I’m seeing locally?", "Some local systems update on different cycles. Check the timestamp shown on each dashboard."),
+        new("dd", "What is a delayed discharge patient?", "A delayed discharge patient is clinically ready to leave but awaiting required supports or placement."),
+        new("capacity", "How is bed capacity calculated?", "Bed capacity is calculated from configured operational beds, closures, and temporary changes.")
+    ];
+
+    private readonly List<OnCallGroup> OnCallGroups =
+    [
+        new("Emergency Doctors", [new("Dr. Bruce Wayne", "4567", "041 234 5678", "001 234 5678"), new("Dr. Diana Prince", "9876", "041 987 6543", "001 987 6543")]),
+        new("ICU", [new("Dr. Stephen Strange", "1234", "041 567 5678", "001 191 5678")]),
+        new("Surgery", [new("NP. Pepper Potts", "3567", "041 293 7244", "001 659 8375")])
+=======
 
     private readonly List<OnCallGroup> OnCallGroups =
     [
@@ -63,11 +133,29 @@
         new("Surgery", [
             new("NP. Pepper Potts", "3567", "041 293 7244", "001 659 8375")
         ])
+>>>>>>> main
     ];
 
     [Parameter] public bool IsDarkMode { get; set; }
 
     private void SelectItem(string item)
+<<<<<<< codex/refactor-header,-navigation,-and-footer-components-qaqas4
+    {
+        _activeItem = item;
+        _isOnCallOpen = item == "On Call";
+        _isSupportOpen = item == "Support";
+    }
+
+    private void CloseOnCall() => _isOnCallOpen = false;
+    private void CloseSupport() => _isSupportOpen = false;
+
+    private void ToggleFaq(string id)
+    {
+        _openFaqId = _openFaqId == id ? null : id;
+    }
+
+    private sealed record FaqItem(string Id, string Question, string Answer);
+=======
     {
         _activeItem = item;
         _isOnCallOpen = item == "On Call";
@@ -75,6 +163,7 @@
 
     private void CloseOnCall() => _isOnCallOpen = false;
 
+>>>>>>> main
     private sealed record OnCallGroup(string Name, List<OnCallPerson> People);
     private sealed record OnCallPerson(string Name, string Ext, string Mobile, string Pager);
 }
