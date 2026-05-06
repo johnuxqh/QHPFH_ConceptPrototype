@@ -1,54 +1,32 @@
-<nav class="primary-nav @(IsDarkMode ? "theme-dark" : "theme-light")" aria-label="Primary">
-    <div class="primary-nav-desktop">
-        @if (!IsCollapsed)
+<nav class="primary-nav" aria-label="Primary">
+    <div class="primary-nav-track" role="menubar">
+        <button type="button" class="home-link @GetSelectedClass("home")" aria-label="Home" @onclick='() => SelectPrimary("home")'>
+            <MudIcon Icon="@Icons.Material.Outlined.Home" Size="Size.Small" />
+        </button>
+
+        @foreach (var item in PrimaryItems)
         {
-            <div class="primary-nav-track" role="menubar">
-                <button type="button" class="home-link" aria-label="Home">
-                    <MudIcon Icon="@Icons.Material.Outlined.Home" Size="Size.Small" />
-                </button>
-
-                @foreach (var item in PrimaryItems)
+            var isActive = item.Key == _activePrimaryKey;
+            <button type="button" class="nav-link nav-link-@item.Key @(isActive ? "selected" : null)" @onclick="() => SelectPrimary(item.Key)">
+                <span>@item.Label</span>
+                @if (item.HasSubMenu)
                 {
-                    var isActive = item.Key == _activePrimaryKey;
-                    <button type="button"
-                            class="nav-link @(isActive ? "selected" : null)"
-                            @onclick="() => SelectPrimary(item.Key)">
-                        <span>@item.Label</span>
-                        @if (item.HasSubMenu)
-                        {
-                            <MudIcon Icon="@Icons.Material.Outlined.ExpandMore" Size="Size.Small" Class="nav-caret" />
-                        }
-                    </button>
+                    <MudIcon Icon="@Icons.Material.Outlined.ExpandMore" Size="Size.Small" Class="nav-caret" />
                 }
-            </div>
+            </button>
         }
-
-        <MudIconButton Icon="@Icons.Material.Filled.UnfoldLess"
-                       AriaLabel="Collapse primary navigation"
-                       Color="Color.Default"
-                       OnClick="OnToggleCollapsed"
-                       Class="nav-collapse-trigger" />
     </div>
 
-    @if (CurrentSubItems.Count > 0 && !IsCollapsed)
+    @if (CurrentSubItems.Count > 0)
     {
         <div class="sub-nav-track" role="menubar" aria-label="Secondary">
             @foreach (var subItem in CurrentSubItems)
             {
                 var isSubActive = subItem == _activeSubItem;
-                <button type="button" class="sub-nav-link @(isSubActive ? "selected" : null)" @onclick="() => _activeSubItem = subItem">@subItem</button>
+                <button type="button" class="sub-nav-link @(isSubActive ? "selected" : null)" @onclick="() => _activeSubItem = subItem"><span>@subItem</span></button>
             }
         </div>
     }
-
-    <div class="primary-nav-mobile">
-        <MudMenu Icon="@Icons.Material.Filled.Menu" Label="Navigation" AriaLabel="Open mobile navigation">
-            @foreach (var item in PrimaryItems)
-            {
-                <MudMenuItem>@item.Label</MudMenuItem>
-            }
-        </MudMenu>
-    </div>
 </nav>
 
 @code {
@@ -63,20 +41,20 @@
         new("apps", "Connected Apps", false, [])
     ];
 
-    private string _activePrimaryKey = "myhub";
-    private string _activeSubItem = string.Empty;
+    private string _activePrimaryKey = "dd";
+    private string _activeSubItem = "DD Hub";
 
     private IReadOnlyList<string> CurrentSubItems => PrimaryItems.First(x => x.Key == _activePrimaryKey).SubItems;
 
-    [Parameter] public bool IsCollapsed { get; set; }
     [Parameter] public bool IsDarkMode { get; set; }
-    [Parameter] public EventCallback OnToggleCollapsed { get; set; }
 
     private void SelectPrimary(string key)
     {
         _activePrimaryKey = key;
         _activeSubItem = CurrentSubItems.FirstOrDefault() ?? string.Empty;
     }
+
+    private string GetSelectedClass(string key) => key == _activePrimaryKey ? "selected" : string.Empty;
 
     private sealed record PrimaryNavItem(string Key, string Label, bool HasSubMenu, List<string> SubItems);
 }
