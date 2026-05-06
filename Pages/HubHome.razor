@@ -75,10 +75,10 @@
     private readonly HashSet<string> _selectedFacilities = [];
     private readonly HashSet<string> _selectedWards = [];
 
-    private List<string> FacilityOptions => (_selectedHhs.Any() ? _selectedHhs.ToList() : HhsOptions);
-        .SelectMany(h => FacilityByHhs[h])
-        .Distinct()
-        .ToList();
+    private List<string> FacilityOptions => (_selectedHhs.Any() ? _selectedHhs : HhsOptions.ToHashSet())
+    .SelectMany(h => FacilityByHhs[h])
+    .Distinct()
+    .ToList();
 
     private bool CanViewWards => _selectedFacilities.Any();
 
