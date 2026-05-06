@@ -1,65 +1,40 @@
 @page "/"
 
-<<<<<<< codex/refactor-header,-navigation,-and-footer-components-phlypv
 <section class="page-shell-card" aria-label="Main page content" @onclick="CloseAllDropdowns">
     <div class="page-filter-row" aria-label="Data filters" @onclick:stopPropagation="true">
         <div class="filter-group">
-            <label>HSS:</label>
-            <button type="button" class="filter-trigger @(_isHhsOpen ? "open" : null)" @onclick="() => ToggleDropdown("hhs")">@SelectedLabel(_selectedHhs)</button>
+            <label>HHS:</label>
+            <button type="button" class="filter-trigger @(_isHhsOpen ? "open" : null)" @onclick='() => ToggleDropdown("hhs")'>@SelectedLabel(_selectedHhs)</button>
             @if (_isHhsOpen)
             {
                 <div class="filter-menu">
                     <label><input type="checkbox" checked="@(!_selectedHhs.Any())" @onchange="ResetHhs" /> Show all</label>
-                    @foreach (var item in HhsOptions) { <label><input type="checkbox" checked="@_selectedHhs.Contains(item)" @onchange="() => ToggleHhs(item)" /> @item</label> }
-                </div>
-            }
-=======
-<section class="page-shell-card" aria-label="Main page content">
-    <div class="page-filter-row" aria-label="Data filters">
-        <div class="filter-group">
-            <label>HSS:</label>
-            <details class="filter-dropdown" @onfocusout="CloseDropdowns">
-                <summary>@SelectedLabel(_selectedHhs)</summary>
-                <div class="filter-menu">
-                    <label><input type="checkbox" checked="@(!_selectedHhs.Any())" @onchange="() => ResetHhs()" /> Show all</label>
                     @foreach (var item in HhsOptions)
                     {
                         <label><input type="checkbox" checked="@_selectedHhs.Contains(item)" @onchange="() => ToggleHhs(item)" /> @item</label>
                     }
                 </div>
-            </details>
->>>>>>> main
+            }
         </div>
 
         <div class="filter-group">
             <label>Facility:</label>
-<<<<<<< codex/refactor-header,-navigation,-and-footer-components-phlypv
-            <button type="button" class="filter-trigger @(_isFacilityOpen ? "open" : null)" @onclick="() => ToggleDropdown("facility")">@SelectedLabel(_selectedFacilities)</button>
+            <button type="button" class="filter-trigger @(_isFacilityOpen ? "open" : null)" @onclick='() => ToggleDropdown("facility")'>@SelectedLabel(_selectedFacilities)</button>
             @if (_isFacilityOpen)
             {
                 <div class="filter-menu">
                     <label><input type="checkbox" checked="@(!_selectedFacilities.Any())" @onchange="ResetFacilities" /> Show all</label>
-                    @foreach (var item in FacilityOptions) { <label><input type="checkbox" checked="@_selectedFacilities.Contains(item)" @onchange="() => ToggleFacility(item)" /> @item</label> }
-                </div>
-            }
-=======
-            <details class="filter-dropdown" @onfocusout="CloseDropdowns">
-                <summary>@SelectedLabel(_selectedFacilities)</summary>
-                <div class="filter-menu">
-                    <label><input type="checkbox" checked="@(!_selectedFacilities.Any())" @onchange="() => ResetFacilities()" /> Show all</label>
                     @foreach (var item in FacilityOptions)
                     {
                         <label><input type="checkbox" checked="@_selectedFacilities.Contains(item)" @onchange="() => ToggleFacility(item)" /> @item</label>
                     }
                 </div>
-            </details>
->>>>>>> main
+            }
         </div>
 
         <div class="filter-group">
             <label>Ward:</label>
-<<<<<<< codex/refactor-header,-navigation,-and-footer-components-phlypv
-            <button type="button" disabled="@(!CanViewWards)" class="filter-trigger @(_isWardOpen ? "open" : null)" @onclick="() => ToggleDropdown("ward")">@WardLabel</button>
+            <button type="button" disabled="@(!CanViewWards)" class="filter-trigger @(_isWardOpen ? "open" : null)" @onclick='() => ToggleDropdown("ward")'>@WardLabel</button>
             @if (!CanViewWards)
             {
                 <div class="filter-hint">Select facilities to enable wards.</div>
@@ -68,54 +43,21 @@
             {
                 <div class="filter-menu">
                     <label><input type="checkbox" checked="@(!_selectedWards.Any())" @onchange="ResetWards" /> Show all</label>
-                    @foreach (var item in WardOptions) { <label><input type="checkbox" checked="@_selectedWards.Contains(item)" @onchange="() => ToggleWard(item)" /> @item</label> }
+                    @foreach (var item in WardOptions)
+                    {
+                        <label><input type="checkbox" checked="@_selectedWards.Contains(item)" @onchange="() => ToggleWard(item)" /> @item</label>
+                    }
                 </div>
             }
-=======
-            <details class="filter-dropdown" @onfocusout="CloseDropdowns">
-                <summary>@WardLabel</summary>
-                <div class="filter-menu">
-                    @if (!CanViewWards)
-                    {
-                        <div class="filter-hint">Select facilities to enable wards.</div>
-                    }
-                    else
-                    {
-                        <label><input type="checkbox" checked="@(!_selectedWards.Any())" @onchange="() => ResetWards()" /> Show all</label>
-                        @foreach (var item in WardOptions)
-                        {
-                            <label><input type="checkbox" checked="@_selectedWards.Contains(item)" @onchange="() => ToggleWard(item)" /> @item</label>
-                        }
-                    }
-                </div>
-            </details>
->>>>>>> main
         </div>
     </div>
 </section>
 
 @code {
-<<<<<<< codex/refactor-header,-navigation,-and-footer-components-phlypv
-    private bool _isHhsOpen; private bool _isFacilityOpen; private bool _isWardOpen;
-    private readonly List<string> HhsOptions = ["Metro North", "Metro South", "Gold Coast", "Sunshine Coast"];
-    private readonly Dictionary<string, List<string>> FacilityByHhs = new() { ["Metro North"] = ["RBWH", "Redcliffe", "Caboolture"], ["Metro South"] = ["PAH", "QEII", "Logan"], ["Gold Coast"] = ["GCUH", "Robina"], ["Sunshine Coast"] = ["SCUH", "Nambour"] };
-    private readonly Dictionary<string, List<string>> WardByFacility = new() { ["RBWH"] = ["Ward 5A", "Ward 7B"], ["Redcliffe"] = ["Ward R1"], ["Caboolture"] = ["Ward C1"], ["PAH"] = ["Ward P1", "Ward P2"], ["QEII"] = ["Ward Q1"], ["Logan"] = ["Ward L1"], ["GCUH"] = ["Ward G1"], ["Robina"] = ["Ward Rb1"], ["SCUH"] = ["Ward S1"], ["Nambour"] = ["Ward N1"] };
-    private readonly HashSet<string> _selectedHhs = []; private readonly HashSet<string> _selectedFacilities = []; private readonly HashSet<string> _selectedWards = [];
-    private List<string> FacilityOptions => (_selectedHhs.Any() ? _selectedHhs : HhsOptions).SelectMany(h => FacilityByHhs[h]).Distinct().ToList();
-    private bool CanViewWards => _selectedFacilities.Any();
-    private List<string> WardOptions => _selectedFacilities.SelectMany(f => WardByFacility.TryGetValue(f, out var wards) ? wards : []).Distinct().ToList();
-    private string WardLabel => !CanViewWards ? "All" : SelectedLabel(_selectedWards);
-    private static string SelectedLabel(HashSet<string> selected) => selected.Count == 0 ? "All" : selected.Count == 1 ? selected.First() : $"{selected.Count} selected";
-    private void ToggleDropdown(string key) { _isHhsOpen = key == "hhs" && !_isHhsOpen; _isFacilityOpen = key == "facility" && !_isFacilityOpen; _isWardOpen = key == "ward" && !_isWardOpen; }
-    private void CloseAllDropdowns() => (_isHhsOpen, _isFacilityOpen, _isWardOpen) = (false, false, false);
-    private void ToggleHhs(string item) { ToggleSet(_selectedHhs, item); _selectedFacilities.RemoveWhere(f => !FacilityOptions.Contains(f)); _selectedWards.Clear(); }
-    private void ToggleFacility(string item) { ToggleSet(_selectedFacilities, item); _selectedWards.RemoveWhere(w => !WardOptions.Contains(w)); }
-    private void ToggleWard(string item) => ToggleSet(_selectedWards, item);
-    private static void ToggleSet(HashSet<string> set, string item) { if (!set.Add(item)) set.Remove(item); }
-    private void ResetHhs() { _selectedHhs.Clear(); _selectedFacilities.Clear(); _selectedWards.Clear(); }
-    private void ResetFacilities() { _selectedFacilities.Clear(); _selectedWards.Clear(); }
-    private void ResetWards() => _selectedWards.Clear();
-=======
+    private bool _isHhsOpen;
+    private bool _isFacilityOpen;
+    private bool _isWardOpen;
+
     private readonly List<string> HhsOptions = ["Metro North", "Metro South", "Gold Coast", "Sunshine Coast"];
 
     private readonly Dictionary<string, List<string>> FacilityByHhs = new()
@@ -128,9 +70,16 @@
 
     private readonly Dictionary<string, List<string>> WardByFacility = new()
     {
-        ["RBWH"] = ["Ward 5A", "Ward 7B"], ["Redcliffe"] = ["Ward R1"], ["Caboolture"] = ["Ward C1"],
-        ["PAH"] = ["Ward P1", "Ward P2"], ["QEII"] = ["Ward Q1"], ["Logan"] = ["Ward L1"],
-        ["GCUH"] = ["Ward G1"], ["Robina"] = ["Ward Rb1"], ["SCUH"] = ["Ward S1"], ["Nambour"] = ["Ward N1"]
+        ["RBWH"] = ["Ward 5A", "Ward 7B"],
+        ["Redcliffe"] = ["Ward R1"],
+        ["Caboolture"] = ["Ward C1"],
+        ["PAH"] = ["Ward P1", "Ward P2"],
+        ["QEII"] = ["Ward Q1"],
+        ["Logan"] = ["Ward L1"],
+        ["GCUH"] = ["Ward G1"],
+        ["Robina"] = ["Ward Rb1"],
+        ["SCUH"] = ["Ward S1"],
+        ["Nambour"] = ["Ward N1"]
     };
 
     private readonly HashSet<string> _selectedHhs = [];
@@ -138,9 +87,9 @@
     private readonly HashSet<string> _selectedWards = [];
 
     private List<string> FacilityOptions => (_selectedHhs.Any() ? _selectedHhs : HhsOptions.ToHashSet())
-    .SelectMany(h => FacilityByHhs[h])
-    .Distinct()
-    .ToList();
+        .SelectMany(h => FacilityByHhs[h])
+        .Distinct()
+        .ToList();
 
     private bool CanViewWards => _selectedFacilities.Any();
 
@@ -151,7 +100,22 @@
 
     private string WardLabel => !CanViewWards ? "All" : SelectedLabel(_selectedWards);
 
-    private static string SelectedLabel(HashSet<string> selected) => selected.Count == 0 ? "All" : selected.Count == 1 ? selected.First() : $"{selected.Count} selected";
+    private static string SelectedLabel(HashSet<string> selected) =>
+        selected.Count == 0 ? "All" : selected.Count == 1 ? selected.First() : $"{selected.Count} selected";
+
+    private void ToggleDropdown(string key)
+    {
+        _isHhsOpen = key == "hhs" && !_isHhsOpen;
+        _isFacilityOpen = key == "facility" && !_isFacilityOpen;
+        _isWardOpen = key == "ward" && !_isWardOpen;
+    }
+
+    private void CloseAllDropdowns()
+    {
+        _isHhsOpen = false;
+        _isFacilityOpen = false;
+        _isWardOpen = false;
+    }
 
     private void ToggleHhs(string item)
     {
@@ -170,13 +134,24 @@
 
     private static void ToggleSet(HashSet<string> set, string item)
     {
-        if (!set.Add(item)) set.Remove(item);
+        if (!set.Add(item))
+        {
+            set.Remove(item);
+        }
     }
 
-    private void ResetHhs() { _selectedHhs.Clear(); _selectedFacilities.Clear(); _selectedWards.Clear(); }
-    private void ResetFacilities() { _selectedFacilities.Clear(); _selectedWards.Clear(); }
-    private void ResetWards() => _selectedWards.Clear();
+    private void ResetHhs()
+    {
+        _selectedHhs.Clear();
+        _selectedFacilities.Clear();
+        _selectedWards.Clear();
+    }
 
-    private void CloseDropdowns(FocusEventArgs _) { }
->>>>>>> main
+    private void ResetFacilities()
+    {
+        _selectedFacilities.Clear();
+        _selectedWards.Clear();
+    }
+
+    private void ResetWards() => _selectedWards.Clear();
 }
