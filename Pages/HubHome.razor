@@ -75,7 +75,7 @@
     private readonly HashSet<string> _selectedFacilities = [];
     private readonly HashSet<string> _selectedWards = [];
 
-    private List<string> FacilityOptions => (_selectedHhs.Any() ? _selectedHhs : HhsOptions)
+    private List<string> FacilityOptions => (_selectedHhs.Any() ? _selectedHhs.ToList() : HhsOptions);
         .SelectMany(h => FacilityByHhs[h])
         .Distinct()
         .ToList();
