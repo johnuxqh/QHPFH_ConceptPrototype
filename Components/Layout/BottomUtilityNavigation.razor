@@ -1,41 +1,154 @@
 <footer class="utility-shell" aria-label="Utility navigation">
-    @if (!_isMinimized)
+    @if (_isOnCallOpen)
     {
-        <div class="utility-bar">
-            <MudMenu Label="On Call" ActivationEvent="MouseEvent.LeftClick">
-                <MudText Class="utility-popup-content">On call details placeholder</MudText>
-            </MudMenu>
-            <MudMenu Label="FAQ / Support" ActivationEvent="MouseEvent.LeftClick">
-                <MudText Class="utility-popup-content">Support options placeholder</MudText>
-            </MudMenu>
-            <MudMenu Label="Notifications" ActivationEvent="MouseEvent.LeftClick">
-                <MudText Class="utility-popup-content">Notifications placeholder</MudText>
-            </MudMenu>
-            <MudMenu Label="System Status" ActivationEvent="MouseEvent.LeftClick">
-                <MudText Class="utility-popup-content">System status placeholder</MudText>
-            </MudMenu>
-            <MudMenu Label="Help" ActivationEvent="MouseEvent.LeftClick">
-                <MudText Class="utility-popup-content">Help placeholder</MudText>
-            </MudMenu>
-            <MudIconButton Icon="@Icons.Material.Filled.ExpandMore"
-                           AriaLabel="Minimize utility navigation"
-                           OnClick="ToggleMinimized" />
-        </div>
-    }
-    else
-    {
-        @* Bottom utility minimise pattern is scaffold only. Final behaviour and visual design to be defined later. *@
-        <MudButton Variant="Variant.Outlined" OnClick="ToggleMinimized" Class="utility-restore-pill">Utilities</MudButton>
+        <section class="oncall-drawer" aria-label="Who's currently on call">
+            <header class="oncall-header">
+                <h3>Who’s Currently On Call</h3>
+                <button type="button" class="oncall-close" aria-label="Close" @onclick="CloseOnCall">×</button>
+            </header>
+
+            @foreach (var group in OnCallGroups)
+            {
+                <article class="oncall-group">
+                    <div class="oncall-table-header">
+                        <span>@group.Name</span>
+                        <span>Ext</span>
+                        <span>Mobile</span>
+                        <span>Pager</span>
+                    </div>
+                    @foreach (var person in group.People)
+                    {
+                        <div class="oncall-row">
+                            <span>@person.Name</span>
+                            <span>@person.Ext</span>
+                            <span>@person.Mobile</span>
+                            <span>@person.Pager</span>
+                        </div>
+                    }
+                </article>
+            }
+        </section>
     }
 
-    @* Overlay/drawer interaction model is scaffold only. Final application rules to be defined later. *@
+    @if (_isSupportOpen)
+    {
+        <section class="support-drawer" aria-label="FAQ support drawer">
+            <header class="support-header">
+                <h3>FAQ’s</h3>
+                <div class="support-search">
+                    <span><MudIcon Icon="@Icons.Material.Outlined.Search" Size="Size.Small" /></span>
+                    <input type="search" aria-label="Search FAQs" />
+                    <button type="button">Search</button>
+                </div>
+                <button type="button" class="oncall-close" aria-label="Close" @onclick="CloseSupport">×</button>
+            </header>
+
+            <div class="support-summary">
+                <p>Start by searching for your question in the search box above. Alternatively, you can browse the most common FAQs below.</p>
+                <button type="button" class="standard-btn selected">All FAQs</button>
+            </div>
+
+            <div class="support-list">
+                @foreach (var item in FaqItems)
+                {
+                    var isOpen = _openFaqId == item.Id;
+                    <article class="faq-item @(isOpen ? "open" : null)">
+                        <button type="button" class="faq-trigger" @onclick="() => ToggleFaq(item.Id)">
+                            <span>@item.Question</span>
+                            <MudIcon Icon="@(isOpen ? Icons.Material.Outlined.ExpandLess : Icons.Material.Outlined.ExpandMore)" Size="Size.Small" />
+                        </button>
+                        @if (isOpen)
+                        {
+                            <div class="faq-answer">@item.Answer</div>
+                        }
+                    </article>
+                }
+            </div>
+
+            <footer class="support-footer">
+                <p>Still need help?</p>
+                <div class="support-actions">
+                    <button type="button" class="standard-btn">Contact Support</button>
+                    <button type="button" class="standard-btn">Start Live Chat</button>
+                </div>
+            </footer>
+        </section>
+    }
+
+    <div class="utility-bar" role="tablist" aria-label="Footer utilities">
+        @foreach (var item in Items)
+        {
+            var isSelected = item == _activeItem;
+            <button type="button"
+                    class="utility-tab @(isSelected ? "selected" : null)"
+                    role="tab"
+                    aria-selected="@isSelected"
+                    @onclick="() => SelectItem(item)">
+                @item
+            </button>
+        }
+    </div>
 </footer>
 
 @code {
-    private bool _isMinimized;
+    private readonly string[] Items = ["On Call", "Support", "Notifications"];
+    private string _activeItem = "On Call";
+    private bool _isOnCallOpen;
+    private bool _isSupportOpen;
+    private string? _openFaqId;
 
-    private void ToggleMinimized()
+    private readonly List<FaqItem> FaqItems =
+    [
+        new("password", "How do I go to change my password?", "Open your profile menu and select Change Password. Enter your current password and then your new password."),
+        new("refresh", "How often is the data updated?", "Data refresh rates vary by source. Most operational data updates regularly throughout the day."),
+        new("mismatch", "Why doesn’t my data match what I’m seeing locally?", "Some local systems update on different cycles. Check the timestamp shown on each dashboard."),
+        new("dd", "What is a delayed discharge patient?", "A delayed discharge patient is clinically ready to leave but awaiting required supports or placement."),
+        new("capacity", "How is bed capacity calculated?", "Bed capacity is calculated from configured operational beds, closures, and temporary changes.")
+    ];
+
+    private readonly List<OnCallGroup> OnCallGroups =
+    [
+        new("Emergency Doctors", [new("Dr. Bruce Wayne", "4567", "041 234 5678", "001 234 5678"), new("Dr. Diana Prince", "9876", "041 987 6543", "001 987 6543")]),
+        new("ICU", [new("Dr. Stephen Strange", "1234", "041 567 5678", "001 191 5678")]),
+        new("Surgery", [new("NP. Pepper Potts", "3567", "041 293 7244", "001 659 8375")])
+    ];
+
+    [Parameter] public bool IsDarkMode { get; set; }
+
+    private void SelectItem(string item)
     {
-        _isMinimized = !_isMinimized;
+        if (item == "On Call")
+        {
+            var next = !_isOnCallOpen;
+            _isOnCallOpen = next;
+            _isSupportOpen = false;
+            _activeItem = next ? "On Call" : string.Empty;
+            return;
+        }
+
+        if (item == "Support")
+        {
+            var next = !_isSupportOpen;
+            _isSupportOpen = next;
+            _isOnCallOpen = false;
+            _activeItem = next ? "Support" : string.Empty;
+            return;
+        }
+
+        _isOnCallOpen = false;
+        _isSupportOpen = false;
+        _activeItem = item;
     }
+
+    private void CloseOnCall() { _isOnCallOpen = false; if (_activeItem == "On Call") _activeItem = string.Empty; }
+    private void CloseSupport() { _isSupportOpen = false; if (_activeItem == "Support") _activeItem = string.Empty; }
+
+    private void ToggleFaq(string id)
+    {
+        _openFaqId = _openFaqId == id ? null : id;
+    }
+
+    private sealed record FaqItem(string Id, string Question, string Answer);
+    private sealed record OnCallGroup(string Name, List<OnCallPerson> People);
+    private sealed record OnCallPerson(string Name, string Ext, string Mobile, string Pager);
 }
