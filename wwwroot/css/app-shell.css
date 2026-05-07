@@ -156,6 +156,7 @@ button, input { font: inherit; }
   font-size: 2rem;
   line-height: 1;
   cursor: pointer;
+  position: relative;
 }
 .oncall-group {
   margin-top: 0.45rem;
