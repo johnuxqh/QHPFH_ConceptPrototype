@@ -156,6 +156,28 @@ button, input { font: inherit; }
   font-size: 2rem;
   line-height: 1;
   cursor: pointer;
+  position: relative;
+}
+.oncall-group {
+  margin-top: 0.45rem;
+  border: 1px solid #c7d6e6;
+  border-radius: 0.25rem;
+  background: #fff;
+  padding: 0.45rem 0.6rem;
+}
+.oncall-table-header,
+.oncall-row {
+  display: grid;
+  grid-template-columns: 2.1fr 0.6fr 1.15fr 1.15fr;
+  column-gap: 0.8rem;
+  align-items: center;
+}
+.oncall-table-header {
+  color: var(--pfh-primary-blue);
+  font-size: clamp(0.68rem, 0.72vw, 0.75rem);
+  font-weight: 700;
+  border-bottom: 1px solid var(--pfh-action-blue);
+  padding: 0.3rem 0;
 }
 .oncall-group {
   margin-top: 0.3rem;
