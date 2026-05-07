@@ -3,62 +3,49 @@
 <section class="page-shell-card" aria-label="Main page content" @onclick="CloseAllDropdowns">
     <div class="page-filter-row" aria-label="Data filters" @onclick:stopPropagation="true">
         <div class="filter-group">
-<<<<<<< codex/refactor-header,-navigation,-and-footer-components-d08lm7
             <label>HSS:</label>
             <button type="button" class="filter-trigger @(_isHhsOpen ? "open" : null)" @onclick="() => ToggleDropdown("hhs")">@HhsLabel</button>
-=======
             <label>HHS:</label>
             <button type="button" class="filter-trigger @(_isHhsOpen ? "open" : null)" @onclick='() => ToggleDropdown("hhs")'>@SelectedLabel(_selectedHhs)</button>
->>>>>>> main
             @if (_isHhsOpen)
             {
                 <div class="filter-menu">
                     <label><input type="checkbox" checked="@(!_selectedHhs.Any())" @onchange="ResetHhs" /> Show all</label>
-<<<<<<< codex/refactor-header,-navigation,-and-footer-components-d08lm7
                     @foreach (var item in HhsOptions) { <label><input type="checkbox" checked="@_selectedHhs.Contains(item)" @onchange="() => ToggleHhs(item)" /> @item</label> }
-=======
                     @foreach (var item in HhsOptions)
                     {
                         <label><input type="checkbox" checked="@_selectedHhs.Contains(item)" @onchange="() => ToggleHhs(item)" /> @item</label>
                     }
->>>>>>> main
                 </div>
             }
         </div>
 
         <div class="filter-group">
             <label>Facility:</label>
-<<<<<<< codex/refactor-header,-navigation,-and-footer-components-d08lm7
             <button type="button" class="filter-trigger @(_isFacilityOpen ? "open" : null)" @onclick="() => ToggleDropdown("facility")">@SelectedLabel(_selectedFacilities)</button>
-=======
             <button type="button" class="filter-trigger @(_isFacilityOpen ? "open" : null)" @onclick='() => ToggleDropdown("facility")'>@SelectedLabel(_selectedFacilities)</button>
->>>>>>> main
             @if (_isFacilityOpen)
             {
                 <div class="filter-menu">
                     <label><input type="checkbox" checked="@(!_selectedFacilities.Any())" @onchange="ResetFacilities" /> Show all</label>
-<<<<<<< codex/refactor-header,-navigation,-and-footer-components-d08lm7
                     @foreach (var item in FacilityOptions) { <label><input type="checkbox" checked="@_selectedFacilities.Contains(item)" @onchange="() => ToggleFacility(item)" /> @item</label> }
-=======
                     @foreach (var item in FacilityOptions)
                     {
                         <label><input type="checkbox" checked="@_selectedFacilities.Contains(item)" @onchange="() => ToggleFacility(item)" /> @item</label>
                     }
->>>>>>> main
                 </div>
             }
         </div>
 
         <div class="filter-group">
             <label>Ward:</label>
-<<<<<<< codex/refactor-header,-navigation,-and-footer-components-d08lm7
             <button type="button" disabled="@(!CanViewWards)" class="filter-trigger @(_isWardOpen ? "open" : null)" @onclick="() => ToggleDropdown("ward")">@WardLabel</button>
             @if (CanViewWards && _isWardOpen)
             {
                 <div class="filter-menu">
                     <label><input type="checkbox" checked="@(!_selectedWards.Any())" @onchange="ResetWards" /> Show all</label>
                     @foreach (var item in WardOptions) { <label><input type="checkbox" checked="@_selectedWards.Contains(item)" @onchange="() => ToggleWard(item)" /> @item</label> }
-=======
+
             <button type="button" disabled="@(!CanViewWards)" class="filter-trigger @(_isWardOpen ? "open" : null)" @onclick='() => ToggleDropdown("ward")'>@WardLabel</button>
             @if (!CanViewWards)
             {
@@ -72,7 +59,7 @@
                     {
                         <label><input type="checkbox" checked="@_selectedWards.Contains(item)" @onchange="() => ToggleWard(item)" /> @item</label>
                     }
->>>>>>> main
+
                 </div>
             }
         </div>
@@ -80,7 +67,6 @@
 </section>
 
 @code {
-<<<<<<< codex/refactor-header,-navigation,-and-footer-components-d08lm7
     private bool _isHhsOpen; private bool _isFacilityOpen; private bool _isWardOpen;
     private readonly List<string> HhsOptions = ["Metro North", "Metro South", "Gold Coast", "Sunshine Coast"];
     private readonly Dictionary<string, List<string>> FacilityByHhs = new() { ["Metro North"] = ["RBWH", "Redcliffe", "Caboolture"], ["Metro South"] = ["PAH", "QEII", "Logan"], ["Gold Coast"] = ["GCUH", "Robina"], ["Sunshine Coast"] = ["SCUH", "Nambour"] };
@@ -104,7 +90,6 @@
     private static void ToggleSet(HashSet<string> set, string item) { if (!set.Add(item)) set.Remove(item); }
     private void ResetHhs() { _selectedHhs.Clear(); _selectedFacilities.Clear(); _selectedWards.Clear(); }
     private void ResetFacilities() { _selectedFacilities.Clear(); _selectedWards.Clear(); }
-=======
     private bool _isHhsOpen;
     private bool _isFacilityOpen;
     private bool _isWardOpen;
@@ -204,6 +189,5 @@
         _selectedWards.Clear();
     }
 
->>>>>>> main
     private void ResetWards() => _selectedWards.Clear();
 }
