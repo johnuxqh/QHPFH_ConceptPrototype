@@ -31,12 +31,17 @@
 </div>
 
 @code {
+
     private bool _isDarkMode;
+
     private ShellMode _shellMode = ShellMode.Std;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender) return;
+        if (!firstRender)
+        {
+            return;
+        }
 
         var storedMode = await JS.InvokeAsync<string?>(
             "localStorage.getItem",
@@ -44,19 +49,21 @@
         );
 
         _shellMode = ShellModeExtensions.FromStorageValue(storedMode);
+
         StateHasChanged();
     }
 
-    private async Task ChangeShellMode(ShellMode mode)
+    private void ToggleTheme()
     {
-        if (_shellMode == mode) return;
-        _shellMode = mode;
-        await JS.InvokeVoidAsync("localStorage.setItem", ShellModeExtensions.StorageKey, mode.ToStorageValue());
+        _isDarkMode = !_isDarkMode;
     }
 
     private async Task ChangeShellMode(ShellMode mode)
     {
-        if (_shellMode == mode) return;
+        if (_shellMode == mode)
+        {
+            return;
+        }
 
         _shellMode = mode;
 
@@ -66,4 +73,5 @@
             mode.ToStorageValue()
         );
     }
+
 }
