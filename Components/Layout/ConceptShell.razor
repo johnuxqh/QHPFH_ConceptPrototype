@@ -1,0 +1,10 @@
+<section class="concept-shell" aria-label="Concept workspace shell">
+    <div class="concept-shell-note">Concept workspace shell placeholder</div>
+    <MainContentShell>
+        @ChildContent
+    </MainContentShell>
+</section>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}
