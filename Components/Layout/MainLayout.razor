@@ -6,11 +6,11 @@
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-<div class="app-shell @( _isDarkMode ? "theme-dark" : "theme-light")">
+<div class="app-shell @(_isDarkMode ? "theme-dark" : "theme-light")">
     <HeaderShell IsDarkMode="_isDarkMode"
-                OnToggleTheme="ToggleTheme"
-                CurrentShellMode="_shellMode"
-                OnShellModeChanged="ChangeShellMode" />
+                 OnToggleTheme="ToggleTheme"
+                 CurrentShellMode="_shellMode"
+                 OnShellModeChanged="ChangeShellMode" />
 
     @if (_shellMode == ShellMode.Std)
     {
@@ -30,7 +30,7 @@
 
 @code {
     private bool _isDarkMode;
-    private ShellMode _shellMode = ShellMode.Concept;
+    private ShellMode _shellMode = ShellMode.Std;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -39,16 +39,18 @@
             return;
         }
 
-        var storedMode = await JS.InvokeAsync<string?>("localStorage.getItem", ShellModeExtensions.StorageKey);
+        var storedMode = await JS.InvokeAsync<string?>(
+            "localStorage.getItem",
+            ShellModeExtensions.StorageKey
+        );
+
         _shellMode = ShellModeExtensions.FromStorageValue(storedMode);
         StateHasChanged();
     }
 
-    private async Task ChangeShellMode(ShellMode mode)
+    private void ToggleTheme()
     {
-        if (_shellMode == mode) return;
-        _shellMode = mode;
-        await JS.InvokeVoidAsync("localStorage.setItem", ShellModeExtensions.StorageKey, mode.ToStorageValue());
+        _isDarkMode = !_isDarkMode;
     }
 
     private async Task ChangeShellMode(ShellMode mode)
@@ -59,6 +61,11 @@
         }
 
         _shellMode = mode;
-        await JS.InvokeVoidAsync("localStorage.setItem", ShellModeExtensions.StorageKey, mode.ToStorageValue());
+
+        await JS.InvokeVoidAsync(
+            "localStorage.setItem",
+            ShellModeExtensions.StorageKey,
+            mode.ToStorageValue()
+        );
     }
 }
