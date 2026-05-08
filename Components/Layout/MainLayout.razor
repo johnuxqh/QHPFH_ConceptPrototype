@@ -47,9 +47,11 @@
         StateHasChanged();
     }
 
-    private void ToggleTheme()
+    private async Task ChangeShellMode(ShellMode mode)
     {
-        _isDarkMode = !_isDarkMode;
+        if (_shellMode == mode) return;
+        _shellMode = mode;
+        await JS.InvokeVoidAsync("localStorage.setItem", ShellModeExtensions.StorageKey, mode.ToStorageValue());
     }
 
     private async Task ChangeShellMode(ShellMode mode)
