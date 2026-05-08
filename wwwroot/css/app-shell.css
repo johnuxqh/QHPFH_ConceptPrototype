@@ -360,6 +360,3 @@ button, input { font: inherit; }
 .concept-shell-mode, .std-content { position: relative; }
 .shell-mode-watermark { position: absolute; inset: 0; display: grid; place-items: center; font-size: 300px; font-weight: 700; line-height: 1; color: rgba(25, 52, 89, 0.08); pointer-events: none; z-index: 0; user-select: none; }
 .main-content, .std-content > *:not(.shell-mode-watermark) { position: relative; z-index: 1; }
-
-.shell-std .concept-header { display: none !important; }
-.shell-concept .std-shell { display: none !important; }

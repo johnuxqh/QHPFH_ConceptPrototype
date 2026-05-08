@@ -6,34 +6,32 @@
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-<div class="app-shell shell-@_shellMode.ToStorageValue() @( _isDarkMode ? "theme-dark" : "theme-light")">
-    <div @key="_shellMode">
+<div class="app-shell @(_isDarkMode ? "theme-dark" : "theme-light")">
+
+    <HeaderShell IsDarkMode="_isDarkMode"
+                 OnToggleTheme="ToggleTheme"
+                 CurrentShellMode="_shellMode"
+                 OnShellModeChanged="ChangeShellMode" />
+
     @if (_shellMode == ShellMode.Std)
     {
         <StandardShell>
-            <HeaderContent>
-                @ShellModeToggle
-            </HeaderContent>
             @Body
         </StandardShell>
     }
     else
     {
-        <HeaderShell IsDarkMode="_isDarkMode"
-                    OnToggleTheme="ToggleTheme">
-            <HeaderContent>
-                @ShellModeToggle
-            </HeaderContent>
-        </HeaderShell>
         <ConceptShell>
             @Body
         </ConceptShell>
-        <BottomUtilityNavigation IsDarkMode="_isDarkMode" />
     }
-    </div>
+
+    <BottomUtilityNavigation IsDarkMode="_isDarkMode" />
+
 </div>
 
 @code {
+
     private bool _isDarkMode;
     private RenderFragment ShellModeToggle => @<div class="shell-mode-toggle" role="group" aria-label="Shell mode">
         <button type="button" class="shell-mode-button @( _shellMode == ShellMode.Std ? "selected" : null)" aria-pressed="@(_shellMode == ShellMode.Std)" @onclick="() => ChangeShellMode(ShellMode.Std)">STD</button>
@@ -52,10 +50,46 @@
 
     private void ToggleTheme() => _isDarkMode = !_isDarkMode;
 
-    private async Task ChangeShellMode(ShellMode mode)
+    private ShellMode _shellMode = ShellMode.Std;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        var storedMode = await JS.InvokeAsync<string?>(
+            "localStorage.getItem",
+            ShellModeExtensions.StorageKey
+        );
+
+        _shellMode = ShellModeExtensions.FromStorageValue(storedMode);
+
+        StateHasChanged();
+    }
+
+    private void ToggleTheme()
     {
         if (_shellMode == mode) return;
         _shellMode = mode;
         await JS.InvokeVoidAsync("localStorage.setItem", ShellModeExtensions.StorageKey, mode.ToStorageValue());
     }
+
+    private async Task ChangeShellMode(ShellMode mode)
+    {
+        if (_shellMode == mode)
+        {
+            return;
+        }
+
+        _shellMode = mode;
+
+        await JS.InvokeVoidAsync(
+            "localStorage.setItem",
+            ShellModeExtensions.StorageKey,
+            mode.ToStorageValue()
+        );
+    }
+
 }
