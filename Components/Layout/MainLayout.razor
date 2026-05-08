@@ -6,50 +6,62 @@
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-<div class="app-shell @( _isDarkMode ? "theme-dark" : "theme-light")">
+<div class="app-shell @(_isDarkMode ? "theme-dark" : "theme-light")">
+
+    <HeaderShell IsDarkMode="_isDarkMode"
+                 OnToggleTheme="ToggleTheme"
+                 CurrentShellMode="_shellMode"
+                 OnShellModeChanged="ChangeShellMode" />
+
     @if (_shellMode == ShellMode.Std)
     {
         <StandardShell>
-            <HeaderContent>
-                <div class="shell-mode-toggle" role="group" aria-label="Shell mode">
-                    <button type="button" class="shell-mode-button @( _shellMode == ShellMode.Std ? "selected" : null)" aria-pressed="@(_shellMode == ShellMode.Std)" @onclick="() => ChangeShellMode(ShellMode.Std)">STD</button>
-                    <button type="button" class="shell-mode-button @( _shellMode == ShellMode.Concept ? "selected" : null)" aria-pressed="@(_shellMode == ShellMode.Concept)" @onclick="() => ChangeShellMode(ShellMode.Concept)">CONCEPT</button>
-                </div>
-            </HeaderContent>
             @Body
         </StandardShell>
     }
     else
     {
-        <HeaderShell IsDarkMode="_isDarkMode"
-                    OnToggleTheme="ToggleTheme"
-                    CurrentShellMode="_shellMode"
-                    OnShellModeChanged="ChangeShellMode" />
         <ConceptShell>
             @Body
         </ConceptShell>
-        <BottomUtilityNavigation IsDarkMode="_isDarkMode" />
     }
+
+    <BottomUtilityNavigation IsDarkMode="_isDarkMode" />
+
 </div>
 
 @code {
     private bool _isDarkMode;
-    private ShellMode _shellMode = ShellMode.Concept;
+    private ShellMode _shellMode = ShellMode.Std;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender) return;
-        var storedMode = await JS.InvokeAsync<string?>("localStorage.getItem", ShellModeExtensions.StorageKey);
+
+        var storedMode = await JS.InvokeAsync<string?>(
+            "localStorage.getItem",
+            ShellModeExtensions.StorageKey
+        );
+
         _shellMode = ShellModeExtensions.FromStorageValue(storedMode);
         StateHasChanged();
     }
 
-    private void ToggleTheme() => _isDarkMode = !_isDarkMode;
+    private void ToggleTheme()
+    {
+        _isDarkMode = !_isDarkMode;
+    }
 
     private async Task ChangeShellMode(ShellMode mode)
     {
         if (_shellMode == mode) return;
+
         _shellMode = mode;
-        await JS.InvokeVoidAsync("localStorage.setItem", ShellModeExtensions.StorageKey, mode.ToStorageValue());
+
+        await JS.InvokeVoidAsync(
+            "localStorage.setItem",
+            ShellModeExtensions.StorageKey,
+            mode.ToStorageValue()
+        );
     }
 }
