@@ -1,4 +1,5 @@
 @inherits LayoutComponentBase
+@inject IJSRuntime JS
 
 <MudThemeProvider />
 <MudPopoverProvider />
@@ -6,20 +7,56 @@
 <MudSnackbarProvider />
 
 <div class="app-shell @( _isDarkMode ? "theme-dark" : "theme-light")">
-    <HeaderShell IsDarkMode="_isDarkMode" OnToggleTheme="ToggleTheme" />
+    <HeaderShell IsDarkMode="_isDarkMode"
+                OnToggleTheme="ToggleTheme"
+                CurrentShellMode="_shellMode"
+                OnShellModeChanged="ChangeShellMode" />
 
-    <MainContentShell>
-        @Body
-    </MainContentShell>
+    @if (_shellMode == ShellMode.Std)
+    {
+        <StandardShell>
+            @Body
+        </StandardShell>
+    }
+    else
+    {
+        <ConceptShell>
+            @Body
+        </ConceptShell>
+    }
 
     <BottomUtilityNavigation IsDarkMode="_isDarkMode" />
 </div>
 
 @code {
     private bool _isDarkMode;
+    private ShellMode _shellMode = ShellMode.Concept;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        var storedMode = await JS.InvokeAsync<string?>("localStorage.getItem", ShellModeExtensions.StorageKey);
+        _shellMode = ShellModeExtensions.FromStorageValue(storedMode);
+        StateHasChanged();
+    }
 
     private void ToggleTheme()
     {
         _isDarkMode = !_isDarkMode;
+    }
+
+    private async Task ChangeShellMode(ShellMode mode)
+    {
+        if (_shellMode == mode)
+        {
+            return;
+        }
+
+        _shellMode = mode;
+        await JS.InvokeVoidAsync("localStorage.setItem", ShellModeExtensions.StorageKey, mode.ToStorageValue());
     }
 }
