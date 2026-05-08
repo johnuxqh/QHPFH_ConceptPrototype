@@ -33,6 +33,22 @@
 @code {
 
     private bool _isDarkMode;
+    private RenderFragment ShellModeToggle => @<div class="shell-mode-toggle" role="group" aria-label="Shell mode">
+        <button type="button" class="shell-mode-button @( _shellMode == ShellMode.Std ? "selected" : null)" aria-pressed="@(_shellMode == ShellMode.Std)" @onclick="() => ChangeShellMode(ShellMode.Std)">STD</button>
+        <button type="button" class="shell-mode-button @( _shellMode == ShellMode.Concept ? "selected" : null)" aria-pressed="@(_shellMode == ShellMode.Concept)" @onclick="() => ChangeShellMode(ShellMode.Concept)">CONCEPT</button>
+    </div>;
+
+    private ShellMode _shellMode = ShellMode.Concept;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        var storedMode = await JS.InvokeAsync<string?>("localStorage.getItem", ShellModeExtensions.StorageKey);
+        _shellMode = ShellModeExtensions.FromStorageValue(storedMode);
+        StateHasChanged();
+    }
+
+    private void ToggleTheme() => _isDarkMode = !_isDarkMode;
 
     private ShellMode _shellMode = ShellMode.Std;
 
@@ -55,7 +71,9 @@
 
     private void ToggleTheme()
     {
-        _isDarkMode = !_isDarkMode;
+        if (_shellMode == mode) return;
+        _shellMode = mode;
+        await JS.InvokeVoidAsync("localStorage.setItem", ShellModeExtensions.StorageKey, mode.ToStorageValue());
     }
 
     private async Task ChangeShellMode(ShellMode mode)
