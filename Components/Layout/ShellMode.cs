@@ -13,7 +13,7 @@ public static class ShellModeExtensions
     public static string ToStorageValue(this ShellMode mode) => mode == ShellMode.Concept ? "concept" : "std";
 
     public static ShellMode FromStorageValue(string? value) =>
-        string.Equals(value, "concept", StringComparison.OrdinalIgnoreCase)
-            ? ShellMode.Concept
-            : ShellMode.Std;
+        string.Equals(value, "std", StringComparison.OrdinalIgnoreCase)
+            ? ShellMode.Std
+            : ShellMode.Concept;
 }
