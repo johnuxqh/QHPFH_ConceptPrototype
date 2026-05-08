@@ -355,12 +355,7 @@ button, input { font: inherit; }
 .std-menu-item:hover { background: #e7e7e7; }
 .std-menu-item.selected { background: #dcdcdc; font-weight: 600; }
 .std-content { flex: 1; overflow: auto; }
-.concept-shell-note {
-  margin: 8px 20px 0;
-  font-size: clamp(0.68rem, 0.7vw, 0.75rem);
-  color: #6d7a8e;
-}
 
-.theme-dark .concept-shell-note {
-  color: #9bb0c9;
-}
+.concept-shell-mode, .std-content { position: relative; }
+.shell-mode-watermark { position: absolute; inset: 0; display: grid; place-items: center; font-size: 500px; font-weight: 700; line-height: 1; color: rgba(25, 52, 89, 0.08); pointer-events: none; z-index: 0; user-select: none; }
+.main-content, .std-content > *:not(.shell-mode-watermark) { position: relative; z-index: 1; }
