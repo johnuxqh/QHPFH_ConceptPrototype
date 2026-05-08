@@ -12,7 +12,10 @@
         </div>
 
         <div class="qld-actions">
-            @HeaderContent
+            <div class="shell-mode-toggle" role="group" aria-label="Shell mode">
+                <button type="button" class="shell-mode-button @(CurrentShellMode == ShellMode.Std ? "selected" : null)" aria-pressed="@(CurrentShellMode == ShellMode.Std)" @onclick="() => OnShellModeChanged.InvokeAsync(ShellMode.Std)">STD</button>
+                <button type="button" class="shell-mode-button @(CurrentShellMode == ShellMode.Concept ? "selected" : null)" aria-pressed="@(CurrentShellMode == ShellMode.Concept)" @onclick="() => OnShellModeChanged.InvokeAsync(ShellMode.Concept)">CONCEPT</button>
+            </div>
             <div class="qld-search" role="search" aria-label="Header search">
                 <span class="qld-search-icon" aria-hidden="true">
                     <MudIcon Icon="@Icons.Material.Outlined.Search" Size="Size.Small" />
@@ -65,7 +68,8 @@
 
     [Parameter] public bool IsDarkMode { get; set; }
     [Parameter] public EventCallback OnToggleTheme { get; set; }
-    [Parameter] public RenderFragment? HeaderContent { get; set; }
+    [Parameter] public ShellMode CurrentShellMode { get; set; } = ShellMode.Std;
+    [Parameter] public EventCallback<ShellMode> OnShellModeChanged { get; set; }
 
     private void ToggleProfile() => _isProfileOpen = !_isProfileOpen;
     private void CloseProfile() => _isProfileOpen = false;
