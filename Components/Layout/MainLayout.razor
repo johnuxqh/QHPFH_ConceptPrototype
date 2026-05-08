@@ -7,6 +7,7 @@
 <MudSnackbarProvider />
 
 <div class="app-shell @(_isDarkMode ? "theme-dark" : "theme-light")">
+
     <HeaderShell IsDarkMode="_isDarkMode"
                  OnToggleTheme="ToggleTheme"
                  CurrentShellMode="_shellMode"
@@ -26,10 +27,13 @@
     }
 
     <BottomUtilityNavigation IsDarkMode="_isDarkMode" />
+
 </div>
 
 @code {
+
     private bool _isDarkMode;
+
     private ShellMode _shellMode = ShellMode.Std;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -45,6 +49,7 @@
         );
 
         _shellMode = ShellModeExtensions.FromStorageValue(storedMode);
+
         StateHasChanged();
     }
 
@@ -68,4 +73,5 @@
             mode.ToStorageValue()
         );
     }
+
 }
