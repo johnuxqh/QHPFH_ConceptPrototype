@@ -27,7 +27,7 @@
                         <label>
                             <input type="checkbox"
                                    checked="@_selectedHhs.Contains(item)"
-                                   @onchange="() => ToggleHhs(item)" />
+                                   @onchange="@(e => ToggleHhs(item))" />
                             @item
                         </label>
                     }
@@ -59,7 +59,7 @@
                         <label>
                             <input type="checkbox"
                                    checked="@_selectedFacilities.Contains(item)"
-                                   @onchange="() => ToggleFacility(item)" />
+                                   @onchange="@(e => ToggleFacility(item))" />
                             @item
                         </label>
                     }
@@ -92,7 +92,7 @@
                         <label>
                             <input type="checkbox"
                                    checked="@_selectedWards.Contains(item)"
-                                   @onchange="() => ToggleWard(item)" />
+                                   @onchange="@(e => ToggleWard(item))" />
                             @item
                         </label>
                     }
@@ -109,39 +109,39 @@
     private bool _isFacilityOpen;
     private bool _isWardOpen;
 
-    private readonly List<string> HhsOptions =
-    [
+    private readonly List<string> HhsOptions = new()
+    {
         "Metro North",
         "Metro South",
         "Gold Coast",
         "Sunshine Coast"
-    ];
+    };
 
     private readonly Dictionary<string, List<string>> FacilityByHhs = new()
     {
-        ["Metro North"] = ["RBWH", "Redcliffe", "Caboolture"],
-        ["Metro South"] = ["PAH", "QEII", "Logan"],
-        ["Gold Coast"] = ["GCUH", "Robina"],
-        ["Sunshine Coast"] = ["SCUH", "Nambour"]
+        ["Metro North"] = new() { "RBWH", "Redcliffe", "Caboolture" },
+        ["Metro South"] = new() { "PAH", "QEII", "Logan" },
+        ["Gold Coast"] = new() { "GCUH", "Robina" },
+        ["Sunshine Coast"] = new() { "SCUH", "Nambour" }
     };
 
     private readonly Dictionary<string, List<string>> WardByFacility = new()
     {
-        ["RBWH"] = ["Ward 5A", "Ward 7B"],
-        ["Redcliffe"] = ["Ward R1"],
-        ["Caboolture"] = ["Ward C1"],
-        ["PAH"] = ["Ward P1", "Ward P2"],
-        ["QEII"] = ["Ward Q1"],
-        ["Logan"] = ["Ward L1"],
-        ["GCUH"] = ["Ward G1"],
-        ["Robina"] = ["Ward Rb1"],
-        ["SCUH"] = ["Ward S1"],
-        ["Nambour"] = ["Ward N1"]
+        ["RBWH"] = new() { "Ward 5A", "Ward 7B" },
+        ["Redcliffe"] = new() { "Ward R1" },
+        ["Caboolture"] = new() { "Ward C1" },
+        ["PAH"] = new() { "Ward P1", "Ward P2" },
+        ["QEII"] = new() { "Ward Q1" },
+        ["Logan"] = new() { "Ward L1" },
+        ["GCUH"] = new() { "Ward G1" },
+        ["Robina"] = new() { "Ward Rb1" },
+        ["SCUH"] = new() { "Ward S1" },
+        ["Nambour"] = new() { "Ward N1" }
     };
 
-    private readonly HashSet<string> _selectedHhs = [];
-    private readonly HashSet<string> _selectedFacilities = [];
-    private readonly HashSet<string> _selectedWards = [];
+    private readonly HashSet<string> _selectedHhs = new();
+    private readonly HashSet<string> _selectedFacilities = new();
+    private readonly HashSet<string> _selectedWards = new();
 
     private Dictionary<string, string> HhsByFacility =>
         FacilityByHhs
@@ -155,13 +155,13 @@
 
     private HashSet<string> EffectiveHhs =>
         _selectedHhs.Any()
-            ? [.. _selectedHhs]
-            : [..
+            ? new HashSet<string>(_selectedHhs)
+            : new HashSet<string>(
                 _selectedFacilities
                     .Where(HhsByFacility.ContainsKey)
                     .Select(f => HhsByFacility[f])
                     .Distinct()
-              ];
+              );
 
     private string HhsLabel => SelectedLabel(EffectiveHhs);
 
@@ -180,7 +180,7 @@
             .SelectMany(f =>
                 WardByFacility.TryGetValue(f, out var wards)
                     ? wards
-                    : [])
+                    : new List<string>())
             .Distinct()
             .ToList();
 
