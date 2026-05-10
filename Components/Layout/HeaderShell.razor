@@ -1,4 +1,4 @@
-<header class="app-header" role="banner">
+<header class="concept-header" role="banner">
     @if (_isProfileOpen)
     {
         <button class="profile-overlay" type="button" aria-label="Close profile menu" @onclick="CloseProfile"></button>
@@ -12,6 +12,7 @@
         </div>
 
         <div class="qld-actions">
+            @HeaderContent
             <div class="qld-search" role="search" aria-label="Header search">
                 <span class="qld-search-icon" aria-hidden="true">
                     <MudIcon Icon="@Icons.Material.Outlined.Search" Size="Size.Small" />
@@ -64,6 +65,7 @@
 
     [Parameter] public bool IsDarkMode { get; set; }
     [Parameter] public EventCallback OnToggleTheme { get; set; }
+    [Parameter] public RenderFragment? HeaderContent { get; set; }
 
     private void ToggleProfile() => _isProfileOpen = !_isProfileOpen;
     private void CloseProfile() => _isProfileOpen = false;
