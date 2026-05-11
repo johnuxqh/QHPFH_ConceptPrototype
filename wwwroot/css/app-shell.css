@@ -437,5 +437,3 @@ button, input { font: inherit; }
   margin-left: 0;
   border-left: 1px solid var(--pfh-border-default);
 }
-
-.nav-caret.mud-icon-root { width: 0.85rem !important; height: 0.85rem !important; font-size: 0.85rem !important; transform: none !important; color: currentColor; }
