@@ -3,7 +3,7 @@
 <div class="app-shell app-shell--@_shellMode.ToStorage() @(_isConceptNavCompact ? "app-shell--concept-nav-compact" : null) @(_isDarkMode ? "theme-dark" : "theme-light")">
     @if (_shellMode == ShellMode.Std)
     {
-        <section class="std-shell-host" @key="std-shell">
+        <section class="std-shell-host" @key="@("std-shell")">
             <StdShell CurrentShellMode="_shellMode" OnShellModeChanged="ChangeShellMode">
                 @ChildContent
             </StdShell>
@@ -11,13 +11,13 @@
     }
     else
     {
-        <section class="concept-shell-host" @key="concept-shell">
+        <section class="concept-shell-host" @key="@("concept-shell")">
             <ConceptShell IsDarkMode="_isDarkMode"
-                         OnToggleTheme="ToggleTheme"
-                         CurrentShellMode="_shellMode"
-                         OnShellModeChanged="ChangeShellMode"
-                         IsConceptNavCompact="_isConceptNavCompact"
-                         OnToggleConceptNavCompact="ToggleConceptNavCompact">
+                          OnToggleTheme="ToggleTheme"
+                          CurrentShellMode="_shellMode"
+                          OnShellModeChanged="ChangeShellMode"
+                          IsConceptNavCompact="_isConceptNavCompact"
+                          OnToggleConceptNavCompact="ToggleConceptNavCompact">
                 @ChildContent
             </ConceptShell>
         </section>
@@ -33,7 +33,10 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender) return;
+        if (!firstRender)
+        {
+            return;
+        }
 
         var shellModeRaw = await JS.InvokeAsync<string?>("localStorage.getItem", ShellState.ShellModeStorageKey);
         _shellMode = ShellState.FromStorage(shellModeRaw);
@@ -44,18 +47,35 @@
         StateHasChanged();
     }
 
-    private void ToggleTheme() => _isDarkMode = !_isDarkMode;
+    private void ToggleTheme()
+    {
+        _isDarkMode = !_isDarkMode;
+    }
 
     private async Task ChangeShellMode(ShellMode mode)
     {
-        if (_shellMode == mode) return;
+        if (_shellMode == mode)
+        {
+            return;
+        }
+
         _shellMode = mode;
-        await JS.InvokeVoidAsync("localStorage.setItem", ShellState.ShellModeStorageKey, mode.ToStorage());
+
+        await JS.InvokeVoidAsync(
+            "localStorage.setItem",
+            ShellState.ShellModeStorageKey,
+            mode.ToStorage()
+        );
     }
 
     private async Task ToggleConceptNavCompact()
     {
         _isConceptNavCompact = !_isConceptNavCompact;
-        await JS.InvokeVoidAsync("localStorage.setItem", ShellState.ConceptNavCompactStorageKey, _isConceptNavCompact.ToString().ToLowerInvariant());
+
+        await JS.InvokeVoidAsync(
+            "localStorage.setItem",
+            ShellState.ConceptNavCompactStorageKey,
+            _isConceptNavCompact.ToString().ToLowerInvariant()
+        );
     }
 }
