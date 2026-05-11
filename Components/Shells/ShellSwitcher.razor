@@ -3,20 +3,24 @@
 <div class="app-shell app-shell--@_shellMode.ToStorage() @(_isConceptNavCompact ? "app-shell--concept-nav-compact" : null) @(_isDarkMode ? "theme-dark" : "theme-light")">
     @if (_shellMode == ShellMode.Std)
     {
-        <StdShell CurrentShellMode="_shellMode" OnShellModeChanged="ChangeShellMode">
-            @ChildContent
-        </StdShell>
+        <section class="std-shell-host" @key="std-shell">
+            <StdShell CurrentShellMode="_shellMode" OnShellModeChanged="ChangeShellMode">
+                @ChildContent
+            </StdShell>
+        </section>
     }
     else
     {
-        <ConceptShell IsDarkMode="_isDarkMode"
-                     OnToggleTheme="ToggleTheme"
-                     CurrentShellMode="_shellMode"
-                     OnShellModeChanged="ChangeShellMode"
-                     IsConceptNavCompact="_isConceptNavCompact"
-                     OnToggleConceptNavCompact="ToggleConceptNavCompact">
-            @ChildContent
-        </ConceptShell>
+        <section class="concept-shell-host" @key="concept-shell">
+            <ConceptShell IsDarkMode="_isDarkMode"
+                         OnToggleTheme="ToggleTheme"
+                         CurrentShellMode="_shellMode"
+                         OnShellModeChanged="ChangeShellMode"
+                         IsConceptNavCompact="_isConceptNavCompact"
+                         OnToggleConceptNavCompact="ToggleConceptNavCompact">
+                @ChildContent
+            </ConceptShell>
+        </section>
     }
 </div>
 
