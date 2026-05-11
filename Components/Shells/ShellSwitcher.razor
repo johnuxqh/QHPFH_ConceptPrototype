@@ -3,7 +3,11 @@
 <div class="app-shell app-shell--@_shellMode.ToStorage() @(_isConceptNavCompact ? "app-shell--concept-nav-compact" : null) @(_isDarkMode ? "theme-dark" : "theme-light")">
     @if (_shellMode == ShellMode.Std)
     {
+<<<<<<< codex/add-dual-shell-mode-framework-7enh32
         <section class="std-shell-host" @key="std-shell">
+=======
+        <section class="std-shell-host" @key="@("std-shell")">
+>>>>>>> main
             <StdShell CurrentShellMode="_shellMode" OnShellModeChanged="ChangeShellMode">
                 @ChildContent
             </StdShell>
@@ -11,6 +15,7 @@
     }
     else
     {
+<<<<<<< codex/add-dual-shell-mode-framework-7enh32
         <section class="concept-shell-host" @key="concept-shell">
             <ConceptShell IsDarkMode="_isDarkMode"
                          OnToggleTheme="ToggleTheme"
@@ -18,6 +23,15 @@
                          OnShellModeChanged="ChangeShellMode"
                          IsConceptNavCompact="_isConceptNavCompact"
                          OnToggleConceptNavCompact="ToggleConceptNavCompact">
+=======
+        <section class="concept-shell-host" @key="@("concept-shell")">
+            <ConceptShell IsDarkMode="_isDarkMode"
+                          OnToggleTheme="ToggleTheme"
+                          CurrentShellMode="_shellMode"
+                          OnShellModeChanged="ChangeShellMode"
+                          IsConceptNavCompact="_isConceptNavCompact"
+                          OnToggleConceptNavCompact="ToggleConceptNavCompact">
+>>>>>>> main
                 @ChildContent
             </ConceptShell>
         </section>
@@ -33,7 +47,14 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+<<<<<<< codex/add-dual-shell-mode-framework-7enh32
         if (!firstRender) return;
+=======
+        if (!firstRender)
+        {
+            return;
+        }
+>>>>>>> main
 
         var shellModeRaw = await JS.InvokeAsync<string?>("localStorage.getItem", ShellState.ShellModeStorageKey);
         _shellMode = ShellState.FromStorage(shellModeRaw);
@@ -44,6 +65,7 @@
         StateHasChanged();
     }
 
+<<<<<<< codex/add-dual-shell-mode-framework-7enh32
     private void ToggleTheme() => _isDarkMode = !_isDarkMode;
 
     private async Task ChangeShellMode(ShellMode mode)
@@ -51,11 +73,41 @@
         if (_shellMode == mode) return;
         _shellMode = mode;
         await JS.InvokeVoidAsync("localStorage.setItem", ShellState.ShellModeStorageKey, mode.ToStorage());
+=======
+    private void ToggleTheme()
+    {
+        _isDarkMode = !_isDarkMode;
+    }
+
+    private async Task ChangeShellMode(ShellMode mode)
+    {
+        if (_shellMode == mode)
+        {
+            return;
+        }
+
+        _shellMode = mode;
+
+        await JS.InvokeVoidAsync(
+            "localStorage.setItem",
+            ShellState.ShellModeStorageKey,
+            mode.ToStorage()
+        );
+>>>>>>> main
     }
 
     private async Task ToggleConceptNavCompact()
     {
         _isConceptNavCompact = !_isConceptNavCompact;
+<<<<<<< codex/add-dual-shell-mode-framework-7enh32
         await JS.InvokeVoidAsync("localStorage.setItem", ShellState.ConceptNavCompactStorageKey, _isConceptNavCompact.ToString().ToLowerInvariant());
+=======
+
+        await JS.InvokeVoidAsync(
+            "localStorage.setItem",
+            ShellState.ConceptNavCompactStorageKey,
+            _isConceptNavCompact.ToString().ToLowerInvariant()
+        );
+>>>>>>> main
     }
 }
