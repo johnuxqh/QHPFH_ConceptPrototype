@@ -408,3 +408,32 @@ button, input { font: inherit; }
 
 .concept-nav-inline-toggle { margin-left: auto; border: 0; background: transparent; width: 32px; color: #4f5d72; border-left: 1px solid var(--pfh-border-default); }
 .compact-active { min-width: 220px; justify-content: flex-start; }
+
+
+/* concept nav polish */
+.nav-link { padding-right: 24px; }
+.nav-caret { margin-left: 6px; flex-shrink: 0; }
+.home-link .mud-icon-root { font-size: 1rem !important; }
+
+.app-shell--concept-nav-compact .primary-nav {
+  display: inline-block;
+  margin: 6px 0 0 20px;
+  border: 1px solid var(--pfh-border-default);
+  background: var(--pfh-menu-surface);
+}
+
+.app-shell--concept-nav-compact .primary-nav-track {
+  width: auto;
+  padding-left: 0;
+  border-bottom: 0;
+}
+
+.app-shell--concept-nav-compact .compact-active {
+  min-width: 0;
+  padding: 0 12px;
+}
+
+.app-shell--concept-nav-compact .concept-nav-inline-toggle {
+  margin-left: 0;
+  border-left: 1px solid var(--pfh-border-default);
+}
