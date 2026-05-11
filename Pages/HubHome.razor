@@ -77,13 +77,7 @@
                 @WardLabel
             </button>
 
-            @if (!CanViewWards)
-            {
-                <div class="filter-hint">
-                    Select facilities to enable wards.
-                </div>
-            }
-            else if (_isWardOpen)
+            @if (_isWardOpen)
             {
                 <div class="filter-menu">
                     <label>
