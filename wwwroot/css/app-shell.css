@@ -23,8 +23,8 @@ button, input { font: inherit; }
 .app-shell.theme-dark { background: linear-gradient(180deg, #111a2b 0%, #121e34 100%); color: #dfe7f5; }
 
 .concept-header { position: sticky; top: 0; z-index: 100; }
-.theme-light .concept-header { /* background: var(--pfh-menu-surface); border-bottom: 1px solid var(--pfh-border-default);*/ }
-.theme-dark .concept-header { background: linear-gradient(95deg, #1c2a41 0%, #273751 100%); /* border-bottom: 1px solid #2e3a52; */ }
+.theme-light .concept-header { background: var(--pfh-menu-surface); border-bottom: 1px solid var(--pfh-border-default); }
+.theme-dark .concept-header { background: linear-gradient(95deg, #1c2a41 0%, #273751 100%); border-bottom: 1px solid #2e3a52; }
 .profile-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.01); border: 0; border-radius: 4px; z-index: 101; }
 
 .qld-header-row { position: relative; z-index: 102; height: var(--pfh-header-height); display: flex; align-items: center; padding: 0 20px; gap: 18px; }
