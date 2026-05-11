@@ -1,13 +1,22 @@
+@{
+    var navToggleLabel = IsConceptNavCompact
+        ? "Expand workspace navigation"
+        : "Collapse workspace navigation";
+}
+
 <div class="concept-shell">
     <HeaderShell IsDarkMode="IsDarkMode" OnToggleTheme="OnToggleTheme">
         <HeaderContent>
             <button type="button"
                     class="concept-nav-compact-toggle"
-                    aria-label="@(IsConceptNavCompact ? "Expand workspace navigation" : "Collapse workspace navigation")"
+                    aria-label="@navToggleLabel"
                     @onclick="OnToggleConceptNavCompact">
-                <MudIcon Icon="@(IsConceptNavCompact ? Icons.Material.Outlined.UnfoldMore : Icons.Material.Outlined.UnfoldLess)" Size="Size.Small" />
+                <MudIcon Icon="@(IsConceptNavCompact ? Icons.Material.Outlined.UnfoldMore : Icons.Material.Outlined.UnfoldLess)"
+                         Size="Size.Small" />
             </button>
-            <ShellModeToggle Mode="CurrentShellMode" OnModeChanged="OnShellModeChanged" />
+
+            <ShellModeToggle Mode="CurrentShellMode"
+                             OnModeChanged="OnShellModeChanged" />
         </HeaderContent>
     </HeaderShell>
 
