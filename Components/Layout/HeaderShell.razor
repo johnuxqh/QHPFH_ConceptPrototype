@@ -55,7 +55,7 @@
         </div>
     </div>
 
-    <PrimaryNavigation IsDarkMode="IsDarkMode" />
+    <PrimaryNavigation IsDarkMode="IsDarkMode" IsCompact="IsConceptNavCompact" OnToggleCompact="OnToggleConceptNavCompact" />
 </header>
 
 @code {
@@ -66,6 +66,8 @@
     [Parameter] public bool IsDarkMode { get; set; }
     [Parameter] public EventCallback OnToggleTheme { get; set; }
     [Parameter] public RenderFragment? HeaderContent { get; set; }
+    [Parameter] public bool IsConceptNavCompact { get; set; }
+    [Parameter] public EventCallback OnToggleConceptNavCompact { get; set; }
 
     private void ToggleProfile() => _isProfileOpen = !_isProfileOpen;
     private void CloseProfile() => _isProfileOpen = false;

@@ -1,24 +1,7 @@
-@using QHPFH_ConceptPrototype.Components.Layout
-
-@{
-    var navToggleLabel = IsConceptNavCompact
-        ? "Expand workspace navigation"
-        : "Collapse workspace navigation";
-}
-
 <div class="concept-shell">
-    <HeaderShell IsDarkMode="IsDarkMode" OnToggleTheme="OnToggleTheme">
+    <HeaderShell IsDarkMode="IsDarkMode" OnToggleTheme="OnToggleTheme" IsConceptNavCompact="IsConceptNavCompact" OnToggleConceptNavCompact="OnToggleConceptNavCompact">
         <HeaderContent>
-            <button type="button"
-                    class="concept-nav-compact-toggle"
-                    aria-label="@navToggleLabel"
-                    @onclick="OnToggleConceptNavCompact">
-                <MudIcon Icon="@(IsConceptNavCompact ? Icons.Material.Outlined.UnfoldMore : Icons.Material.Outlined.UnfoldLess)"
-                         Size="Size.Small" />
-            </button>
-
-            <ShellModeToggle Mode="CurrentShellMode"
-                             OnModeChanged="OnShellModeChanged" />
+            <ShellModeToggle Mode="CurrentShellMode" OnModeChanged="OnShellModeChanged" />
         </HeaderContent>
     </HeaderShell>
 
@@ -31,16 +14,10 @@
 
 @code {
     [Parameter] public RenderFragment? ChildContent { get; set; }
-
     [Parameter] public bool IsDarkMode { get; set; }
-
     [Parameter] public EventCallback OnToggleTheme { get; set; }
-
     [Parameter] public ShellMode CurrentShellMode { get; set; }
-
     [Parameter] public EventCallback<ShellMode> OnShellModeChanged { get; set; }
-
     [Parameter] public bool IsConceptNavCompact { get; set; }
-
     [Parameter] public EventCallback OnToggleConceptNavCompact { get; set; }
 }

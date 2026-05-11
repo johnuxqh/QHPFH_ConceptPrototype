@@ -404,3 +404,7 @@ button, input { font: inherit; }
   overflow: hidden;
   border-bottom: 0;
 }
+
+
+.concept-nav-inline-toggle { margin-left: auto; border: 0; background: transparent; width: 32px; color: #4f5d72; border-left: 1px solid var(--pfh-border-default); }
+.compact-active { min-width: 220px; justify-content: flex-start; }
