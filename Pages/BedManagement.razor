@@ -1,8 +1,11 @@
 @page "/bed-management"
 @using Microsoft.AspNetCore.Components.Web
 @using MudBlazor
+<<<<<<< codex/create-bed-management-ward-operations-prototype-f0km1h
+=======
 @using MudBlazor
 @using Microsoft.AspNetCore.Components.Web
+>>>>>>> main
 
 <section class="page-shell-card bed-mgmt-page" aria-label="Bed management ward operations">
     @if (!string.IsNullOrWhiteSpace(_toastMessage))
@@ -51,6 +54,9 @@
                 <table class="bm-bay-table">
                     <thead>
                         <tr>
+<<<<<<< codex/create-bed-management-ward-operations-prototype-f0km1h
+                            <th>Ward / Bay</th><th>Beds Total</th><th>Occupied</th><th>Ready</th><th>Cleaning</th><th>Blocked</th><th>Maintenance</th><th>Key Notes</th>
+=======
                             <th>Ward / Bay</th>
                             <th>Beds Total</th>
                             <th>Occupied</th>
@@ -59,12 +65,18 @@
                             <th>Blocked</th>
                             <th>Maintenance</th>
                             <th>Key Notes</th>
+>>>>>>> main
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var bay in Bays)
                         {
                             <tr class="bm-group-row" @onclick="() => ToggleBay(bay.BayName)">
+<<<<<<< codex/create-bed-management-ward-operations-prototype-f0km1h
+                                <td><button class="bm-expand" type="button"><MudIcon Icon="@(bay.IsExpanded ? Icons.Material.Outlined.ExpandLess : Icons.Material.Outlined.ExpandMore)" Size="Size.Small" />@bay.BayName</button></td>
+                                <td>@bay.TotalBeds</td><td>@bay.Occupied</td><td>@bay.Ready</td><td>@bay.Cleaning</td><td>@bay.Blocked</td><td>@bay.Maintenance</td><td>@bay.KeyNotes</td>
+                            </tr>
+=======
                                 <td>
                                     <button class="bm-expand" type="button">
                                         <MudIcon Icon="@(bay.IsExpanded ? Icons.Material.Outlined.ExpandLess : Icons.Material.Outlined.ExpandMore)" Size="Size.Small" />
@@ -80,19 +92,31 @@
                                 <td>@bay.KeyNotes</td>
                             </tr>
 
+>>>>>>> main
                             @if (bay.IsExpanded)
                             {
                                 @foreach (var bed in bay.Beds)
                                 {
+<<<<<<< codex/create-bed-management-ward-operations-prototype-f0km1h
+                                    <tr class="bm-bed-row @(bed.Status == "Ready" ? "drop-ready" : null)" @ondragover="AllowDrop" @ondrop="(e) => DropPatientToBed(bay, bed)">
+=======
                                     <tr class="bm-bed-row @(bed.Status == "Ready" ? "drop-ready" : null)"
                                         @ondragover="AllowDrop"
                                         @ondrop="(e) => DropPatientToBed(bay, bed)">
+>>>>>>> main
                                         <td class="bm-bed-cell">@bed.BedNumber</td>
                                         <td colspan="2">
                                             @if (bed.Status == "Occupied")
                                             {
                                                 <div class="bm-bed-patient" draggable="true" @ondragstart="() => StartDragFromBed(bay, bed)">@bed.PatientName</div>
                                             }
+<<<<<<< codex/create-bed-management-ward-operations-prototype-f0km1h
+                                            else { @bed.PatientName }
+                                        </td>
+                                        <td>@bed.AgeSex</td>
+                                        <td><span class="bm-status @bed.StatusClass">@bed.Status</span></td>
+                                        <td>@bed.Specialty</td><td>@bed.Los</td><td class="bm-bed-note">@bed.Notes <MudIcon Icon="@Icons.Material.Outlined.MoreHoriz" Size="Size.Small" /></td>
+=======
                                             else
                                             {
                                                 @bed.PatientName
@@ -103,6 +127,7 @@
                                         <td>@bed.Specialty</td>
                                         <td>@bed.Los</td>
                                         <td class="bm-bed-note">@bed.Notes <MudIcon Icon="@Icons.Material.Outlined.MoreHoriz" Size="Size.Small" /></td>
+>>>>>>> main
                                     </tr>
                                 }
                             }
@@ -110,6 +135,43 @@
                     </tbody>
                 </table>
             }
+<<<<<<< codex/create-bed-management-ward-operations-prototype-f0km1h
+            else if (SelectedView == "Grid View")
+            {
+                <div class="bm-grid-view">
+                    @foreach (var bay in Bays)
+                    {
+                        <article class="bm-bay-card">
+                            <header>
+                                <h4>@bay.BayName</h4>
+                                <span>@bay.Occupied/@bay.TotalBeds occupied</span>
+                            </header>
+                            <div class="bm-bed-tiles bm-cols-@bay.TotalBeds">
+                                @foreach (var bed in bay.Beds)
+                                {
+                                    <div class="bm-bed-tile @(bed.Status == "Ready" ? "drop-ready" : null)" @ondragover="AllowDrop" @ondrop="(e) => DropPatientToBed(bay, bed)">
+                                        <div class="bm-bed-tile-head">
+                                            <strong>@bed.BedNumber</strong>
+                                            <span class="bm-status @bed.StatusClass">@bed.Status</span>
+                                        </div>
+                                        @if (bed.Status == "Occupied")
+                                        {
+                                            <div class="bm-bed-patient" draggable="true" @ondragstart="() => StartDragFromBed(bay, bed)">@bed.PatientName</div>
+                                        }
+                                        else
+                                        {
+                                            <div class="bm-bed-empty">Ready for allocation</div>
+                                        }
+                                        <div class="bm-bed-note-short">@ShortNoteFor(bed)</div>
+                                    </div>
+                                }
+                            </div>
+                        </article>
+                    }
+                </div>
+            }
+=======
+>>>>>>> main
             else
             {
                 <div class="bm-placeholder">@SelectedView placeholder ready for next implementation pass.</div>
@@ -265,6 +327,19 @@
         new("Bay 10", 3, 2, 1, 0, 0, 0, "One ready", false, [])
     ];
 
+<<<<<<< codex/create-bed-management-ward-operations-prototype-f0km1h
+
+    private static string ShortNoteFor(BedOperation bed)
+    {
+        if (bed.Notes.Contains("isolation", StringComparison.OrdinalIgnoreCase)) return "Isolation";
+        if (bed.Notes.Contains("EVS", StringComparison.OrdinalIgnoreCase)) return "EVS requested";
+        if (bed.Notes.Contains("hold", StringComparison.OrdinalIgnoreCase)) return "NUM hold";
+        if (bed.Specialty.Contains("Cardiology", StringComparison.OrdinalIgnoreCase)) return "Telemetry";
+        return bed.Notes.Length > 26 ? bed.Notes[..26] + "…" : bed.Notes;
+    }
+
+=======
+>>>>>>> main
     private void ToggleBay(string bayName)
     {
         var bay = Bays.First(x => x.BayName == bayName);
