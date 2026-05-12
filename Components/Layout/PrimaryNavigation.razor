@@ -7,7 +7,7 @@
         else
         {
             <button type="button" class="home-link @GetSelectedClass("home")" aria-label="Home" @onclick='() => SelectPrimary("home")'>
-                <MudIcon Icon="@Icons.Material.Outlined.Home" Size="Size.Small" />
+                <img src="images/header/home_icon.svg" alt="Home" class="home-icon" />
             </button>
 
             @foreach (var item in PrimaryItems)
@@ -37,13 +37,14 @@
             @foreach (var subItem in CurrentSubItems)
             {
                 var isSubActive = subItem == _activeSubItem;
-                <button type="button" class="sub-nav-link @(isSubActive ? "selected" : null)" @onclick="() => _activeSubItem = subItem"><span>@subItem</span></button>
+                <button type="button" class="sub-nav-link @(isSubActive ? "selected" : null)" @onclick="() => SelectSubItem(subItem)"><span>@subItem</span></button>
             }
         </div>
     }
 </nav>
 
 @code {
+    [Inject] private QHPFH_ConceptPrototype.Components.Shells.NavigationState NavigationState { get; set; } = default!;
     private readonly List<PrimaryNavItem> PrimaryItems =
     [
         new("myhub", "MyHub", false, []),
@@ -68,9 +69,21 @@
     {
         _activePrimaryKey = key;
         _activeSubItem = CurrentSubItems.FirstOrDefault() ?? string.Empty;
+        NavigationState.SetActive(_activePrimaryKey, _activeSubItem);
     }
 
     private string GetSelectedClass(string key) => key == _activePrimaryKey ? "selected" : string.Empty;
+
+    protected override void OnInitialized()
+    {
+        NavigationState.SetActive(_activePrimaryKey, _activeSubItem);
+    }
+
+    private void SelectSubItem(string subItem)
+    {
+        _activeSubItem = subItem;
+        NavigationState.SetActive(_activePrimaryKey, _activeSubItem);
+    }
 
     private sealed record PrimaryNavItem(string Key, string Label, bool HasSubMenu, List<string> SubItems);
 }
