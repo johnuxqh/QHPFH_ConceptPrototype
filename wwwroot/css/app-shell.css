@@ -485,3 +485,23 @@ button, input { font: inherit; }
 .view-toggle button { min-width: 74px; padding: 7px 12px; font-size: 1.04rem; }
 .scaffold-body { min-height: 220px; font-size: .9rem; }
 .allocation-btn { padding: 8px 14px; font-size: .84rem; font-weight: 700; }
+
+.situational-panel { grid-template-columns: repeat(7, minmax(190px, 1fr)); gap: 10px; }
+.situational-card { background: #fff; border: 1px solid #dbe5f0; border-radius: 8px; padding: 14px; box-shadow: 0 1px 5px rgba(18,46,83,.08); min-height: 136px; }
+.situational-head { display:flex; justify-content:space-between; align-items:center; }
+.situational-head p { margin: 0; font-size: .8rem; font-weight: 700; color: #274f88; letter-spacing: .02em; }
+.situational-icon { opacity: .95; }
+.situational-card h3 { margin: 8px 0 4px; font-size: 2.95rem; line-height: 1; font-weight: 700; }
+.situational-foot { display:flex; justify-content:space-between; align-items:center; color:#5a6e84; font-size: .86rem; }
+.situational-foot .trail { font-weight: 700; color:#4a6281; }
+.situational-delta { margin-top: 4px; display:flex; justify-content:flex-end; gap: 8px; font-size: .82rem; }
+.situational-delta strong { font-weight: 700; }
+
+.blue { color: #1f66d0; }
+.green { color: #10996f; }
+.orange { color: #f57c00; }
+.purple { color: #6d44c0; }
+.teal { color: #138c9a; }
+.red { color: #d91f30; }
+
+.theme-dark .situational-card { background:#122037; border-color:#2f4e73; }

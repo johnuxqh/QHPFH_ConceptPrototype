@@ -50,12 +50,31 @@
         </div>
 
         <section class="situational-panel">
-            @foreach (var metric in SituationalMetrics)
+            @foreach (var metric in SituationalPanelItems)
             {
-                <article class="metric-card">
-                    <p>@metric.Label</p>
-                    <h3>@metric.Value</h3>
-                    <span>@metric.Detail</span>
+                <article class="situational-card">
+                    <div class="situational-head">
+                        <p>@metric.Title</p>
+                        <MudIcon Icon="@metric.Icon" Size="Size.Medium" Class="@($"situational-icon {metric.AccentClass}")" />
+                    </div>
+
+                    <h3 class="@metric.AccentClass">@metric.Value</h3>
+
+                    <div class="situational-foot">
+                        <span>@metric.Subtitle</span>
+                        @if (!string.IsNullOrWhiteSpace(metric.TrailingLabel))
+                        {
+                            <span class="trail">@metric.TrailingLabel</span>
+                        }
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(metric.Delta24h))
+                    {
+                        <div class="situational-delta @metric.DeltaClass">
+                            <span>24h</span>
+                            <strong>@metric.Delta24h</strong>
+                        </div>
+                    }
                 </article>
             }
         </section>
@@ -197,25 +216,46 @@ else
         (SelectedFacility == All || w.Facility == SelectedFacility) &&
         (SelectedWard == All || w.WardName == SelectedWard));
 
-    private IEnumerable<PatientAdmission> FilteredPatients => Patients.Where(p =>
-        (SelectedHhs == All || p.CurrentHhs == SelectedHhs) &&
-        (SelectedFacility == All || p.CurrentFacility == SelectedFacility) &&
-        (SelectedWard == All || p.CurrentWard == SelectedWard || p.TargetWard == SelectedWard));
+    private List<SituationalItem> SituationalPanelItems
+    {
+        get
+        {
+            var wards = FilteredWards.ToList();
+            var totalPhysical = wards.Sum(x => x.PhysicalBeds);
+            var totalOpen = wards.Sum(x => x.OpenBeds);
+            var cleaningAwaiting = wards.Sum(x => x.CleaningAwaiting);
+            var occupancy = wards.Any() ? wards.Average(x => x.OccupancyPercent) : 0;
+            var capacityDelta = wards.Sum(x => x.CapacityDelta24h);
+            var admissionsToday = wards.Sum(x => x.ElectiveAdmissionsToday + x.EdAddOnsToday + x.HithReturnsToday);
+            var delayed = wards.Sum(x => x.DelayedDischargeCount);
+            var admissionsPlan = wards.Sum(x => x.ElectiveAdmissionsToday);
+            var openDelta = wards.Sum(x => x.CapacityDelta24h < 0 ? x.CapacityDelta24h : 0);
+            var cleaningDelta = wards.Sum(x => x.CleaningAwaiting > 1 ? -1 : 0);
+            var pressureDelta = wards.Count(x => x.PressureStatus is "High" or "Critical");
 
-    private List<MetricItem> SituationalMetrics =>
-    [
-        new("Open Beds", FilteredWards.Sum(x => x.OpenBeds).ToString(), $"{FilteredWards.Sum(x => x.AvailableBeds)} currently available"),
-        new("Occupancy", $"{(FilteredWards.Any() ? FilteredWards.Average(x => x.OccupancyPercent) : 0):0}%", $"Across {FilteredWards.Count()} wards"),
-        new("Non-operational Beds", FilteredWards.Sum(x => x.NonOperationalBeds).ToString(), "Includes staffing and infrastructure factors"),
-        new("Admissions Pipeline", FilteredPatients.Count(x => x.AdmissionStatus != "Complete").ToString(), "Pending arrivals and admissions")
-    ];
+            return
+            [
+                new("PHYSICAL CAPACITY", totalPhysical.ToString("N0"), "Total Beds", Icons.Material.Outlined.KingBed, "blue"),
+                new("OPEN OPERATIONAL BEDS", totalOpen.ToString("N0"), totalPhysical == 0 ? "0% of capacity" : $"{Math.Round((decimal)totalOpen / totalPhysical * 100, 0)}% of capacity", Icons.Material.Outlined.LocalHotel, "green", "red", $"▼ {Math.Abs(openDelta)}"),
+                new("BEDS RETURNING", cleaningAwaiting.ToString("N0"), "Awaiting cleaning", Icons.Material.Outlined.CleaningServices, "orange", "red", $"▼ {Math.Abs(cleaningDelta)}"),
+                new("OPERATIONAL PRESSURE", $"{Math.Round(occupancy, 0)}%", PressureBand(occupancy), Icons.Material.Outlined.Speed, "orange", "red", $"▲ {pressureDelta}%"),
+                new("CAPACITY DELTA (24H)", $"{capacityDelta:+#;-#;0}", "6 OUT 11 IN", Icons.Material.Outlined.Equalizer, capacityDelta >= 0 ? "purple" : "red"),
+                new("ADMISSIONS TODAY", admissionsToday.ToString("N0"), $"Planned: {admissionsPlan}", Icons.Material.Outlined.Groups, "teal"),
+                new("DELAYED FLOW PATIENTS", delayed.ToString("N0"), wards.Any() ? $"{Math.Round((double)delayed / Math.Max(wards.Sum(x => x.OccupiedBeds), 1) * 100)}% of total patients" : "0% of total patients", Icons.Material.Outlined.Person, "red")
+            ];
+        }
+    }
 
     private List<InsightItem> CalculatedInsights => InsightEngine.BuildInsights(FilteredWards.ToList());
 
+    private static string PressureBand(decimal occupancy) =>
+        occupancy < 80 ? "Low" :
+        occupancy < 90 ? "Medium" :
+        occupancy < 95 ? "High" :
+        "Critical";
+
     private void ToggleHhsDropdown() => ToggleDropdown("hhs");
-
     private void ToggleFacilityDropdown() => ToggleDropdown("facility");
-
     private void ToggleWardDropdown() => ToggleDropdown("ward");
 
     private void ToggleDropdown(string key)
@@ -309,7 +349,15 @@ else
         bool DelayedDischarge,
         int NotesCount);
 
-    private sealed record MetricItem(string Label, string Value, string Detail);
+    private sealed record SituationalItem(
+        string Title,
+        string Value,
+        string Subtitle,
+        string Icon,
+        string AccentClass,
+        string DeltaClass = "",
+        string Delta24h = "",
+        string TrailingLabel = "");
 
     private sealed record InsightItem(string Title, string Message, string Severity);
 
@@ -434,7 +482,7 @@ else
                         var occupied = rand.Next((int)(open * 0.7), open + 2);
                         var available = Math.Max(open - occupied, -2);
                         var occupancy = open == 0 ? 0 : Math.Round((decimal)occupied / open * 100, 1);
-                        var pressure = occupancy < 80 ? "Low" : occupancy < 90 ? "Medium" : occupancy < 95 ? "High" : "Critical";
+                        var pressure = PressureBand(occupancy);
 
                         list.Add(new WardRecord(
                             hhs.Key,
