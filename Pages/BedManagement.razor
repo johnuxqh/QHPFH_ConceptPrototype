@@ -1,0 +1,186 @@
+@page "/bed-management"
+@using MudBlazor
+
+<section class="page-shell-card bed-mgmt-page" aria-label="Bed management ward operations">
+    <div class="bm-filter-row">
+        <div class="bm-filter"><span>Facility:</span><button type="button">QCH</button></div>
+        <div class="bm-filter"><span>HHS:</span><button type="button">All</button></div>
+        <div class="bm-filter"><span>Ward:</span><button type="button">8A Surgical</button></div>
+
+        <button class="bm-allocation-btn" type="button" @onclick="() => _isAllocationPanelOpen = true">View Allocation Board</button>
+    </div>
+
+    <section class="bm-view-tabs" role="tablist" aria-label="View mode">
+        @foreach (var view in ViewModes)
+        {
+            <button type="button" class="bm-tab @(view == SelectedView ? "active" : null)" @onclick="() => SelectedView = view">@view</button>
+        }
+    </section>
+
+    <section class="bm-summary-strip">
+        @foreach (var item in SummaryItems)
+        {
+            <article class="bm-summary-item">
+                <p>@item.Label</p>
+                <strong class="@item.ToneClass">@item.Value</strong>
+            </article>
+        }
+    </section>
+
+    <section class="bm-events-strip">
+        <h3>Active Operational Events</h3>
+        <ul>
+            @foreach (var evt in OperationalEvents)
+            {
+                <li><span class="bm-event-location">@evt.Location</span><span>@evt.Message</span></li>
+            }
+        </ul>
+    </section>
+
+    <div class="bm-main-grid">
+        <section class="bm-list-panel">
+            @if (SelectedView == "List View")
+            {
+                <table class="bm-bay-table">
+                    <thead>
+                        <tr>
+                            <th>Ward / Bay</th><th>Beds Total</th><th>Occupied</th><th>Ready</th><th>Cleaning</th><th>Blocked</th><th>Maintenance</th><th>Key Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var bay in Bays)
+                        {
+                            <tr class="bm-group-row" @onclick="() => ToggleBay(bay.BayName)">
+                                <td><button class="bm-expand" type="button"><MudIcon Icon="@(bay.IsExpanded ? Icons.Material.Outlined.ExpandLess : Icons.Material.Outlined.ExpandMore)" Size="Size.Small" />@bay.BayName</button></td>
+                                <td>@bay.TotalBeds</td><td>@bay.Occupied</td><td>@bay.Ready</td><td>@bay.Cleaning</td><td>@bay.Blocked</td><td>@bay.Maintenance</td><td>@bay.KeyNotes</td>
+                            </tr>
+                            @if (bay.IsExpanded)
+                            {
+                                @foreach (var bed in bay.Beds)
+                                {
+                                    <tr class="bm-bed-row">
+                                        <td class="bm-bed-cell">@bed.BedNumber</td>
+                                        <td colspan="2">@bed.PatientName</td>
+                                        <td>@bed.AgeSex</td>
+                                        <td><span class="bm-status @bed.StatusClass">@bed.Status</span></td>
+                                        <td>@bed.Specialty</td>
+                                        <td>@bed.Los</td>
+                                        <td class="bm-bed-note">@bed.Notes <MudIcon Icon="@Icons.Material.Outlined.MoreHoriz" Size="Size.Small" /></td>
+                                    </tr>
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="bm-placeholder">@SelectedView placeholder ready for next implementation pass.</div>
+            }
+        </section>
+
+        <aside class="bm-right-panel">
+            <article>
+                <h4>Incoming</h4>
+                <ul><li>ED Arrivals: 3</li><li>Add On Patients: 2</li><li>IHT Returns: 1</li></ul>
+            </article>
+            <article>
+                <h4>Quick Actions</h4>
+                <div class="bm-actions">
+                    @foreach (var action in QuickActions) { <button type="button">@action</button> }
+                </div>
+            </article>
+            <article>
+                <h4>Recent Activity</h4>
+                <ul class="bm-activity">
+                    <li>12:20 Bay 3 Bed 2 flagged blocked. NUM note added.</li>
+                    <li>12:05 Bay 5 Bed 1 changed from cleaning to ready.</li>
+                    <li>11:42 Facilities confirmed Bay 6 maintenance booking.</li>
+                    <li>11:18 ED called ahead for 1 surgical admission.</li>
+                </ul>
+            </article>
+        </aside>
+    </div>
+</section>
+
+@if (_isAllocationPanelOpen)
+{
+    <div class="bm-slideout-backdrop" @onclick="() => _isAllocationPanelOpen = false"></div>
+    <aside class="bm-slideout">
+        <header>
+            <h3>Allocation Board</h3>
+            <button type="button" @onclick="() => _isAllocationPanelOpen = false">Close</button>
+        </header>
+        <div class="bm-slideout-body">Placeholder panel for allocation workflow (drag/drop to be implemented later).</div>
+    </aside>
+}
+
+@code {
+    private bool _isAllocationPanelOpen;
+    private string SelectedView { get; set; } = "List View";
+    private static readonly List<string> ViewModes = ["List View", "Grid View", "Map View"];
+
+    private static readonly List<(string Label, string Value, string ToneClass)> SummaryItems =
+    [
+        ("Total Beds", "48", "tone-neutral"),
+        ("Occupied", "32", "tone-occupied"),
+        ("Ready", "8", "tone-ready"),
+        ("Cleaning", "4", "tone-cleaning"),
+        ("Blocked", "3", "tone-blocked"),
+        ("Maintenance", "1", "tone-maintenance"),
+        ("System Pressure", "19%, Low", "tone-low")
+    ];
+
+    private static readonly List<(string Location, string Message)> OperationalEvents =
+    [
+        ("Bay 3", "Bed 2 blocked due to adjacent aggressive patient, review after meds"),
+        ("Bay 6", "Maintenance until 14:00, facilities booked"),
+        ("Isolation", "Bay 1 Bed 1 occupied by non-isolation patient")
+    ];
+
+    private static readonly List<string> QuickActions =
+    ["Block Bed", "Mark Cleaning", "Mark Ready", "Request Maintenance", "Add Operational Note"];
+
+    private readonly List<BayOperation> Bays =
+    [
+        new("Bay 1",2,2,0,0,0,0,"Isolation allocation mismatch", true, [new("Bed 1","Alex Browne","67M","Occupied","occupied","General Surgery","2d","Non-isolation patient"),new("Bed 2","Priya Das","54F","Occupied","occupied","General Surgery","1d","Stable")]),
+        new("Bay 2",3,2,1,0,0,0,"One bed ready", false, [new("Bed 1","Mila Torres","39F","Occupied","occupied","Breast Surgery","3d","Awaiting imaging"),new("Bed 2","","","Ready","ready","-","-","Prepared"),new("Bed 3","Tom Willis","71M","Occupied","occupied","Urology","1d","Post-op day 1")]),
+        new("Bay 3",4,2,1,0,1,0,"Bed 2 blocked", false, [new("Bed 1","Jordan Lee","61M","Occupied","occupied","Colorectal","4d","Pain review 14:00"),new("Bed 2","","","Blocked","blocked","-","-","Adjacent behaviour risk"),new("Bed 3","Nadia Khan","45F","Occupied","occupied","General Surgery","2d","Mobilising"),new("Bed 4","","","Ready","ready","-","-","Available")]),
+        new("Bay 4",3,2,0,1,0,0,"Cleaning in progress", false, [new("Bed 1","Luca James","58M","Occupied","occupied","Vascular","3d","Drain monitoring"),new("Bed 2","Rina Patel","48F","Occupied","occupied","General Surgery","1d","Pain controlled"),new("Bed 3","","","Cleaning","cleaning","-","-","EVS assigned")]),
+        new("Bay 5",2,1,1,0,0,0,"Ready for admit", false, [new("Bed 1","Dana Cook","69F","Occupied","occupied","ENT","5d","Discharge likely tomorrow"),new("Bed 2","","","Ready","ready","-","-","Bed made")]),
+        new("Bay 6",2,1,0,0,0,1,"Maintenance booked", false, [new("Bed 1","Samir Gill","52M","Occupied","occupied","General Surgery","2d","Nil acute issues"),new("Bed 2","","","Maintenance","maintenance","-","-","Out of service till 14:00")]),
+        new("Bay 7",3,2,1,0,0,0,"One ready", false, []),new("Bay 8",3,2,1,0,0,0,"One ready", false, []),new("Bay 9",4,3,0,1,0,0,"One cleaning", false, []),new("Bay 10",3,2,1,0,0,0,"One ready", false, [])
+    ];
+
+    private void ToggleBay(string bayName)
+    {
+        var bay = Bays.First(x => x.BayName == bayName);
+        bay.IsExpanded = !bay.IsExpanded;
+    }
+
+    private sealed class BayOperation(string bayName, int totalBeds, int occupied, int ready, int cleaning, int blocked, int maintenance, string keyNotes, bool isExpanded, List<BedOperation> beds)
+    {
+        public string BayName { get; } = bayName;
+        public int TotalBeds { get; } = totalBeds;
+        public int Occupied { get; } = occupied;
+        public int Ready { get; } = ready;
+        public int Cleaning { get; } = cleaning;
+        public int Blocked { get; } = blocked;
+        public int Maintenance { get; } = maintenance;
+        public string KeyNotes { get; } = keyNotes;
+        public bool IsExpanded { get; set; } = isExpanded;
+        public List<BedOperation> Beds { get; } = beds;
+    }
+
+    private sealed class BedOperation(string bedNumber, string patientName, string ageSex, string status, string statusClass, string specialty, string los, string notes)
+    {
+        public string BedNumber { get; } = bedNumber;
+        public string PatientName { get; } = string.IsNullOrWhiteSpace(patientName) ? "—" : patientName;
+        public string AgeSex { get; } = string.IsNullOrWhiteSpace(ageSex) ? "—" : ageSex;
+        public string Status { get; } = status;
+        public string StatusClass { get; } = statusClass;
+        public string Specialty { get; } = specialty;
+        public string Los { get; } = los;
+        public string Notes { get; } = notes;
+    }
+}
