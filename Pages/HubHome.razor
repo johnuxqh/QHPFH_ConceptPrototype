@@ -4,108 +4,114 @@
 
 @if (IsBedManagementPage)
 {
-<section class="page-shell-card bed-management-page" aria-label="Bed management content" @onclick="CloseAllDropdowns">
-    <div class="page-filter-row" aria-label="Bed management filters" @onclick:stopPropagation="true">
-        <div class="filter-group">
-            <label>HHS:</label>
-            <button type="button" class="filter-trigger @(_isHhsOpen ? "open" : null)" @onclick="ToggleHhsDropdown">@SelectedHhs</button>
-            @if (_isHhsOpen)
-            {
-                <div class="filter-menu single-select-menu">
-                    @foreach (var item in HhsOptions)
-                    {
-                        <button type="button" class="menu-option @(SelectedHhs == item ? "active" : null)" @onclick="() => SelectHhs(item)">@item</button>
-                    }
-                </div>
-            }
-        </div>
-
-        <div class="filter-group">
-            <label>Facility:</label>
-            <button type="button" class="filter-trigger @(_isFacilityOpen ? "open" : null)" @onclick="ToggleFacilityDropdown">@SelectedFacility</button>
-            @if (_isFacilityOpen)
-            {
-                <div class="filter-menu single-select-menu">
-                    @foreach (var item in FilteredFacilityOptions)
-                    {
-                        <button type="button" class="menu-option @(SelectedFacility == item ? "active" : null)" @onclick="() => SelectFacility(item)">@item</button>
-                    }
-                </div>
-            }
-        </div>
-
-        <div class="filter-group">
-            <label>Ward:</label>
-            <button type="button" class="filter-trigger @(_isWardOpen ? "open" : null)" @onclick="ToggleWardDropdown">@SelectedWard</button>
-            @if (_isWardOpen)
-            {
-                <div class="filter-menu single-select-menu">
-                    @foreach (var item in FilteredWardOptions)
-                    {
-                        <button type="button" class="menu-option @(SelectedWard == item ? "active" : null)" @onclick="() => SelectWard(item)">@item</button>
-                    }
-                </div>
-            }
-        </div>
-    </div>
-
-    <section class="situational-panel">
-        @foreach (var metric in SituationalPanelItems)
-        {
-            <article class="situational-card">
-                <div class="situational-head">
-                    <p>@metric.Title</p>
-                    <MudIcon Icon="@metric.Icon" Size="Size.Medium" Class="situational-icon @metric.AccentClass" />
-                </div>
-                <h3 class="@metric.AccentClass">@metric.Value</h3>
-                <div class="situational-foot">
-                    <span>@metric.Subtitle</span>
-                    @if (!string.IsNullOrWhiteSpace(metric.TrailingLabel))
-                    {
-                        <span class="trail">@metric.TrailingLabel</span>
-                    }
-                </div>
-                    @if (!string.IsNullOrWhiteSpace(metric.Delta24h))
-                    {
-                        <div class="situational-delta @metric.DeltaClass">
-                            <span>24h</span><strong>@metric.Delta24h</strong>
-                        </div>
-                    }
-            </article>
-        }
-    </section>
-
-    <section class="insights-panel">
-        <h2>Actionable Insights</h2>
-        <div class="insights-grid">
-            @foreach (var insight in CalculatedInsights)
-            {
-                <article class="insight-card @insight.Severity.ToLowerInvariant()">
-                    <h3>@insight.Title</h3>
-                    <p>@insight.Message</p>
-                </article>
-            }
-        </div>
-    </section>
-
-    <section class="main-scaffold">
-        <div class="scaffold-header">
-            <h2>Main Bed Management Workspace</h2>
-            <div class="view-toggle" role="tablist" aria-label="View mode">
-                @foreach (var view in ViewModes)
+    <section class="page-shell-card bed-management-page" aria-label="Bed management content" @onclick="CloseAllDropdowns">
+        <div class="page-filter-row" aria-label="Bed management filters" @onclick:stopPropagation="true">
+            <div class="filter-group">
+                <label>HHS:</label>
+                <button type="button" class="filter-trigger @(_isHhsOpen ? "open" : null)" @onclick="ToggleHhsDropdown">@SelectedHhs</button>
+                @if (_isHhsOpen)
                 {
-                    <button type="button" class="@(view == SelectedViewMode ? "active" : null)" @onclick="() => SelectedViewMode = view">@view</button>
+                    <div class="filter-menu single-select-menu">
+                        @foreach (var item in HhsOptions)
+                        {
+                            <button type="button" class="menu-option @(SelectedHhs == item ? "active" : null)" @onclick="() => SelectHhs(item)">@item</button>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="filter-group">
+                <label>Facility:</label>
+                <button type="button" class="filter-trigger @(_isFacilityOpen ? "open" : null)" @onclick="ToggleFacilityDropdown">@SelectedFacility</button>
+                @if (_isFacilityOpen)
+                {
+                    <div class="filter-menu single-select-menu">
+                        @foreach (var item in FilteredFacilityOptions)
+                        {
+                            <button type="button" class="menu-option @(SelectedFacility == item ? "active" : null)" @onclick="() => SelectFacility(item)">@item</button>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="filter-group">
+                <label>Ward:</label>
+                <button type="button" class="filter-trigger @(_isWardOpen ? "open" : null)" @onclick="ToggleWardDropdown">@SelectedWard</button>
+                @if (_isWardOpen)
+                {
+                    <div class="filter-menu single-select-menu">
+                        @foreach (var item in FilteredWardOptions)
+                        {
+                            <button type="button" class="menu-option @(SelectedWard == item ? "active" : null)" @onclick="() => SelectWard(item)">@item</button>
+                        }
+                    </div>
                 }
             </div>
         </div>
-        <div class="scaffold-body">
-            <p>@SelectedViewMode view scaffold ready. Detailed operational table/grid interactions will be enabled in the next implementation step.</p>
-        </div>
-        <footer>
-            <button type="button" class="allocation-btn">Go to Allocations</button>
-        </footer>
+
+        <section class="situational-panel">
+            @foreach (var metric in SituationalPanelItems)
+            {
+                <article class="situational-card">
+                    <div class="situational-head">
+                        <p>@metric.Title</p>
+                        <MudIcon Icon="@metric.Icon" Size="Size.Medium" Class="@($"situational-icon {metric.AccentClass}")" />
+                    </div>
+
+                    <h3 class="@metric.AccentClass">@metric.Value</h3>
+
+                    <div class="situational-foot">
+                        <span>@metric.Subtitle</span>
+                        @if (!string.IsNullOrWhiteSpace(metric.TrailingLabel))
+                        {
+                            <span class="trail">@metric.TrailingLabel</span>
+                        }
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(metric.Delta24h))
+                    {
+                        <div class="situational-delta @metric.DeltaClass">
+                            <span>24h</span>
+                            <strong>@metric.Delta24h</strong>
+                        </div>
+                    }
+                </article>
+            }
+        </section>
+
+        <section class="insights-panel">
+            <h2>Actionable Insights</h2>
+            <div class="insights-grid">
+                @foreach (var insight in CalculatedInsights)
+                {
+                    <article class="insight-card @insight.Severity.ToLowerInvariant()">
+                        <h3>@insight.Title</h3>
+                        <p>@insight.Message</p>
+                    </article>
+                }
+            </div>
+        </section>
+
+        <section class="main-scaffold">
+            <div class="scaffold-header">
+                <h2>Main Bed Management Workspace</h2>
+                <div class="view-toggle" role="tablist" aria-label="View mode">
+                    @foreach (var view in ViewModes)
+                    {
+                        <button type="button" class="@(view == SelectedViewMode ? "active" : null)" @onclick="() => SelectedViewMode = view">@view</button>
+                    }
+                </div>
+            </div>
+
+            <div class="scaffold-body">
+                <p>@SelectedViewMode view scaffold ready. Detailed operational table/grid interactions will be enabled in the next implementation step.</p>
+            </div>
+
+            <footer>
+                <button type="button" class="allocation-btn">Go to Allocations</button>
+            </footer>
+        </section>
     </section>
-</section>
 }
 else
 {
@@ -113,7 +119,23 @@ else
 }
 
 @code {
-    private bool IsBedManagementPage => NavigationState.ActivePrimaryKey == "bed" && NavigationState.ActiveSubItem == "Bed Management";
+    private bool IsBedManagementPage =>
+        NavigationState.ActivePrimaryKey == "bed" &&
+        NavigationState.ActiveSubItem == "Bed Management";
+
+    private bool _isHhsOpen;
+    private bool _isFacilityOpen;
+    private bool _isWardOpen;
+
+    private const string All = "All";
+
+    private string SelectedHhs { get; set; } = All;
+    private string SelectedFacility { get; set; } = All;
+    private string SelectedWard { get; set; } = All;
+    private string SelectedViewMode { get; set; } = "List";
+
+    private readonly List<string> ViewModes = ["List", "Grid", "Compact"];
+
     protected override void OnInitialized()
     {
         NavigationState.Changed += OnNavigationChanged;
@@ -126,16 +148,27 @@ else
         NavigationState.Changed -= OnNavigationChanged;
     }
 
+    private readonly List<string> HhsOptions =
+    [
+        All,
+        "Cairns and Hinterland",
+        "Central Queensland",
+        "Central West",
+        "Children’s Health Queensland",
+        "Darling Downs",
+        "Gold Coast",
+        "Mackay",
+        "Metro North",
+        "Metro South",
+        "North West",
+        "South West",
+        "Sunshine Coast",
+        "Torres and Cape",
+        "Townsville",
+        "West Moreton",
+        "Wide Bay"
+    ];
 
-    private bool _isHhsOpen; private bool _isFacilityOpen; private bool _isWardOpen;
-    private const string All = "All";
-    private string SelectedHhs { get; set; } = All;
-    private string SelectedFacility { get; set; } = All;
-    private string SelectedWard { get; set; } = All;
-    private string SelectedViewMode { get; set; } = "List";
-    private readonly List<string> ViewModes = ["List", "Grid", "Compact"];
-
-    private readonly List<string> HhsOptions = [All, "Cairns and Hinterland", "Central Queensland", "Central West", "Children’s Health Queensland", "Darling Downs", "Gold Coast", "Mackay", "Metro North", "Metro South", "North West", "South West", "Sunshine Coast", "Torres and Cape", "Townsville", "West Moreton", "Wide Bay"];
     private readonly Dictionary<string, List<string>> FacilitiesByHhs = new()
     {
         ["Cairns and Hinterland"] = ["Cairns Hospital", "Innisfail Hospital", "Mareeba Hospital"],
@@ -159,8 +192,24 @@ else
     private readonly List<WardRecord> Wards = DemoData.BuildWardRecords();
     private readonly List<PatientAdmission> Patients = DemoData.BuildPatientAdmissions();
 
-    private List<string> FilteredFacilityOptions => [All, ..(SelectedHhs == All ? FacilitiesByHhs.Values.SelectMany(x => x) : FacilitiesByHhs[SelectedHhs]).Distinct().Order()];
-    private List<string> FilteredWardOptions => [All, ..FilteredWards.Select(w => w.WardName).Distinct().Order()];
+    private List<string> FilteredFacilityOptions =>
+    [
+        All,
+        ..(SelectedHhs == All
+            ? FacilitiesByHhs.Values.SelectMany(x => x)
+            : FacilitiesByHhs[SelectedHhs])
+            .Distinct()
+            .Order()
+    ];
+
+    private List<string> FilteredWardOptions =>
+    [
+        All,
+        ..FilteredWards
+            .Select(w => w.WardName)
+            .Distinct()
+            .Order()
+    ];
 
     private IEnumerable<WardRecord> FilteredWards => Wards.Where(w =>
         (SelectedHhs == All || w.Hhs == SelectedHhs) &&
@@ -174,7 +223,6 @@ else
             var wards = FilteredWards.ToList();
             var totalPhysical = wards.Sum(x => x.PhysicalBeds);
             var totalOpen = wards.Sum(x => x.OpenBeds);
-            var available = wards.Sum(x => x.AvailableBeds);
             var cleaningAwaiting = wards.Sum(x => x.CleaningAwaiting);
             var occupancy = wards.Any() ? wards.Average(x => x.OccupancyPercent) : 0;
             var capacityDelta = wards.Sum(x => x.CapacityDelta24h);
@@ -198,29 +246,323 @@ else
         }
     }
 
-    private static string PressureBand(decimal occupancy) => occupancy < 80 ? "Low" : occupancy < 90 ? "Medium" : occupancy < 95 ? "High" : "Critical";
-
     private List<InsightItem> CalculatedInsights => InsightEngine.BuildInsights(FilteredWards.ToList());
+
+    private static string PressureBand(decimal occupancy) =>
+        occupancy < 80 ? "Low" :
+        occupancy < 90 ? "Medium" :
+        occupancy < 95 ? "High" :
+        "Critical";
 
     private void ToggleHhsDropdown() => ToggleDropdown("hhs");
     private void ToggleFacilityDropdown() => ToggleDropdown("facility");
     private void ToggleWardDropdown() => ToggleDropdown("ward");
-    private void ToggleDropdown(string key){ _isHhsOpen = key == "hhs" && !_isHhsOpen; _isFacilityOpen = key == "facility" && !_isFacilityOpen; _isWardOpen = key == "ward" && !_isWardOpen; }
-    private void CloseAllDropdowns(){ _isHhsOpen = _isFacilityOpen = _isWardOpen = false; }
-    private void SelectHhs(string hhs){ SelectedHhs = hhs; if (SelectedFacility != All && !FilteredFacilityOptions.Contains(SelectedFacility)) SelectedFacility = All; SelectedWard = All; CloseAllDropdowns(); }
-    private void SelectFacility(string facility){ SelectedFacility = facility; if (facility != All) SelectedHhs = Wards.First(x => x.Facility == facility).Hhs; SelectedWard = All; CloseAllDropdowns(); }
-    private void SelectWard(string ward){ SelectedWard = ward; CloseAllDropdowns(); }
 
-    private sealed record WardRecord(string Hhs, string Facility, string WardCode, string WardName, string WardDescription, string WardType, int PhysicalBeds, int OpenBeds, int OccupiedBeds, int AvailableBeds, decimal OccupancyPercent, string PressureStatus, string BedReductionReason, int ElectiveAdmissionsToday, int EdAddOnsToday, int HithReturnsToday, int PredictedDischargesToday, int ActualDischargesToday, int DelayedDischargeCount, int CleaningAwaiting, int NonOperationalBeds, int CapacityDelta24h, string LastUpdated);
-    private sealed record PatientAdmission(string PatientId, string FirstName, string LastName, int Age, string Sex, string SourceType, string CurrentHhs, string CurrentFacility, string CurrentWard, string TargetWard, string AdmissionStatus, string AdmissionTime, string EstimatedArrivalTime, string ProcedureOrReason, bool IsolationRequired, bool HighAcuity, bool DelayedDischarge, int NotesCount);
-    private sealed record SituationalItem(string Title, string Value, string Subtitle, string Icon, string AccentClass, string DeltaClass = "", string Delta24h = "", string TrailingLabel = "");
+    private void ToggleDropdown(string key)
+    {
+        _isHhsOpen = key == "hhs" && !_isHhsOpen;
+        _isFacilityOpen = key == "facility" && !_isFacilityOpen;
+        _isWardOpen = key == "ward" && !_isWardOpen;
+    }
+
+    private void CloseAllDropdowns()
+    {
+        _isHhsOpen = false;
+        _isFacilityOpen = false;
+        _isWardOpen = false;
+    }
+
+    private void SelectHhs(string hhs)
+    {
+        SelectedHhs = hhs;
+
+        if (SelectedFacility != All && !FilteredFacilityOptions.Contains(SelectedFacility))
+        {
+            SelectedFacility = All;
+        }
+
+        SelectedWard = All;
+        CloseAllDropdowns();
+    }
+
+    private void SelectFacility(string facility)
+    {
+        SelectedFacility = facility;
+
+        if (facility != All)
+        {
+            SelectedHhs = Wards.First(x => x.Facility == facility).Hhs;
+        }
+
+        SelectedWard = All;
+        CloseAllDropdowns();
+    }
+
+    private void SelectWard(string ward)
+    {
+        SelectedWard = ward;
+        CloseAllDropdowns();
+    }
+
+    private sealed record WardRecord(
+        string Hhs,
+        string Facility,
+        string WardCode,
+        string WardName,
+        string WardDescription,
+        string WardType,
+        int PhysicalBeds,
+        int OpenBeds,
+        int OccupiedBeds,
+        int AvailableBeds,
+        decimal OccupancyPercent,
+        string PressureStatus,
+        string BedReductionReason,
+        int ElectiveAdmissionsToday,
+        int EdAddOnsToday,
+        int HithReturnsToday,
+        int PredictedDischargesToday,
+        int ActualDischargesToday,
+        int DelayedDischargeCount,
+        int CleaningAwaiting,
+        int NonOperationalBeds,
+        int CapacityDelta24h,
+        string LastUpdated);
+
+    private sealed record PatientAdmission(
+        string PatientId,
+        string FirstName,
+        string LastName,
+        int Age,
+        string Sex,
+        string SourceType,
+        string CurrentHhs,
+        string CurrentFacility,
+        string CurrentWard,
+        string TargetWard,
+        string AdmissionStatus,
+        string AdmissionTime,
+        string EstimatedArrivalTime,
+        string ProcedureOrReason,
+        bool IsolationRequired,
+        bool HighAcuity,
+        bool DelayedDischarge,
+        int NotesCount);
+
+    private sealed record SituationalItem(
+        string Title,
+        string Value,
+        string Subtitle,
+        string Icon,
+        string AccentClass,
+        string DeltaClass = "",
+        string Delta24h = "",
+        string TrailingLabel = "");
+
     private sealed record InsightItem(string Title, string Message, string Severity);
 
-    private static class InsightEngine { public static List<InsightItem> BuildInsights(List<WardRecord> wards){ var insights = new List<InsightItem>(); var overCapacity = wards.Count(w => w.OccupancyPercent >= 100); if (overCapacity > 0) insights.Add(new($"{overCapacity} wards are over capacity", "Immediate demand management and patient flow escalation advised.", "Critical")); var cleaningBacklog = wards.Where(w => w.CleaningAwaiting >= 3).ToList(); if (cleaningBacklog.Any()) insights.Add(new("Cleaning backlog contributing to pressure", $"{cleaningBacklog.Sum(x => x.CleaningAwaiting)} beds are awaiting cleaning across pressured wards.", "High")); var staffingImpact = wards.Where(w => w.BedReductionReason == "Insufficient staffing").Sum(x => x.NonOperationalBeds); if (staffingImpact > 0) insights.Add(new("Staffing impact reducing operational beds", $"{staffingImpact} beds unavailable due to staffing constraints.", "High")); var delayed = wards.Where(w => w.PressureStatus is "High" or "Critical").Sum(x => x.DelayedDischargeCount); if (delayed > 0) insights.Add(new("Delayed discharge concentration in critical wards", $"{delayed} delayed discharges recorded in high-pressure wards.", "Medium")); var electiveSurge = wards.Sum(w => w.ElectiveAdmissionsToday) > wards.Sum(w => w.ActualDischargesToday); if (electiveSurge) insights.Add(new("Elective surge expected tomorrow", "Planned elective demand is outpacing current discharge throughput.", "Medium")); if (!insights.Any()) insights.Add(new("Capacity profile stable", "No immediate pressure flags in the current filter context.", "Low")); return insights; } }
+    private static class InsightEngine
+    {
+        public static List<InsightItem> BuildInsights(List<WardRecord> wards)
+        {
+            var insights = new List<InsightItem>();
+
+            var overCapacity = wards.Count(w => w.OccupancyPercent >= 100);
+            if (overCapacity > 0)
+            {
+                insights.Add(new($"{overCapacity} wards are over capacity", "Immediate demand management and patient flow escalation advised.", "Critical"));
+            }
+
+            var cleaningBacklog = wards.Where(w => w.CleaningAwaiting >= 3).ToList();
+            if (cleaningBacklog.Any())
+            {
+                insights.Add(new("Cleaning backlog contributing to pressure", $"{cleaningBacklog.Sum(x => x.CleaningAwaiting)} beds are awaiting cleaning across pressured wards.", "High"));
+            }
+
+            var staffingImpact = wards.Where(w => w.BedReductionReason == "Insufficient staffing").Sum(x => x.NonOperationalBeds);
+            if (staffingImpact > 0)
+            {
+                insights.Add(new("Staffing impact reducing operational beds", $"{staffingImpact} beds unavailable due to staffing constraints.", "High"));
+            }
+
+            var delayed = wards.Where(w => w.PressureStatus is "High" or "Critical").Sum(x => x.DelayedDischargeCount);
+            if (delayed > 0)
+            {
+                insights.Add(new("Delayed discharge concentration in critical wards", $"{delayed} delayed discharges recorded in high-pressure wards.", "Medium"));
+            }
+
+            var electiveSurge = wards.Sum(w => w.ElectiveAdmissionsToday) > wards.Sum(w => w.ActualDischargesToday);
+            if (electiveSurge)
+            {
+                insights.Add(new("Elective surge expected tomorrow", "Planned elective demand is outpacing current discharge throughput.", "Medium"));
+            }
+
+            if (!insights.Any())
+            {
+                insights.Add(new("Capacity profile stable", "No immediate pressure flags in the current filter context.", "Low"));
+            }
+
+            return insights;
+        }
+    }
 
     private static class DemoData
     {
-        public static List<WardRecord> BuildWardRecords(){ var wards = new[] { ("ED","Emergency Department","Emergency"), ("GEN","General Medicine","Medical"), ("SUR","Surgical","Surgical"), ("ICU","Intensive Care","Critical Care"), ("MAT","Maternity","Maternity"), ("MAU","Medical Assessment Unit","Assessment") }; var specials = new[] { ("PICU","PICU","Critical Care"),("NICU","NICU","Critical Care"),("12A","12A Surgical & Orthopaedics","Surgical"),("11A","11A General Medicine","Medical"),("11B","11B Cardiology","Cardiology"),("10A","10A Respiratory","Respiratory"),("10B","10B Neurology","Neurology"),("9A","9A Oncology","Oncology"),("8A","8A Adolescent Medicine","Adolescent"),("ESS","Emergency Short Stay","Short Stay")}; var reasons = new[]{"Platform matches activity","Insufficient staffing","Maintenance / infrastructure","Safety risks / acuity","Infection control","Internal emergencies","Seasonal adjustments / financial / reconfiguration"}; var list = new List<WardRecord>(); var rand = new Random(42); var facilitiesByHhs = new Dictionary<string, List<string>> { ["Cairns and Hinterland"] = ["Cairns Hospital", "Innisfail Hospital", "Mareeba Hospital"], ["Central Queensland"] = ["Rockhampton Hospital", "Gladstone Hospital", "Emerald Hospital"], ["Central West"] = ["Longreach Hospital", "Blackall Hospital"], ["Children’s Health Queensland"] = ["Queensland Children’s Hospital"], ["Darling Downs"] = ["Toowoomba Hospital", "Dalby Hospital"], ["Gold Coast"] = ["Gold Coast University Hospital", "Robina Hospital"], ["Mackay"] = ["Mackay Base Hospital", "Sarina Hospital"], ["Metro North"] = ["Royal Brisbane and Women's Hospital", "Redcliffe Hospital", "Caboolture Hospital"], ["Metro South"] = ["Princess Alexandra Hospital", "QEII Jubilee Hospital", "Logan Hospital"], ["North West"] = ["Mount Isa Hospital"], ["South West"] = ["Roma Hospital", "Charleville Hospital"], ["Sunshine Coast"] = ["Sunshine Coast University Hospital", "Nambour General Hospital"], ["Torres and Cape"] = ["Thursday Island Hospital", "Cooktown Hospital"], ["Townsville"] = ["Townsville University Hospital", "Ayr Hospital"], ["West Moreton"] = ["Ipswich Hospital", "Gatton Hospital"], ["Wide Bay"] = ["Bundaberg Hospital", "Hervey Bay Hospital"]}; foreach (var hhs in facilitiesByHhs){ foreach (var facility in hhs.Value){ var set = facility == "Queensland Children’s Hospital" ? specials : wards; foreach (var w in set){ var physical = rand.Next(16, 46); var nonOperational = rand.Next(0, 6); var open = Math.Max(physical - nonOperational, 6); var occupied = rand.Next((int)(open * 0.7), open + 2); var available = Math.Max(open - occupied, -2); var occupancy = open == 0 ? 0 : Math.Round((decimal)occupied / open * 100, 1); var pressure = occupancy < 80 ? "Low" : occupancy < 90 ? "Medium" : occupancy < 95 ? "High" : "Critical"; list.Add(new(hhs.Key, facility, w.Item1, w.Item2, $"{w.Item2} operational unit", w.Item3, physical, open, occupied, available, occupancy, pressure, reasons[rand.Next(reasons.Length)], rand.Next(0, 14), rand.Next(0, 10), rand.Next(0, 6), rand.Next(0, 12), rand.Next(0, 11), rand.Next(0, 7), rand.Next(0, 6), nonOperational, rand.Next(-4, 5), DateTime.UtcNow.AddMinutes(-rand.Next(2, 60)).ToString("HH:mm"))); }}} return list; }
-        public static List<PatientAdmission> BuildPatientAdmissions(){ var names = new[]{("Clark","Kent"),("Bruce","Wayne"),("Diana","Prince"),("Barry","Allen"),("Peter","Parker"),("Tony","Stark"),("Natasha","Romanoff"),("Matt","Murdock"),("Jessica","Jones"),("Steve","Rogers"),("Gwen","Stacy"),("Reed","Richards"),("Jean","Grey")}; var rand = new Random(84); var statuses = new[]{"Queued","In Transit","Admitted","Complete"}; return Enumerable.Range(1, 52).Select(i => { var n = names[i % names.Length]; return new PatientAdmission($"PT-{i:0000}", n.Item1, n.Item2, rand.Next(1, 93), rand.NextDouble() > 0.52 ? "F" : "M", rand.NextDouble() > 0.5 ? "ED" : "Elective", "Metro North", "Royal Brisbane and Women's Hospital", "General Medicine", rand.NextDouble()>0.6?"ICU":"Surgical", statuses[rand.Next(statuses.Length)], DateTime.UtcNow.AddHours(-rand.Next(1, 16)).ToString("HH:mm"), DateTime.UtcNow.AddMinutes(rand.Next(20, 280)).ToString("HH:mm"), rand.NextDouble()>0.5?"Acute respiratory decompensation":"Post-op bed request", rand.NextDouble()>0.75, rand.NextDouble()>0.82, rand.NextDouble()>0.85, rand.Next(0, 5)); }).ToList(); }
+        public static List<WardRecord> BuildWardRecords()
+        {
+            var standardWards = new[]
+            {
+                ("ED", "Emergency Department", "Emergency"),
+                ("GEN", "General Medicine", "Medical"),
+                ("SUR", "Surgical", "Surgical"),
+                ("ICU", "Intensive Care", "Critical Care"),
+                ("MAT", "Maternity", "Maternity"),
+                ("MAU", "Medical Assessment Unit", "Assessment")
+            };
+
+            var childWards = new[]
+            {
+                ("PICU", "PICU", "Critical Care"),
+                ("NICU", "NICU", "Critical Care"),
+                ("12A", "12A Surgical & Orthopaedics", "Surgical"),
+                ("11A", "11A General Medicine", "Medical"),
+                ("11B", "11B Cardiology", "Cardiology"),
+                ("10A", "10A Respiratory", "Respiratory"),
+                ("10B", "10B Neurology", "Neurology"),
+                ("9A", "9A Oncology", "Oncology"),
+                ("8A", "8A Adolescent Medicine", "Adolescent"),
+                ("ESS", "Emergency Short Stay", "Short Stay")
+            };
+
+            var reasons = new[]
+            {
+                "Platform matches activity",
+                "Insufficient staffing",
+                "Maintenance / infrastructure",
+                "Safety risks / acuity",
+                "Infection control",
+                "Internal emergencies",
+                "Seasonal adjustments / financial / reconfiguration"
+            };
+
+            var facilitiesByHhs = new Dictionary<string, List<string>>
+            {
+                ["Cairns and Hinterland"] = ["Cairns Hospital", "Innisfail Hospital", "Mareeba Hospital"],
+                ["Central Queensland"] = ["Rockhampton Hospital", "Gladstone Hospital", "Emerald Hospital"],
+                ["Central West"] = ["Longreach Hospital", "Blackall Hospital"],
+                ["Children’s Health Queensland"] = ["Queensland Children’s Hospital"],
+                ["Darling Downs"] = ["Toowoomba Hospital", "Dalby Hospital"],
+                ["Gold Coast"] = ["Gold Coast University Hospital", "Robina Hospital"],
+                ["Mackay"] = ["Mackay Base Hospital", "Sarina Hospital"],
+                ["Metro North"] = ["Royal Brisbane and Women's Hospital", "Redcliffe Hospital", "Caboolture Hospital"],
+                ["Metro South"] = ["Princess Alexandra Hospital", "QEII Jubilee Hospital", "Logan Hospital"],
+                ["North West"] = ["Mount Isa Hospital"],
+                ["South West"] = ["Roma Hospital", "Charleville Hospital"],
+                ["Sunshine Coast"] = ["Sunshine Coast University Hospital", "Nambour General Hospital"],
+                ["Torres and Cape"] = ["Thursday Island Hospital", "Cooktown Hospital"],
+                ["Townsville"] = ["Townsville University Hospital", "Ayr Hospital"],
+                ["West Moreton"] = ["Ipswich Hospital", "Gatton Hospital"],
+                ["Wide Bay"] = ["Bundaberg Hospital", "Hervey Bay Hospital"]
+            };
+
+            var list = new List<WardRecord>();
+            var rand = new Random(42);
+
+            foreach (var hhs in facilitiesByHhs)
+            {
+                foreach (var facility in hhs.Value)
+                {
+                    var wardSet = facility == "Queensland Children’s Hospital" ? childWards : standardWards;
+
+                    foreach (var ward in wardSet)
+                    {
+                        var physical = rand.Next(16, 46);
+                        var nonOperational = rand.Next(0, 6);
+                        var open = Math.Max(physical - nonOperational, 6);
+                        var occupied = rand.Next((int)(open * 0.7), open + 2);
+                        var available = Math.Max(open - occupied, -2);
+                        var occupancy = open == 0 ? 0 : Math.Round((decimal)occupied / open * 100, 1);
+                        var pressure = PressureBand(occupancy);
+
+                        list.Add(new WardRecord(
+                            hhs.Key,
+                            facility,
+                            ward.Item1,
+                            ward.Item2,
+                            $"{ward.Item2} operational unit",
+                            ward.Item3,
+                            physical,
+                            open,
+                            occupied,
+                            available,
+                            occupancy,
+                            pressure,
+                            reasons[rand.Next(reasons.Length)],
+                            rand.Next(0, 14),
+                            rand.Next(0, 10),
+                            rand.Next(0, 6),
+                            rand.Next(0, 12),
+                            rand.Next(0, 11),
+                            rand.Next(0, 7),
+                            rand.Next(0, 6),
+                            nonOperational,
+                            rand.Next(-4, 5),
+                            DateTime.UtcNow.AddMinutes(-rand.Next(2, 60)).ToString("HH:mm")));
+                    }
+                }
+            }
+
+            return list;
+        }
+
+        public static List<PatientAdmission> BuildPatientAdmissions()
+        {
+            var names = new[]
+            {
+                ("Clark", "Kent"),
+                ("Bruce", "Wayne"),
+                ("Diana", "Prince"),
+                ("Barry", "Allen"),
+                ("Peter", "Parker"),
+                ("Tony", "Stark"),
+                ("Natasha", "Romanoff"),
+                ("Matt", "Murdock"),
+                ("Jessica", "Jones"),
+                ("Steve", "Rogers"),
+                ("Gwen", "Stacy"),
+                ("Reed", "Richards"),
+                ("Jean", "Grey")
+            };
+
+            var rand = new Random(84);
+            var statuses = new[] { "Queued", "In Transit", "Admitted", "Complete" };
+
+            return Enumerable.Range(1, 52)
+                .Select(i =>
+                {
+                    var name = names[i % names.Length];
+
+                    return new PatientAdmission(
+                        $"PT-{i:0000}",
+                        name.Item1,
+                        name.Item2,
+                        rand.Next(1, 93),
+                        rand.NextDouble() > 0.52 ? "F" : "M",
+                        rand.NextDouble() > 0.5 ? "ED" : "Elective",
+                        "Metro North",
+                        "Royal Brisbane and Women's Hospital",
+                        "General Medicine",
+                        rand.NextDouble() > 0.6 ? "ICU" : "Surgical",
+                        statuses[rand.Next(statuses.Length)],
+                        DateTime.UtcNow.AddHours(-rand.Next(1, 16)).ToString("HH:mm"),
+                        DateTime.UtcNow.AddMinutes(rand.Next(20, 280)).ToString("HH:mm"),
+                        rand.NextDouble() > 0.5 ? "Acute respiratory decompensation" : "Post-op bed request",
+                        rand.NextDouble() > 0.75,
+                        rand.NextDouble() > 0.82,
+                        rand.NextDouble() > 0.85,
+                        rand.Next(0, 5));
+                })
+                .ToList();
+        }
     }
 }
