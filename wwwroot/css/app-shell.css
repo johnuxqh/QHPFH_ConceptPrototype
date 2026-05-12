@@ -505,3 +505,8 @@ button, input { font: inherit; }
 .red { color: #d91f30; }
 
 .theme-dark .situational-card { background:#122037; border-color:#2f4e73; }
+
+.page-filter-row { margin-top: 0; margin-left: 0; width: fit-content; height: 42px; align-items: center; }
+.filter-group { height: 100%; }
+.filter-group > label { min-width: 38px; }
+.filter-trigger { height: 28px; }
