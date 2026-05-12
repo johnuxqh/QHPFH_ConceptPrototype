@@ -173,7 +173,7 @@ else
     private bool _isFacilityOpen;
     private bool _isWardOpen;
 
-    private const string All = DemoReferenceData.All;
+    private static readonly string All = DemoReferenceData.All;
 
     private string SelectedViewMode { get; set; } = "List";
 
@@ -287,13 +287,13 @@ else
         _isWardOpen = false;
     }
 
-    private static string SelectedLabel(HashSet<string> selected) =>
-        selected.Count switch
-        {
-            0 => All,
-            1 => selected.First(),
-            _ => $"{selected.Count} selected"
-        };
+    private string SelectedLabel(HashSet<string> selected) =>
+    selected.Count switch
+    {
+        0 => All,
+        1 => selected.First(),
+        _ => $"{selected.Count} selected"
+    };
 
     private static void ToggleSet(HashSet<string> set, string value)
     {
