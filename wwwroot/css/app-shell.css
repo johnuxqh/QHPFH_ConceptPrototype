@@ -510,3 +510,8 @@ button, input { font: inherit; }
 .filter-group { height: 100%; }
 .filter-group > label { min-width: 38px; }
 .filter-trigger { height: 28px; }
+
+/* Bed management filter multi-select + icon scale */
+.bed-management-page .filter-menu input[type="checkbox"] { width: 0.95rem; height: 0.95rem; accent-color: #005eb8; }
+.bed-management-page .filter-menu label { cursor: pointer; }
+.bed-management-page .situational-icon { font-size: 4.375rem !important; width: 4.375rem; height: 4.375rem; }
