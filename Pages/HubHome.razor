@@ -204,27 +204,30 @@ else
         NavigationState.Changed -= OnNavigationChanged;
     }
 
-    private List<string> FilteredFacilityOptions =>
-    [
-        All,
-        ..(_selectedHhs.Any()
-            ? _selectedHhs.SelectMany(hhs => FacilitiesByHhs.GetValueOrDefault(hhs, []))
-            : FacilitiesByHhs.Values.SelectMany(x => x))
+   private List<string> FilteredFacilityOptions =>
+[
+    All,
+    ..(_selectedHhs.Any()
+        ? _selectedHhs.SelectMany(hhs =>
+            FacilitiesByHhs.TryGetValue(hhs, out var facilities)
+                ? facilities
+                : Enumerable.Empty<string>())
+        : FacilitiesByHhs.Values.SelectMany(x => x))
+        .Distinct()
+        .Order()
+];
+
+private List<string> FilteredWardOptions =>
+[
+    All,
+    ..(_selectedFacilities.Any()
+        ? Wards
+            .Where(w => _selectedFacilities.Contains(w.Facility))
+            .Select(w => w.WardName)
             .Distinct()
             .Order()
-    ];
-
-    private List<string> FilteredWardOptions =>
-    [
-        All,
-        ..(_selectedFacilities.Any()
-            ? Wards
-                .Where(w => _selectedFacilities.Contains(w.Facility))
-                .Select(w => w.WardName)
-                .Distinct()
-                .Order()
-            : [])
-    ];
+        : Enumerable.Empty<string>())
+];
 
     private IEnumerable<WardRecord> FilteredWards => Wards.Where(w =>
         (!_selectedHhs.Any() || _selectedHhs.Contains(w.Hhs)) &&
