@@ -2,637 +2,107 @@
 @using Microsoft.AspNetCore.Components.Web
 @using MudBlazor
 
-<section class="page-shell-card bed-mgmt-page" aria-label="Bed management ward operations">
-    @if (!string.IsNullOrWhiteSpace(_toastMessage))
+<section class="page-shell-card bed-mgmt-page ward-ops">
+    @if (!string.IsNullOrWhiteSpace(_toastMessage)) { <div class="bm-toast">@_toastMessage</div> }
+
+    <div class="bm-topbar">
+        <div class="bm-filter"><label>Facility</label><button>QCH</button></div>
+        <div class="bm-filter"><label>HHS</label><button>All</button></div>
+        <div class="bm-filter"><label>Ward</label><button>8A Surgical</button></div>
+        <input class="bm-search" placeholder="Search patients, beds, notes" />
+        <button class="bm-ghost" @onclick="SetMapView">Map View</button>
+        <button class="bm-ghost" @onclick="()=>_showHandover=true">Handover</button>
+        <button class="bm-ghost" @onclick="()=>_showUtilities=true">More</button>
+    </div>
+
+    <section class="bm-capacity-banner red"><strong>HOSPITAL CAPACITY STATUS: RED</strong><span>High demand across ED and inpatient flow. Prioritise confirmed discharges before 11:00. Escalate blocked beds to NUM.</span></section>
+
+    <section class="bm-summary-strip six">
+        <article class="bm-summary-item"><p>Total Physical Beds</p><strong>48</strong></article>
+        <article class="bm-summary-item"><p>Open Beds</p><strong class="tone-ready">8</strong></article>
+        <article class="bm-summary-item"><p>Occupied Beds</p><strong class="tone-occupied">32</strong></article>
+        <article class="bm-summary-item"><p>Pending Beds</p><strong>8</strong><small>Cleaning 4 • Maintenance 2 • Blocked 2</small></article>
+        <article class="bm-summary-item"><p>Isolation / Specialist</p><strong>6</strong><small>4 Isolation • 2 Specialist</small></article>
+        <article class="bm-summary-item clickable" @onclick="()=>_isAllocationPanelOpen=true"><p>Expected Admissions</p><strong>ED 4 • IHT 2</strong><small>OPD 1 • Other 0</small></article>
+    </section>
+
+    @if (SelectedView == "List View")
     {
-        <div class="bm-toast">@_toastMessage</div>
+        <section class="bm-ward-table-wrap">
+            <table class="bm-ward-table"><thead><tr><th>Bed</th><th>Patient</th><th>Team</th><th>Allergies</th><th>Infection Control</th><th>Alerts</th><th>EDD</th><th>Discharge Progress</th><th>Requests / Results</th><th>EWS</th><th>Waiting For</th><th>Actions</th></tr></thead>
+                <tbody>
+                @foreach(var bed in BedRows.Take(10))
+                {
+                    <tr class="state-@bed.StatusClass" @ondragover="AllowDrop" @ondrop="(e)=>DropPatientToBed(bed)">
+                        <td><strong>@bed.BedLabel</strong><div class="status-select"><select @bind="bed.Status"><option>Open / Ready</option><option>Occupied</option><option>Cleaning</option><option>Blocked</option><option>Maintenance</option><option>Isolation / Specialist</option></select></div></td>
+                        <td>
+                            @if (bed.HasPatient)
+                            {
+                                <div class="bm-bed-patient" draggable="true" @ondragstart="() => StartDragFromBed(bed)">@bed.PatientName</div>
+                                <small>@bed.Demographics</small>
+                            }
+                            else { <strong>@(bed.Status is "Blocked" or "Maintenance" ? "BLOCKED" : "OPEN")</strong> }
+                        </td>
+                        <td>@bed.Team</td><td>@bed.Allergies</td><td>@bed.Infection</td><td>@bed.Alerts</td><td>@bed.Edd</td><td><div class="progress"><span style="width:@bed.DischargeProgress%"></span></div>@bed.DischargeProgress%</td><td>@bed.Requests</td><td>@bed.Ews</td><td>@bed.WaitingFor</td><td><button class="kebab">⋮</button></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            <footer>Showing 1–10 of 48 beds</footer>
+        </section>
     }
 
-    <div class="bm-filter-row">
-        <div class="bm-filter"><span>Facility:</span><button type="button">QCH</button></div>
-        <div class="bm-filter"><span>HHS:</span><button type="button">All</button></div>
-        <div class="bm-filter"><span>Ward:</span><button type="button">8A Surgical</button></div>
-        <button class="bm-allocation-btn" type="button" @onclick="OpenAllocationPanel">View Allocation Board</button>
-    </div>
-
-    <section class="bm-view-tabs" role="tablist" aria-label="View mode">
-        @foreach (var view in ViewModes)
-        {
-            <button type="button"
-                    class="bm-tab @(view == SelectedView ? "active" : null)"
-                    @onclick="() => SelectedView = view">
-                @view
-            </button>
-        }
-    </section>
-
-    <section class="bm-summary-strip">
-        @foreach (var item in SummaryItems)
-        {
-            <article class="bm-summary-item">
-                <p>@item.Label</p>
-                <strong class="@item.ToneClass">@item.Value</strong>
-            </article>
-        }
-    </section>
-
-    <section class="bm-events-strip">
-        <h3>Active Operational Events</h3>
-        <ul>
-            @foreach (var evt in OperationalEvents)
-            {
-                <li>
-                    <span class="bm-event-location">@evt.Location</span>
-                    <span>@evt.Message</span>
-                </li>
-            }
-        </ul>
-    </section>
-
-    <div class="bm-main-grid">
-        <section class="bm-list-panel">
-            @if (SelectedView == "List View")
-            {
-                <table class="bm-bay-table">
-                    <thead>
-                        <tr>
-                            <th>Ward / Bay</th>
-                            <th>Beds Total</th>
-                            <th>Occupied</th>
-                            <th>Ready</th>
-                            <th>Cleaning</th>
-                            <th>Blocked</th>
-                            <th>Maintenance</th>
-                            <th>Key Notes</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var bay in Bays)
-                        {
-                            <tr class="bm-group-row" @onclick="() => ToggleBay(bay)">
-                                <td>
-                                    <button class="bm-expand" type="button">
-                                        <MudIcon Icon="@(bay.IsExpanded ? Icons.Material.Outlined.ExpandLess : Icons.Material.Outlined.ExpandMore)" Size="Size.Small" />
-                                        @bay.BayName
-                                    </button>
-                                </td>
-                                <td>@bay.TotalBeds</td>
-                                <td>@bay.Occupied</td>
-                                <td>@bay.Ready</td>
-                                <td>@bay.Cleaning</td>
-                                <td>@bay.Blocked</td>
-                                <td>@bay.Maintenance</td>
-                                <td>@bay.KeyNotes</td>
-                            </tr>
-
-                            @if (bay.IsExpanded)
-                            {
-                                @foreach (var bed in bay.Beds)
-                                {
-                                    <tr class="bm-bed-row @(bed.Status == "Ready" ? "drop-ready" : null)"
-                                        @ondragover="AllowDrop"
-                                        @ondragover:preventDefault="true"
-                                        @ondrop="() => DropPatientToBed(bay, bed)">
-                                        <td class="bm-bed-cell">@bed.BedNumber</td>
-                                        <td colspan="2">
-                                            @if (bed.Status == "Occupied")
-                                            {
-                                                <div class="bm-bed-patient"
-                                                     draggable="true"
-                                                     @ondragstart="() => StartDragFromBed(bay, bed)">
-                                                    @bed.PatientName
-                                                </div>
-                                            }
-                                            else
-                                            {
-                                                @bed.PatientName
-                                            }
-                                        </td>
-                                        <td>@bed.AgeSex</td>
-                                        <td><span class="bm-status @bed.StatusClass">@bed.Status</span></td>
-                                        <td>@bed.Specialty</td>
-                                        <td>@bed.Los</td>
-                                        <td class="bm-bed-note">
-                                            @bed.Notes
-                                            <MudIcon Icon="@Icons.Material.Outlined.MoreHoriz" Size="Size.Small" />
-                                        </td>
-                                    </tr>
-                                }
-                            }
-                        }
-                    </tbody>
-                </table>
-            }
-            else if (SelectedView == "Grid View")
-            {
-                <div class="bm-grid-view">
-                    @foreach (var bay in Bays)
-                    {
-                        <article class="bm-bay-card">
-                            <header>
-                                <h4>@bay.BayName</h4>
-                                <span>@bay.Occupied/@bay.TotalBeds occupied</span>
-                            </header>
-
-                            <div class="@($"bm-bed-tiles bm-cols-{bay.TotalBeds}")">
-                                @foreach (var bed in bay.Beds)
-                                {
-                                    <div class="bm-bed-tile @(bed.Status == "Ready" ? "drop-ready" : null)"
-                                         @ondragover="AllowDrop"
-                                         @ondragover:preventDefault="true"
-                                         @ondrop="() => DropPatientToBed(bay, bed)">
-                                        <div class="bm-bed-tile-head">
-                                            <strong>@bed.BedNumber</strong>
-                                            <span class="bm-status @bed.StatusClass">@bed.Status</span>
-                                        </div>
-
-                                        @if (bed.Status == "Occupied")
-                                        {
-                                            <div class="bm-bed-patient"
-                                                 draggable="true"
-                                                 @ondragstart="() => StartDragFromBed(bay, bed)">
-                                                @bed.PatientName
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <div class="bm-bed-empty">@bed.PatientName</div>
-                                        }
-
-                                        <div class="bm-bed-note-short">@ShortNoteFor(bed)</div>
-                                    </div>
-                                }
-                            </div>
-                        </article>
-                    }
-                </div>
-            }
-            else if (SelectedView == "Map View")
-            {
-                <div class="bm-map-layout">
-                    <div class="bm-zone bm-corridor">Main Corridor</div>
-                    <div class="bm-zone bm-staff">Staff Station</div>
-                    <div class="bm-zone bm-treatment">Treatment Room</div>
-                    <div class="bm-zone bm-clean">Clean Utility</div>
-                    <div class="bm-zone bm-soiled">Soiled Utility</div>
-                    <div class="bm-zone bm-store">Store Room</div>
-
-                    @foreach (var bay in Bays)
-                    {
-                        <section class="@($"bm-map-bay bm-map-bay-{bay.BayName.Replace(" ", "").ToLowerInvariant()}")">
-                            <header>@bay.BayName</header>
-
-                            <div class="@($"bm-map-beds bm-cols-{bay.TotalBeds}")">
-                                @foreach (var bed in bay.Beds)
-                                {
-                                    var isIsolation = bed.Notes.Contains("isolation", StringComparison.OrdinalIgnoreCase);
-
-                                    <div class="bm-map-bed @(bed.Status == "Ready" ? "drop-ready" : null)"
-                                         @ondragover="AllowDrop"
-                                         @ondragover:preventDefault="true"
-                                         @ondrop="() => DropPatientToBed(bay, bed)">
-                                        <div class="bm-map-bed-top">
-                                            <span>@bed.BedNumber</span>
-                                            <span class="bm-status @bed.StatusClass">@(isIsolation ? "Isolation" : bed.Status)</span>
-                                        </div>
-
-                                        @if (bed.Status == "Occupied")
-                                        {
-                                            <div class="bm-bed-patient"
-                                                 draggable="true"
-                                                 @ondragstart="() => StartDragFromBed(bay, bed)">
-                                                @bed.PatientName
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <div class="bm-bed-empty">@((bed.Status == "Ready") ? "Ready" : "Unavailable")</div>
-                                        }
-                                    </div>
-                                }
-                            </div>
-                        </section>
-                    }
-                </div>
-            }
-        </section>
-
-        <aside class="bm-right-panel">
-            <article>
-                <h4>Incoming</h4>
-                <ul>
-                    <li>ED Arrivals: @AllocationBySource["ED"].Count</li>
-                    <li>Add On Patients: @AllocationBySource["OPD"].Count</li>
-                    <li>IHT Returns: @AllocationBySource["IHT"].Count</li>
-                </ul>
-            </article>
-
-            <article>
-                <h4>Quick Actions</h4>
-                <div class="bm-actions">
-                    @foreach (var action in QuickActions)
-                    {
-                        <button type="button">@action</button>
-                    }
-                </div>
-            </article>
-
-            <article>
-                <h4>Recent Activity</h4>
-                <ul class="bm-activity">
-                    <li>12:20 Bay 3 Bed 2 flagged blocked. NUM note added.</li>
-                    <li>12:05 Bay 5 Bed 1 changed from cleaning to ready.</li>
-                    <li>11:42 Facilities confirmed Bay 6 maintenance booking.</li>
-                    <li>11:18 ED called ahead for 1 surgical admission.</li>
-                </ul>
-            </article>
-        </aside>
-    </div>
+    @if (_isAllocationPanelOpen){@Slideout("Allocation Board")}
+    @if (_showHandover){@HandoverSlideout()}
+    @if (_showUtilities){@UtilitiesSlideout()}
 </section>
 
-@if (_isAllocationPanelOpen)
-{
-    <div class="bm-slideout-backdrop" @onclick="CloseAllocationPanel"></div>
-
-    <aside class="bm-slideout"
-           @ondragover="AllowDrop"
-           @ondragover:preventDefault="true">
-        <header>
-            <h3>@(_dragMode == "bed" ? "Move Patient To" : "Allocation Board")</h3>
-            <button type="button" @onclick="CloseAllocationPanel">Close</button>
-        </header>
-
-        @if (_dragMode == "bed")
-        {
-            <div class="bm-targets">
-                @foreach (var target in MoveTargets)
-                {
-                    <div class="bm-move-target"
-                         @ondragover="AllowDrop"
-                         @ondragover:preventDefault="true"
-                         @ondrop="() => DropFromBedToTarget(target)">
-                        @target
-                    </div>
-                }
-            </div>
-        }
-        else
-        {
-            <div class="bm-allocation-tabs">
-                @foreach (var tab in AllocationTabs)
-                {
-                    <button type="button"
-                            class="@(SelectedAllocationTab == tab ? "active" : null)"
-                            @onclick="() => SelectedAllocationTab = tab">
-                        @tab
-                    </button>
-                }
-            </div>
-
-            <div class="bm-cards">
-                @foreach (var patient in AllocationBySource[SelectedAllocationTab])
-                {
-                    <article class="bm-patient-card"
-                             draggable="true"
-                             @ondragstart="() => StartDragFromAllocation(patient)">
-                        <strong>@patient.Name</strong>
-                        <p>@patient.AgeSex • @patient.Presentation</p>
-                        <p>
-                            ETA @patient.Eta
-                            @if (!string.IsNullOrWhiteSpace(patient.Needs))
-                            {
-                                <span> • Needs @patient.Needs</span>
-                            }
-                        </p>
-                        @if (!string.IsNullOrWhiteSpace(patient.Priority))
-                        {
-                            <span class="bm-priority">Priority @patient.Priority</span>
-                        }
-                    </article>
-                }
-            </div>
-        }
-    </aside>
-}
-
 @code {
-    private bool _isAllocationPanelOpen;
-    private string? _toastMessage;
-    private string _dragMode = string.Empty;
-    private PatientCard? _draggedAllocationPatient;
-    private (BayOperation Bay, BedOperation Bed)? _draggedBedPatient;
-
     private string SelectedView { get; set; } = "List View";
-    private string SelectedAllocationTab { get; set; } = "ED";
+    private bool _isAllocationPanelOpen;
+    private bool _showHandover;
+    private bool _showUtilities;
+    private string? _toastMessage;
+    private string _dragMode = "";
+    private IncomingCard? _draggedIncoming;
+    private BedRow? _draggedBed;
+    private string _activeTab = "ED";
 
-    private static readonly List<string> ViewModes = new() { "List View", "Grid View", "Map View" };
-    private static readonly List<string> AllocationTabs = new() { "ED", "OPD", "IHT", "Other" };
-    private static readonly List<string> MoveTargets = new() { "IHT Returns", "Pending Transfer", "Temporary Hold", "Discharge Pending" };
+    private readonly Dictionary<string,List<IncomingCard>> IncomingByTab = new(){["ED"]= [new("ED001 | 45m","JAMES, Peter","Appendicitis","ETA 30m | Gen Surg","High"),new("ED002 | 68f","MARTIN, Susan","Chest Pain","ETA 45m | Cardiology","Medium"),new("ED003 | 72m","ROBERTS, Alan","Abdominal Pain","ETA 60m | Gen Med","Medium"),new("ED004 | 55f","WALKER, Kim","COPD Exacerbation","ETA 90m | Respiratory","Low")],["IHT"]=[],["OPD"]=[],["Other"]=[]};
+    private readonly List<string> MoveTargets=["IHT Returns Queue","Pending Transfer","Temporary Hold","Discharge Pending"];
 
-    private static readonly List<(string Label, string Value, string ToneClass)> SummaryItems = new()
-    {
-        ("Total Beds", "48", "tone-neutral"),
-        ("Occupied", "32", "tone-occupied"),
-        ("Ready", "8", "tone-ready"),
-        ("Cleaning", "4", "tone-cleaning"),
-        ("Blocked", "3", "tone-blocked"),
-        ("Maintenance", "1", "tone-maintenance"),
-        ("System Pressure", "19%, Low", "tone-low")
-    };
+    private readonly List<BedRow> BedRows = [
+        new("Bed 1","Occupied","TAYLOR, Noah","MRN 8001234 | 45y | M","General Surgery","Penicillin","MRSA","Behavioural + Other Alert","22 May / 2 days",75,"Bloods / Resulted",2,"Discharge meds"),
+        new("Bed 2","Occupied","NGUYEN, Scarlett","MRN 8002233 | 68y | F","Cardiology","None known allergy","No infection","Falls + Other Alert","25 May",25,"CXR Resulted",4,"Physio review"),
+        new("Bed 3","Open / Ready","","","General Surgery","-","-","-","-",0,"-",0,"Available"),
+        new("Bed 4","Cleaning","","","General Surgery","-","-","-","-",0,"-",0,"Awaiting cleaning"),
+        new("Bed 5","Isolation / Specialist","PARKER, June","MRN 8003377 | 52y | F","General Surgery","Latex","Isolation","Infection control","24 May",40,"CT Pending",3,"NUM review"),
+        new("Bed 6","Occupied","LEE, Aaron","MRN 8001112 | 37y | M","General Surgery","None","No infection","-","23 May",60,"Bloods Pending",2,"Discharge planning"),
+        new("Bed 7","Open / Ready","","","General Surgery","-","-","-","-",0,"-",0,"Available"),
+        new("Bed 8","Maintenance","","","-","-","-","-","-",0,"-",0,"Maintenance"),
+        new("Bed 9","Blocked","","","-","-","-","-","-",0,"-",0,"NUM hold"),
+        new("Bed 10","Occupied","WILLIAMS, Noah","MRN 8004455 | 41y | M","General Surgery","Penicillin","No infection","-","26 May",35,"ECG Resulted",1,"Awaiting review")
+    ];
 
-    private static readonly List<(string Location, string Message)> OperationalEvents = new()
-    {
-        ("Bay 3", "Bed 2 blocked due to adjacent aggressive patient, review after meds"),
-        ("Bay 6", "Maintenance until 14:00, facilities booked"),
-        ("Isolation", "Bay 1 Bed 1 occupied by non-isolation patient")
-    };
+    private void SetMapView() => SelectedView = "Map View";
+    private void AllowDrop(DragEventArgs _) { }
+    private void StartDragFromIncoming(IncomingCard c){_dragMode="incoming";_draggedIncoming=c;_draggedBed=null;}
+    private void StartDragFromBed(BedRow b){_dragMode="bed";_draggedBed=b;_draggedIncoming=null;_isAllocationPanelOpen=true;}
+    private void DropPatientToBed(BedRow bed){if(_dragMode!="incoming"||_draggedIncoming is null||bed.Status!="Open / Ready")return;bed.Assign(_draggedIncoming);foreach(var l in IncomingByTab.Values)l.Remove(_draggedIncoming);_toastMessage=$"{bed.PatientName} allocated to {bed.BedLabel}.";_dragMode="";_draggedIncoming=null;}
+    private void DropBedToTarget(string target){if(_dragMode!="bed"||_draggedBed is null)return;IncomingByTab["IHT"].Add(new IncomingCard("IHT-R",""+_draggedBed.PatientName,_draggedBed.Team,"From ward",target));var name=_draggedBed.PatientName;_draggedBed.MarkCleaning();_toastMessage=$"{name} moved to {target}. {_draggedBed.BedLabel} marked as Cleaning.";_draggedBed=null;_dragMode="";}
 
-    private static readonly List<string> QuickActions = new()
-    {
-        "Block Bed",
-        "Mark Cleaning",
-        "Mark Ready",
-        "Request Maintenance",
-        "Add Operational Note"
-    };
+    private RenderFragment Slideout(string title) => @<>
+        <div class="bm-slideout-backdrop" @onclick="()=>_isAllocationPanelOpen=false"></div>
+        <aside class="bm-slideout wide"><header><h3>@title</h3><button @onclick="()=>_isAllocationPanelOpen=false">Close</button></header>
+        <div class="bm-allocation-tabs">@foreach(var t in new[]{"ED 4","IHT 2","OPD 1","Other 0"}){var key=t.Split(' ')[0];<button class="@(_activeTab==key?"active":null)" @onclick="()=>_activeTab=key">@t</button>}</div>
+        <div class="bm-cards">@foreach(var c in IncomingByTab[_activeTab]){<article class="bm-patient-card" draggable="true" @ondragstart="()=>StartDragFromIncoming(c)"><strong>@c.Code</strong><p>@c.Name</p><p>@c.Reason</p><p>@c.Meta</p><span class="bm-priority">@c.Priority</span></article>}</div>
+        <h4>Drop zones</h4><div class="bm-targets">@foreach(var t in MoveTargets){<div class="bm-move-target" @ondragover="AllowDrop" @ondrop="(e)=>DropBedToTarget(t)">@t</div>}</div>
+        <a class="bm-link" href="#">View full allocation centre</a></aside>
+    </>;
 
-    private readonly Dictionary<string, List<PatientCard>> AllocationBySource = new()
-    {
-        ["ED"] = new()
-        {
-            new("Jake Martin", "9 yrs, M", "Abdominal Pain", "15m", "Standard", "High"),
-            new("Chloe Davis", "4 yrs, F", "Asthma Exacerbation", "25m", "Oxygen", "Medium"),
-            new("Ethan Brown", "7 yrs, M", "Fracture Forearm", "30m", "Orthopaedic", "Medium"),
-            new("Mia Wilson", "5 yrs, F", "Vomiting / Dehydration", "45m", "Standard", "Low")
-        },
-        ["OPD"] = new()
-        {
-            new("Ava Collins", "6 yrs, F", "OPD conversion", "1h", "Standard", "")
-        },
-        ["IHT"] = new()
-        {
-            new("Jack Thompson", "65 yrs, M", "Cardiology", "45m", "Telemetry", ""),
-            new("Scarlett Nguyen", "72 yrs, F", "General Medicine", "2h", "Standard", "")
-        },
-        ["Other"] = new()
-    };
+    private RenderFragment HandoverSlideout() => @<><div class="bm-slideout-backdrop" @onclick="()=>_showHandover=false"></div><aside class="bm-slideout"><header><h3>Shift Handover</h3><button @onclick="()=>_showHandover=false">Close</button></header><h4>Priority Issues</h4><ul><li>Hospital capacity status: RED</li><li>Bed 8 maintenance pending</li><li>Bed 5 isolation patient requires review</li><li>Bed 2 recently moved to IHT, cleaning required</li></ul><h4>Patients to Watch</h4><ul><li>High EWS</li><li>Behavioural risk</li><li>Falls risk</li><li>Infection control</li></ul><h4>Discharge Focus</h4><ul><li>EDD today/tomorrow</li><li>Waiting for discharge meds</li><li>Waiting for physio review</li><li>Waiting for CT result</li></ul><h4>Admissions Expected</h4><p>ED 4 • IHT 2 • OPD 1</p><h4>Notes</h4><textarea placeholder="Add handover note"></textarea></aside></>;
+    private RenderFragment UtilitiesSlideout() => @<><div class="bm-slideout-backdrop" @onclick="()=>_showUtilities=false"></div><aside class="bm-slideout"><header><h3>Ward Utilities</h3><button @onclick="()=>_showUtilities=false">Close</button></header><h4>Ward Actions</h4><ul><li>Print Ward Snapshot</li><li>Export Patient List</li><li>Open Shift Summary</li></ul><h4>Operational Management</h4><ul><li>Open / Close Surge Beds</li><li>Mark Bed or Area Out of Service</li><li>Bulk Update Bed Status</li><li>Cleaning Overview</li><li>Maintenance Overview</li></ul><h4>Communication</h4><ul><li>Send Ward Broadcast</li><li>Escalate Capacity Issue</li><li>Contact Bed Manager</li><li>View Hospital Alerts</li></ul><h4>Views & Layout</h4><ul><li>Compact View</li><li>Expanded Clinical View</li><li>Show / Hide Columns</li><li>Save My Layout</li></ul><h4>Administration</h4><ul><li>Ward Configuration</li><li>Specialist Bed Settings</li><li>Audit History</li><li>Archived Notes</li></ul></aside></>;
 
-    private readonly List<BayOperation> Bays = new()
-    {
-        new("Bay 1", "Isolation allocation mismatch", true, new()
-        {
-            new("Bed 1", "Alex Browne", "67M", "Occupied", "occupied", "General Surgery", "2d", "Non-isolation patient"),
-            new("Bed 2", "Priya Das", "54F", "Occupied", "occupied", "General Surgery", "1d", "Stable")
-        }),
-        new("Bay 2", "One bed ready", false, new()
-        {
-            new("Bed 1", "Mila Torres", "39F", "Occupied", "occupied", "Breast Surgery", "3d", "Awaiting imaging"),
-            new("Bed 2", "", "", "Ready", "ready", "-", "-", "Prepared"),
-            new("Bed 3", "Tom Willis", "71M", "Occupied", "occupied", "Urology", "1d", "Post-op day 1")
-        }),
-        new("Bay 3", "Bed 2 blocked", false, new()
-        {
-            new("Bed 1", "Jordan Lee", "61M", "Occupied", "occupied", "Colorectal", "4d", "Pain review 14:00"),
-            new("Bed 2", "", "", "Blocked", "blocked", "-", "-", "Adjacent behaviour risk"),
-            new("Bed 3", "Nadia Khan", "45F", "Occupied", "occupied", "General Surgery", "2d", "Mobilising"),
-            new("Bed 4", "", "", "Ready", "ready", "-", "-", "Available")
-        }),
-        new("Bay 4", "Cleaning in progress", false, new()
-        {
-            new("Bed 1", "Luca James", "58M", "Occupied", "occupied", "Vascular", "3d", "Drain monitoring"),
-            new("Bed 2", "Rina Patel", "48F", "Occupied", "occupied", "General Surgery", "1d", "Pain controlled"),
-            new("Bed 3", "", "", "Cleaning", "cleaning", "-", "-", "EVS assigned")
-        }),
-        new("Bay 5", "Ready for admit", false, new()
-        {
-            new("Bed 1", "Dana Cook", "69F", "Occupied", "occupied", "ENT", "5d", "Discharge likely tomorrow"),
-            new("Bed 2", "", "", "Ready", "ready", "-", "-", "Bed made")
-        }),
-        new("Bay 6", "Maintenance booked", false, new()
-        {
-            new("Bed 1", "Samir Gill", "52M", "Occupied", "occupied", "General Surgery", "2d", "Nil acute issues"),
-            new("Bed 2", "", "", "Maintenance", "maintenance", "-", "-", "Out of service till 14:00")
-        }),
-        new("Bay 7", "One ready", false, new()
-        {
-            new("Bed 1", "Hannah Lim", "44F", "Occupied", "occupied", "General Surgery", "1d", "Stable"),
-            new("Bed 2", "", "", "Ready", "ready", "-", "-", "Telemetry capable"),
-            new("Bed 3", "Owen Chen", "62M", "Occupied", "occupied", "Cardiology", "3d", "Telemetry")
-        }),
-        new("Bay 8", "One ready", false, new()
-        {
-            new("Bed 1", "", "", "Cleaning", "cleaning", "-", "-", "EVS requested"),
-            new("Bed 2", "Grace Hall", "51F", "Occupied", "occupied", "General Surgery", "2d", "Stable"),
-            new("Bed 3", "", "", "Ready", "ready", "-", "-", "Available")
-        }),
-        new("Bay 9", "One cleaning", false, new()
-        {
-            new("Bed 1", "Noah King", "59M", "Occupied", "occupied", "General Surgery", "2d", "Stable"),
-            new("Bed 2", "", "", "Ready", "ready", "-", "-", "Available"),
-            new("Bed 3", "Erin White", "47F", "Occupied", "occupied", "ENT", "1d", "Post-op"),
-            new("Bed 4", "", "", "Cleaning", "cleaning", "-", "-", "EVS assigned")
-        }),
-        new("Bay 10", "One ready", false, new()
-        {
-            new("Bed 1", "", "", "Ready", "ready", "-", "-", "Available"),
-            new("Bed 2", "Mark Stone", "70M", "Occupied", "occupied", "General Medicine", "4d", "Stable"),
-            new("Bed 3", "Ruth Green", "66F", "Occupied", "occupied", "General Surgery", "2d", "Stable")
-        })
-    };
-
-    private void OpenAllocationPanel()
-    {
-        _isAllocationPanelOpen = true;
-    }
-
-    private void CloseAllocationPanel()
-    {
-        _isAllocationPanelOpen = false;
-        _dragMode = string.Empty;
-        _draggedAllocationPatient = null;
-        _draggedBedPatient = null;
-    }
-
-    private static void AllowDrop(DragEventArgs _)
-    {
-    }
-
-    private static void ToggleBay(BayOperation bay)
-    {
-        bay.IsExpanded = !bay.IsExpanded;
-    }
-
-    private void StartDragFromAllocation(PatientCard patient)
-    {
-        _dragMode = "allocation";
-        _draggedAllocationPatient = patient;
-        _draggedBedPatient = null;
-    }
-
-    private void StartDragFromBed(BayOperation bay, BedOperation bed)
-    {
-        _dragMode = "bed";
-        _draggedBedPatient = (bay, bed);
-        _draggedAllocationPatient = null;
-        _isAllocationPanelOpen = true;
-    }
-
-    private void DropPatientToBed(BayOperation bay, BedOperation bed)
-    {
-        if (_dragMode != "allocation" || _draggedAllocationPatient is null || bed.Status != "Ready")
-        {
-            return;
-        }
-
-        bed.AssignFrom(_draggedAllocationPatient);
-
-        foreach (var list in AllocationBySource.Values)
-        {
-            list.Remove(_draggedAllocationPatient);
-        }
-
-        RecalculateBay(bay);
-        Toast($"Patient allocated to {bay.BayName} {bed.BedNumber}");
-
-        _draggedAllocationPatient = null;
-        _dragMode = string.Empty;
-    }
-
-    private void DropFromBedToTarget(string target)
-    {
-        if (_dragMode != "bed" || _draggedBedPatient is null)
-        {
-            return;
-        }
-
-        var (bay, bed) = _draggedBedPatient.Value;
-
-        if (target == "IHT Returns")
-        {
-            AllocationBySource["IHT"].Add(new PatientCard(bed.PatientName, bed.AgeSex, bed.Specialty, "Now", "Standard", ""));
-            bed.MarkCleaning("Moved to IHT Returns");
-            RecalculateBay(bay);
-            Toast("Patient moved to IHT Returns. Bed marked Cleaning.");
-        }
-        else
-        {
-            Toast($"Patient moved to {target}.");
-        }
-
-        _draggedBedPatient = null;
-        _dragMode = string.Empty;
-    }
-
-    private static void RecalculateBay(BayOperation bay)
-    {
-        bay.Occupied = bay.Beds.Count(x => x.Status == "Occupied");
-        bay.Ready = bay.Beds.Count(x => x.Status == "Ready");
-        bay.Cleaning = bay.Beds.Count(x => x.Status == "Cleaning");
-        bay.Blocked = bay.Beds.Count(x => x.Status == "Blocked");
-        bay.Maintenance = bay.Beds.Count(x => x.Status == "Maintenance");
-    }
-
-    private static string ShortNoteFor(BedOperation bed)
-    {
-        if (bed.Notes.Contains("isolation", StringComparison.OrdinalIgnoreCase)) return "Isolation";
-        if (bed.Notes.Contains("EVS", StringComparison.OrdinalIgnoreCase)) return "EVS requested";
-        if (bed.Notes.Contains("hold", StringComparison.OrdinalIgnoreCase)) return "NUM hold";
-        if (bed.Specialty.Contains("Cardiology", StringComparison.OrdinalIgnoreCase)) return "Telemetry";
-
-        return bed.Notes.Length > 26 ? $"{bed.Notes[..26]}…" : bed.Notes;
-    }
-
-    private void Toast(string message)
-    {
-        _toastMessage = message;
-    }
-
-    private sealed class PatientCard
-    {
-        public PatientCard(string name, string ageSex, string presentation, string eta, string needs, string priority)
-        {
-            Name = name;
-            AgeSex = ageSex;
-            Presentation = presentation;
-            Eta = eta;
-            Needs = needs;
-            Priority = priority;
-        }
-
-        public string Name { get; }
-        public string AgeSex { get; }
-        public string Presentation { get; }
-        public string Eta { get; }
-        public string Needs { get; }
-        public string Priority { get; }
-    }
-
-    private sealed class BayOperation
-    {
-        public BayOperation(string bayName, string keyNotes, bool isExpanded, List<BedOperation> beds)
-        {
-            BayName = bayName;
-            KeyNotes = keyNotes;
-            IsExpanded = isExpanded;
-            Beds = beds;
-            RecalculateBay(this);
-        }
-
-        public string BayName { get; }
-        public int TotalBeds => Beds.Count;
-        public int Occupied { get; set; }
-        public int Ready { get; set; }
-        public int Cleaning { get; set; }
-        public int Blocked { get; set; }
-        public int Maintenance { get; set; }
-        public string KeyNotes { get; }
-        public bool IsExpanded { get; set; }
-        public List<BedOperation> Beds { get; }
-    }
-
-    private sealed class BedOperation
-    {
-        public BedOperation(string bedNumber, string patientName, string ageSex, string status, string statusClass, string specialty, string los, string notes)
-        {
-            BedNumber = bedNumber;
-            PatientName = string.IsNullOrWhiteSpace(patientName) ? "—" : patientName;
-            AgeSex = string.IsNullOrWhiteSpace(ageSex) ? "—" : ageSex;
-            Status = status;
-            StatusClass = statusClass;
-            Specialty = specialty;
-            Los = los;
-            Notes = notes;
-        }
-
-        public string BedNumber { get; }
-        public string PatientName { get; private set; }
-        public string AgeSex { get; private set; }
-        public string Status { get; private set; }
-        public string StatusClass { get; private set; }
-        public string Specialty { get; private set; }
-        public string Los { get; private set; }
-        public string Notes { get; private set; }
-
-        public void AssignFrom(PatientCard patient)
-        {
-            PatientName = patient.Name;
-            AgeSex = patient.AgeSex;
-            Status = "Occupied";
-            StatusClass = "occupied";
-            Specialty = patient.Presentation;
-            Los = "0d";
-            Notes = $"Allocated from panel ({patient.Eta})";
-        }
-
-        public void MarkCleaning(string note)
-        {
-            PatientName = "—";
-            AgeSex = "—";
-            Status = "Cleaning";
-            StatusClass = "cleaning";
-            Specialty = "-";
-            Los = "-";
-            Notes = note;
-        }
-    }
+    private sealed class IncomingCard(string code,string name,string reason,string meta,string priority){public string Code=code;public string Name=name;public string Reason=reason;public string Meta=meta;public string Priority=priority;}
+    private sealed class BedRow(string bedLabel,string status,string patientName,string demographics,string team,string allergies,string infection,string alerts,string edd,int dischargeProgress,string requests,int ews,string waitingFor){public string BedLabel=bedLabel;public string Status=status;public string PatientName=patientName;public string Demographics=demographics;public string Team=team;public string Allergies=allergies;public string Infection=infection;public string Alerts=alerts;public string Edd=edd;public int DischargeProgress=dischargeProgress;public string Requests=requests;public int Ews=ews;public string WaitingFor=waitingFor;public bool HasPatient=>!string.IsNullOrWhiteSpace(PatientName);public string StatusClass=>Status.ToLowerInvariant().Replace(" / ","-").Replace(" ","-"); public void Assign(IncomingCard c){PatientName=c.Name;Demographics="MRN pending";Team=c.Reason.Contains("Cardio")?"Cardiology":"General Surgery";Status="Occupied";WaitingFor="Admission";} public void MarkCleaning(){PatientName="";Demographics="";Status="Cleaning";WaitingFor="Awaiting cleaning";}}
 }

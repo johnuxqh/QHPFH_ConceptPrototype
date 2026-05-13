@@ -81,6 +81,7 @@
 .bm-map-bay-bay5{grid-column:2/3;grid-row:3}.bm-map-bay-bay6{grid-column:3/4;grid-row:3}.bm-map-bay-bay7{grid-column:4/5;grid-row:3}.bm-map-bay-bay8{grid-column:5/6;grid-row:3}
 .bm-map-bay-bay9{grid-column:2/4;grid-row:4}.bm-map-bay-bay10{grid-column:4/6;grid-row:4}
 
+
 /* Refined list-view visual alignment */
 .bed-mgmt-page{padding:14px 20px 22px;background:#f7f9fc;}
 .bm-filter-row{gap:10px;margin-bottom:14px}.bm-filter button{min-width:140px;height:36px;border-radius:6px;background:#f4f6fa;font-weight:600}
@@ -104,3 +105,10 @@
 .bm-right-panel article{border-radius:8px}.bm-right-panel h4{font-size:.96rem;color:#1a2d48;margin-bottom:10px}
 .bm-actions{grid-template-columns:1fr 1fr}.bm-actions button{min-height:40px;border-radius:6px;background:#fff}
 .bm-slideout{top:108px;border-top:1px solid #d1dbe6}
+.ward-ops .bm-topbar{display:grid;grid-template-columns:repeat(3,150px) 1fr auto auto auto;gap:8px;align-items:end;margin-bottom:10px}.ward-ops .bm-filter label{display:block;font-size:.68rem;color:#5c6f84}.ward-ops .bm-search{height:36px;border:1px solid #d5deea;padding:0 10px}.bm-ghost{height:36px;border:1px solid #cfd9e4;background:#fff;padding:0 12px}
+.bm-capacity-banner{display:flex;gap:12px;align-items:center;border:1px solid;padding:10px 12px;border-radius:8px;margin-bottom:10px}.bm-capacity-banner.red{background:#fff4f4;border-color:#f1c7c7;color:#8d1f1f}
+.bm-summary-strip.six{grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}.bm-summary-item small{font-size:.68rem;color:#5f7286}.bm-summary-item.clickable{cursor:pointer}
+.bm-ward-table-wrap{border:1px solid #dde5ef;background:#fff;border-radius:8px;overflow:hidden}.bm-ward-table{width:100%;border-collapse:collapse;font-size:.76rem}.bm-ward-table th,.bm-ward-table td{padding:8px;border-bottom:1px solid #ebeff5;vertical-align:top}.bm-ward-table th{background:#f6f8fb;text-align:left}
+.bm-ward-table tr{position:relative}.bm-ward-table tr::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px}.bm-ward-table tr.state-open--ready::before{background:#16a34a}.bm-ward-table tr.state-occupied::before{background:#2563eb}.bm-ward-table tr.state-cleaning::before{background:#d97706}.bm-ward-table tr.state-blocked::before{background:#7c3aed}.bm-ward-table tr.state-maintenance::before{background:#b91c1c}.bm-ward-table tr.state-isolation--specialist::before{background:#4f46e5}
+.status-select select{font-size:.68rem;border:1px solid #cfd9e5;background:#fff}.progress{height:6px;background:#ebeff5;border-radius:6px;overflow:hidden}.progress span{display:block;height:100%;background:#2f6cd6}.kebab{border:0;background:transparent}
+.bm-slideout.wide{width:min(520px,48vw)}.bm-link{display:block;margin-top:10px;font-weight:600}
