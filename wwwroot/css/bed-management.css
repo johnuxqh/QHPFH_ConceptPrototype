@@ -112,3 +112,8 @@
 .bm-ward-table tr{position:relative}.bm-ward-table tr::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px}.bm-ward-table tr.state-open--ready::before{background:#16a34a}.bm-ward-table tr.state-occupied::before{background:#2563eb}.bm-ward-table tr.state-cleaning::before{background:#d97706}.bm-ward-table tr.state-blocked::before{background:#7c3aed}.bm-ward-table tr.state-maintenance::before{background:#b91c1c}.bm-ward-table tr.state-isolation--specialist::before{background:#4f46e5}
 .status-select select{font-size:.68rem;border:1px solid #cfd9e5;background:#fff}.progress{height:6px;background:#ebeff5;border-radius:6px;overflow:hidden}.progress span{display:block;height:100%;background:#2f6cd6}.kebab{border:0;background:transparent}
 .bm-slideout.wide{width:min(520px,48vw)}.bm-link{display:block;margin-top:10px;font-weight:600}
+.bm-topbar .bm-ghost.active{background:#eaf2ff;border-color:#8fb0cb}
+.bm-main-grid{display:grid;grid-template-columns:1fr 320px;gap:10px}.bm-list-panel{min-width:0}
+.bm-inline-actions{display:flex;gap:4px;margin-top:4px}.bm-inline-actions button{border:1px solid #d5dfeb;background:#fff;padding:2px 4px}
+.bm-status-pill{display:inline-flex;gap:4px;align-items:center;border:1px solid #d6e1ec;background:#f9fbfe;padding:2px 6px;border-radius:12px;font-size:.68rem}
+.qa-drop.hover{background:#e7f0ff;border-color:#6f98d0}
