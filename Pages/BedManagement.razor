@@ -249,66 +249,58 @@
     };
 
     protected override void OnInitialized()
+{
+    var feed = DemoHubData.BuildPatientAdmissions();
+
+    var reasons = new[]
     {
-        var feed = DemoHubData.BuildPatientAdmissions();
+        "Post-op bed request",
+        "Abdominal pain escalation",
+        "Chest pain pathway",
+        "Respiratory compromise",
+        "Falls assessment",
+        "Sepsis review",
+        "Telemetry monitoring needed",
+        "Isolation requirement"
+    };
 
-        IncomingByTab["ED"] = feed.Take(8).Select((p, i) =>
-            new IncomingCard($"ED{i + 1:000} | {p.Age}{p.Sex.ToLowerInvariant()}", $"{p.LastName.ToUpperInvariant()}, {p.FirstName}", p.Reason, $"{p.EstimatedArrival} | {p.PrimarySpecialty}", i % 3 == 0 ? "High" : i % 3 == 1 ? "Medium" : "Low")).ToList();
-
-        IncomingByTab["IHT"] = feed.Skip(20).Take(4).Select((p, i) =>
-            new IncomingCard($"IHT{i + 1:000} | {p.Age}{p.Sex.ToLowerInvariant()}", $"{p.LastName.ToUpperInvariant()}, {p.FirstName}", p.Reason, $"{p.EstimatedArrival} | {p.PrimarySpecialty}", "Medium")).ToList();
-
-        IncomingByTab["OPD"] = feed.Skip(35).Take(3).Select((p, i) =>
-            new IncomingCard($"OPD{i + 1:000} | {p.Age}{p.Sex.ToLowerInvariant()}", $"{p.LastName.ToUpperInvariant()}, {p.FirstName}", p.Reason, $"{p.EstimatedArrival} | {p.PrimarySpecialty}", "Low")).ToList();
-    }
-
-    private static void AllowDrop(DragEventArgs _) { }
-
-    private void HoverAction(string key) => _hoverAction = key;
-
-    private void StartDragFromIncoming(IncomingCard card)
+    var specialties = new[]
     {
-        _dragMode = "incoming";
-        _draggedIncoming = card;
-        _draggedBed = null;
-    }
+        "General Surgery",
+        "Cardiology",
+        "General Medicine",
+        "Respiratory",
+        "Orthopaedics",
+        "Neurology"
+    };
 
-    private void StartDragFromBed(BedRow bed)
-    {
-        _dragMode = "patient";
-        _draggedBed = bed;
-    }
+    IncomingByTab["ED"] = feed.Take(8).Select((p, i) =>
+        new IncomingCard(
+            $"ED{i + 1:000} | {p.Age}{p.Sex.ToLowerInvariant()}",
+            $"{p.LastName.ToUpperInvariant()}, {p.FirstName}",
+            reasons[i % reasons.Length],
+            $"{DateTime.Now.AddMinutes(20 + (i * 12)):HH:mm} | {specialties[i % specialties.Length]}",
+            i % 3 == 0 ? "High" : i % 3 == 1 ? "Medium" : "Low"
+        )).ToList();
 
-    private void StartDragBedForAction(BedRow bed)
-    {
-        _dragMode = "bed";
-        _draggedBed = bed;
-    }
+    IncomingByTab["IHT"] = feed.Skip(20).Take(4).Select((p, i) =>
+        new IncomingCard(
+            $"IHT{i + 1:000} | {p.Age}{p.Sex.ToLowerInvariant()}",
+            $"{p.LastName.ToUpperInvariant()}, {p.FirstName}",
+            reasons[(i + 3) % reasons.Length],
+            $"{DateTime.Now.AddMinutes(45 + (i * 20)):HH:mm} | {specialties[(i + 2) % specialties.Length]}",
+            "Medium"
+        )).ToList();
 
-    private void DropPatientToBed(BedRow bed)
-    {
-        if (_dragMode != "incoming" || _draggedIncoming is null)
-        {
-            return;
-        }
-
-        if (bed.Status != "Open / Ready")
-        {
-            Log($"{bed.BedLabel} cannot accept patient while {bed.Status}.");
-            return;
-        }
-
-        bed.Assign(_draggedIncoming);
-
-        foreach (var list in IncomingByTab.Values)
-        {
-            list.Remove(_draggedIncoming);
-        }
-
-        Log($"{bed.PatientName} allocated to {bed.BedLabel}");
-        _draggedIncoming = null;
-        _dragMode = string.Empty;
-    }
+    IncomingByTab["OPD"] = feed.Skip(35).Take(3).Select((p, i) =>
+        new IncomingCard(
+            $"OPD{i + 1:000} | {p.Age}{p.Sex.ToLowerInvariant()}",
+            $"{p.LastName.ToUpperInvariant()}, {p.FirstName}",
+            reasons[(i + 5) % reasons.Length],
+            $"{DateTime.Now.AddMinutes(60 + (i * 30)):HH:mm} | {specialties[(i + 4) % specialties.Length]}",
+            "Low"
+        )).ToList();
+}
 
     private void DropBedToAction(string key)
     {
