@@ -117,3 +117,8 @@
 .bm-inline-actions{display:flex;gap:4px;margin-top:4px}.bm-inline-actions button{border:1px solid #d5dfeb;background:#fff;padding:2px 4px}
 .bm-status-pill{display:inline-flex;gap:4px;align-items:center;border:1px solid #d6e1ec;background:#f9fbfe;padding:2px 6px;border-radius:12px;font-size:.68rem}
 .qa-drop.hover{background:#e7f0ff;border-color:#6f98d0}
+.ward-ops .bm-topbar{grid-template-columns:150px 150px 170px 1fr auto auto;align-items:end}
+.bm-view-row{display:flex;justify-content:flex-end;gap:8px;margin:4px 0 8px}.bm-ghost.view{height:32px;font-size:.75rem}
+.bm-right-panel article{padding:8px}.bm-right-panel h4{font-size:.86rem}.bm-actions button{font-size:.74rem;min-height:34px}
+.bm-ward-table th{font-size:.74rem;font-weight:700;color:#24324a}.bm-ward-table td{font-size:.74rem;padding:7px}
+.bm-status-pill{font-size:.66rem}
