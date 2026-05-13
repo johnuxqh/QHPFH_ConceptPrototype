@@ -1,0 +1,56 @@
+@page "/allocation-centre"
+
+<section class="page-shell-card bed-mgmt-page">
+    <header>
+        <h2>Allocation Centre</h2>
+        <p>Multi-ward and multi-facility patient movement coordination</p>
+    </header>
+
+    <div class="bm-main-grid" style="grid-template-columns: 1fr 320px;">
+        <section>
+            <h3>Placeholder Lanes</h3>
+            <div class="bm-grid-view">
+                @foreach (var lane in Lanes)
+                {
+                    <article class="bm-bed-tile">
+                        <strong>@lane</strong>
+                        <small>Placeholder lane</small>
+                    </article>
+                }
+            </div>
+        </section>
+
+        <aside class="bm-right-panel">
+            <article>
+                <h4>Destination Panel</h4>
+                <div class="bm-targets">
+                    @foreach (var destination in Destinations)
+                    {
+                        <div class="bm-move-target">@destination</div>
+                    }
+                </div>
+            </article>
+        </aside>
+    </div>
+</section>
+
+@code {
+    private static readonly string[] Lanes =
+    [
+        "ED Admissions",
+        "Elective Admissions",
+        "Add-ons",
+        "IHT",
+        "Pending Transfer",
+        "Discharge Pending"
+    ];
+
+    private static readonly string[] Destinations =
+    [
+        "Ward 8A Surgical",
+        "Ward 2A General Medicine",
+        "ED Short Stay",
+        "ICU",
+        "Paeds"
+    ];
+}

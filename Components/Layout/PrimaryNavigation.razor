@@ -45,12 +45,13 @@
 
 @code {
     [Inject] private QHPFH_ConceptPrototype.Components.Shells.NavigationState NavigationState { get; set; } = default!;
+    [Inject] private NavigationManager Nav { get; set; } = default!;
     private readonly List<PrimaryNavItem> PrimaryItems =
     [
         new("myhub", "MyHub", false, []),
         new("hospital", "Hospital Overview", false, []),
         new("dd", "Delayed Discharge", true, ["DD Hub", "Patient Management", "Census Management", "DDP Census"]),
-        new("bed", "Bed & Ward", true, ["Bed Hub", "Bed Management"]),
+        new("bed", "Bed & Ward", true, ["Bed Hub", "Bed Management", "Ward Operations", "Allocation Centre"]),
         new("scenario", "Scenario Mapping", false, []),
         new("journey", "Patient Journey", false, []),
         new("apps", "Connected Apps", false, [])
@@ -70,6 +71,7 @@
         _activePrimaryKey = key;
         _activeSubItem = CurrentSubItems.FirstOrDefault() ?? string.Empty;
         NavigationState.SetActive(_activePrimaryKey, _activeSubItem);
+        NavigateForSelection(_activePrimaryKey, _activeSubItem);
     }
 
     private string GetSelectedClass(string key) => key == _activePrimaryKey ? "selected" : string.Empty;
@@ -77,12 +79,32 @@
     protected override void OnInitialized()
     {
         NavigationState.SetActive(_activePrimaryKey, _activeSubItem);
+        NavigateForSelection(_activePrimaryKey, _activeSubItem);
     }
 
     private void SelectSubItem(string subItem)
     {
         _activeSubItem = subItem;
         NavigationState.SetActive(_activePrimaryKey, _activeSubItem);
+        NavigateForSelection(_activePrimaryKey, _activeSubItem);
+    }
+
+    private void NavigateForSelection(string primaryKey, string subItem)
+    {
+        if (primaryKey != "bed")
+        {
+            return;
+        }
+
+        var route = subItem switch
+        {
+            "Bed Management" => "/bed-management",
+            "Ward Operations" => "/ward-operations",
+            "Allocation Centre" => "/allocation-centre",
+            _ => "/"
+        };
+
+        Nav.NavigateTo(route);
     }
 
     private sealed record PrimaryNavItem(string Key, string Label, bool HasSubMenu, List<string> SubItems);
