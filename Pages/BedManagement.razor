@@ -1,0 +1,242 @@
+@page "/bed-management"
+@using Microsoft.AspNetCore.Components.Web
+@using MudBlazor
+@using QHPFH_ConceptPrototype.Data
+
+<section class="page-shell-card bed-mgmt-page ward-ops">
+    @if (!string.IsNullOrWhiteSpace(_toastMessage))
+    {
+        <div class="bm-toast">@_toastMessage</div>
+    }
+
+    <div class="bm-topbar">
+        <div class="bm-filter"><label>Facility</label><button>QCH</button></div>
+        <div class="bm-filter"><label>HHS</label><button>All</button></div>
+        <div class="bm-filter"><label>Ward</label><button>8A Surgical</button></div>
+        <input class="bm-search" placeholder="Search patients, beds, notes" />
+        <button class="bm-ghost" @onclick="() => _showHandover = true">Handover</button>
+        <button class="bm-ghost" @onclick="() => _showUtilities = true">More</button>
+    </div>
+
+    <section class="bm-capacity-banner red">
+        <strong>HOSPITAL CAPACITY STATUS: RED</strong>
+        <span>High demand across ED and inpatient flow. Prioritise confirmed discharges before 11:00. Escalate blocked beds to NUM.</span>
+    </section>
+
+    <section class="bm-summary-strip six">
+        <article class="bm-summary-item"><p>Total Physical Beds</p><strong>48</strong></article>
+        <article class="bm-summary-item"><p>Open Beds</p><strong class="tone-ready">8</strong></article>
+        <article class="bm-summary-item"><p>Occupied Beds</p><strong class="tone-occupied">32</strong></article>
+        <article class="bm-summary-item"><p>Pending Beds</p><strong>8</strong><small>Cleaning 4 • Maintenance 2 • Blocked 2</small></article>
+        <article class="bm-summary-item"><p>Isolation / Specialist</p><strong>6</strong><small>4 Isolation • 2 Specialist</small></article>
+        <article class="bm-summary-item clickable"><p>Expected Admissions</p><strong>ED 4 • IHT 2</strong><small>OPD 1 • Other 0</small></article>
+    </section>
+
+    <div class="bm-view-row">
+        @foreach (var v in new[] { "Grid View", "List View", "Map View" })
+        {
+            <button class="bm-ghost view @(SelectedView == v ? "active" : null)" @onclick="() => SelectedView = v">@v</button>
+        }
+    </div>
+
+    <div class="bm-main-grid">
+        <section class="bm-list-panel">
+            @if (SelectedView == "List View")
+            {
+                <section class="bm-ward-table-wrap">
+                    <table class="bm-ward-table">
+                        <thead>
+                            <tr>
+                                <th>Bed</th><th>Status</th><th>Patient</th><th>Team</th><th>Allergies</th><th>Infection Control</th><th>Alerts</th><th>EDD</th><th>Discharge Progress</th><th>Requests / Results</th><th>EWS</th><th>Waiting For</th><th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var bed in BedRows.Take(10))
+                            {
+                                <tr class="state-@bed.StatusClass" draggable="true" @ondragstart="() => StartDragAction(bed)" @ondragover="AllowDrop" @ondrop="(e) => DropPatientToBed(bed)">
+                                    <td><strong>@bed.BedLabel</strong></td>
+                                    <td><div class="bm-status-pill"><MudIcon Icon="@StatusIcon(bed.Status)" Size="Size.Small" />@bed.Status</div></td>
+                                    <td>
+                                        @if (bed.HasPatient)
+                                        {
+                                            <div class="bm-bed-patient" draggable="true" @ondragstart="() => StartDragFromBed(bed)">@bed.PatientName</div>
+                                            <small>@bed.Demographics</small>
+                                        }
+                                        else
+                                        {
+                                            <strong>—</strong>
+                                        }
+                                        <div class="bm-inline-actions">
+                                            @foreach (var action in ActionDefs)
+                                            {
+                                                <button title="@action.Label" @onclick="() => ApplyBedAction(bed, action.Key)"><MudIcon Icon="@action.Icon" Size="Size.Small" /></button>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>@bed.Team</td><td>@bed.Allergies</td><td>@bed.Infection</td><td>@bed.Alerts</td><td>@bed.Edd</td>
+                                    <td><div class="progress"><span style="width:@bed.DischargeProgress%"></span></div>@bed.DischargeProgress%</td>
+                                    <td>@bed.Requests</td><td>@bed.Ews</td><td>@bed.WaitingFor</td><td><button class="kebab">⋮</button></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <footer>Showing 1–10 of 48 beds</footer>
+                </section>
+            }
+            else if (SelectedView == "Grid View")
+            {
+                <div class="bm-grid-view">
+                    @foreach (var bed in BedRows.Take(10))
+                    {
+                        <article class="bm-bed-tile state-@bed.StatusClass" draggable="true" @ondragstart="() => StartDragAction(bed)">
+                            <div class="bm-bed-tile-head"><strong>@bed.BedLabel</strong><span class="bm-status-pill"><MudIcon Icon="@StatusIcon(bed.Status)" Size="Size.Small" />@bed.Status</span></div>
+                            <div>@(bed.HasPatient ? bed.PatientName : "—")</div>
+                            <small>@bed.WaitingFor</small>
+                            <div class="bm-inline-actions">@foreach (var action in ActionDefs){<button title="@action.Label" @onclick="() => ApplyBedAction(bed, action.Key)"><MudIcon Icon="@action.Icon" Size="Size.Small" /></button>}</div>
+                        </article>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="bm-map-layout"><div class="bm-corridor">Map View placeholder retained</div></div>
+            }
+        </section>
+
+        <aside class="bm-right-panel">
+            <article>
+                <h4>Incoming</h4>
+                <ul><li>ED Arrivals 4</li><li>IHT Returns 2</li><li>OPD 1</li></ul>
+                <div class="bm-cards">@foreach(var c in IncomingByTab["ED"].Take(4)){<article class="bm-patient-card" draggable="true" @ondragstart="()=>StartDragFromIncoming(c)"><strong>@c.Code</strong><p>@c.Name</p><p>@c.Reason</p><p>@c.Meta</p></article>}</div>
+            </article>
+            <article>
+                <h4>Quick Actions</h4>
+                <div class="bm-actions">@foreach (var a in ActionDefs){<button class="qa-drop @(_hoverAction==a.Key?"hover":null)" @ondragover="(e)=>HoverAction(a.Key)" @ondragleave="(e)=>_hoverAction=null" @ondrop="(e)=>DropBedToAction(a.Key)"><MudIcon Icon="@a.Icon" Size="Size.Small"/> @a.Label</button>}</div>
+            </article>
+            <article>
+                <h4>Drop Zones</h4>
+                <div class="bm-targets">@foreach (var t in MoveTargets){<div class="bm-move-target" @ondragover="AllowDrop" @ondrop="(e)=>DropBedToTarget(t)">@t</div>}</div>
+            </article>
+            <article>
+                <h4>Recent Activity</h4>
+                <ul class="bm-activity">@foreach (var x in Activity.Take(6)){<li>@x</li>}</ul>
+            </article>
+        </aside>
+    </div>
+
+    @if (_showHandover)
+    {
+        @SimpleSlideout("Shift Handover", new[] { "Hospital capacity status: RED", "Bed 8 maintenance pending", "Bed 5 isolation review", "Bed 2 moved to IHT, cleaning required" })
+    }
+
+    @if (_showUtilities)
+    {
+        @SimpleSlideout("Ward Utilities", new[] { "Print Ward Snapshot", "Export Patient List", "Open/Close Surge Beds", "Cleaning Overview", "Send Ward Broadcast" })
+    }
+</section>
+
+@code {
+    private string SelectedView { get; set; } = "Grid View";
+    private bool _showUtilities;
+    private bool _showHandover;
+    private bool _isAllocationPanelOpen;
+    private string? _toastMessage;
+    private string? _hoverAction;
+    private string _dragMode = "";
+    private IncomingCard? _draggedIncoming;
+    private BedRow? _draggedBed;
+
+    private readonly List<string> Activity = ["12:20 Bed 3 marked Cleaning", "12:25 Bed 3 marked Ready", "12:26 Bed 4 blocked", "12:27 Maintenance requested for Bed 6"];
+    private readonly (string Key, string Label, string Icon)[] ActionDefs = [("ready", "Mark Ready", Icons.Material.Outlined.CheckCircle), ("cleaning", "Mark Cleaning", Icons.Material.Outlined.CleaningServices), ("block", "Block Bed", Icons.Material.Outlined.Lock), ("maintenance", "Request Maintenance", Icons.Material.Outlined.Handyman), ("isolation", "Isolation", Icons.Material.Outlined.Shield), ("note", "Add Operational Note", Icons.Material.Outlined.StickyNote2)];
+    private readonly Dictionary<string, List<IncomingCard>> IncomingByTab = new() { ["ED"] = [], ["IHT"] = [], ["OPD"] = [], ["Other"] = [] };
+    private readonly List<string> MoveTargets = ["IHT Returns Queue", "Pending Transfer", "Temporary Hold", "Discharge Pending"];
+    private readonly List<BedRow> BedRows = [new("Bed 1","Occupied","TAYLOR, Noah","MRN 8001234 | 45y | M","General Surgery","Penicillin","MRSA","Behavioural + Other Alert","22 May / 2 days",75,"Bloods / Resulted",2,"Discharge meds"),new("Bed 2","Occupied","NGUYEN, Scarlett","MRN 8002233 | 68y | F","Cardiology","NKA","No infection","Falls + Other Alert","25 May",25,"CXR Resulted",4,"Physio review"),new("Bed 3","Open / Ready","","","General Surgery","-","-","-","-",0,"-",0,"Available"),new("Bed 4","Cleaning","","","General Surgery","-","-","-","-",0,"-",0,"Awaiting cleaning"),new("Bed 5","Isolation / Specialist","PARKER, June","MRN 8003377 | 52y | F","General Surgery","Latex","Isolation","Infection control","24 May",40,"CT Pending",3,"NUM review"),new("Bed 6","Occupied","LEE, Aaron","MRN 8001112 | 37y | M","General Surgery","None","No infection","-","23 May",60,"Bloods Pending",2,"Discharge planning"),new("Bed 7","Open / Ready","","","General Surgery","-","-","-","-",0,"-",0,"Available"),new("Bed 8","Maintenance","","","-","-","-","-","-",0,"-",0,"Maintenance"),new("Bed 9","Blocked","","","-","-","-","-","-",0,"-",0,"NUM hold"),new("Bed 10","Occupied","WILLIAMS, Noah","MRN 8004455 | 41y | M","General Surgery","Penicillin","No infection","-","26 May",35,"ECG Resulted",1,"Awaiting review")];
+
+    protected override void OnInitialized()
+    {
+        var feed = DemoHubData.BuildPatientAdmissions();
+        IncomingByTab["ED"] = feed.Take(8).Select((p, i) => new IncomingCard($"ED{i + 1:000} | {p.Age}{p.Sex.ToLowerInvariant()}", $"{p.LastName.ToUpperInvariant()}, {p.FirstName}", p.Reason, p.EstimatedArrival + " | " + p.PrimarySpecialty, i % 3 == 0 ? "High" : i % 3 == 1 ? "Medium" : "Low")).ToList();
+        IncomingByTab["IHT"] = feed.Skip(20).Take(4).Select((p, i) => new IncomingCard($"IHT{i + 1:000} | {p.Age}{p.Sex.ToLowerInvariant()}", $"{p.LastName.ToUpperInvariant()}, {p.FirstName}", p.Reason, p.EstimatedArrival + " | " + p.PrimarySpecialty, "Medium")).ToList();
+        IncomingByTab["OPD"] = feed.Skip(35).Take(3).Select((p, i) => new IncomingCard($"OPD{i + 1:000} | {p.Age}{p.Sex.ToLowerInvariant()}", $"{p.LastName.ToUpperInvariant()}, {p.FirstName}", p.Reason, p.EstimatedArrival + " | " + p.PrimarySpecialty, "Low")).ToList();
+    }
+
+    private void AllowDrop(DragEventArgs _) { }
+    private void HoverAction(string key) => _hoverAction = key;
+    private void StartDragFromIncoming(IncomingCard card) { _dragMode = "incoming"; _draggedIncoming = card; _draggedBed = null; }
+    private void StartDragFromBed(BedRow bed) { _dragMode = "patient"; _draggedBed = bed; }
+    private void StartDragAction(BedRow bed) { _dragMode = "bed"; _draggedBed = bed; }
+
+    private void DropPatientToBed(BedRow bed)
+    {
+        if (_dragMode != "incoming" || _draggedIncoming is null) return;
+        if (bed.Status != "Open / Ready") { Log($"{bed.BedLabel} cannot accept patient while {bed.Status}."); return; }
+        bed.Assign(_draggedIncoming);
+        foreach (var list in IncomingByTab.Values) list.Remove(_draggedIncoming);
+        Log($"{bed.PatientName} allocated to {bed.BedLabel}");
+        _draggedIncoming = null;
+        _dragMode = "";
+    }
+
+    private void DropBedToAction(string key)
+    {
+        if (_dragMode != "bed" || _draggedBed is null) return;
+        ApplyBedAction(_draggedBed, key);
+        _draggedBed = null;
+        _dragMode = "";
+        _hoverAction = null;
+    }
+
+    private void ApplyBedAction(BedRow bed, string key)
+    {
+        if ((key == "ready" || key == "cleaning") && bed.Status == "Occupied")
+        {
+            Log("Patient must be transferred/discharged first.");
+            return;
+        }
+
+        if (key == "ready") { bed.Status = "Open / Ready"; bed.WaitingFor = "Available"; }
+        else if (key == "cleaning") { bed.Status = "Cleaning"; bed.WaitingFor = "Awaiting cleaning"; }
+        else if (key == "block") { bed.Status = "Blocked"; bed.WaitingFor = "NUM hold"; }
+        else if (key == "maintenance") { bed.Status = "Maintenance"; bed.WaitingFor = "Maintenance review"; }
+        else if (key == "isolation") { bed.Status = "Isolation / Specialist"; bed.WaitingFor = "Isolation review"; }
+        else if (key == "note") { bed.WaitingFor = "Operational note added"; }
+
+        Log($"{bed.BedLabel} {ActionText(key)}");
+    }
+
+    private string ActionText(string key) => key switch { "ready" => "marked Ready", "cleaning" => "marked Cleaning", "block" => "blocked", "maintenance" => "maintenance requested", "isolation" => "marked Isolation", _ => "note added" };
+
+    private void DropBedToTarget(string target)
+    {
+        if (_dragMode != "patient" || _draggedBed is null) return;
+        IncomingByTab["IHT"].Add(new IncomingCard("IHT-R", _draggedBed.PatientName, _draggedBed.Team, "From ward", target));
+        var bedLabel = _draggedBed.BedLabel;
+        _draggedBed.MarkCleaning();
+        if (target == "Discharge Pending") _draggedBed.WaitingFor = "Awaiting cleaning";
+        Log($"{bedLabel} patient moved to {target}. {bedLabel} marked Cleaning.");
+        _draggedBed = null;
+        _dragMode = "";
+    }
+
+    private string StatusIcon(string status) => status switch { "Occupied" => Icons.Material.Outlined.Person, "Open / Ready" => Icons.Material.Outlined.CheckCircle, "Cleaning" => Icons.Material.Outlined.CleaningServices, "Blocked" => Icons.Material.Outlined.Lock, "Maintenance" => Icons.Material.Outlined.Handyman, "Isolation / Specialist" => Icons.Material.Outlined.Shield, _ => Icons.Material.Outlined.Bed };
+    private void Log(string message) { Activity.Insert(0, $"{DateTime.Now:HH:mm} {message}"); _toastMessage = message; }
+
+    private RenderFragment SimpleSlideout(string title, IEnumerable<string> lines) => @<>
+        <div class="bm-slideout-backdrop" @onclick="() => { _showHandover = false; _showUtilities = false; }"></div>
+        <aside class="bm-slideout"><header><h3>@title</h3><button @onclick="() => { _showHandover = false; _showUtilities = false; }">Close</button></header><ul>@foreach (var line in lines) { <li>@line</li> }</ul></aside>
+    </>;
+
+    private sealed class IncomingCard(string code, string name, string reason, string meta, string priority)
+    {
+        public string Code = code; public string Name = name; public string Reason = reason; public string Meta = meta; public string Priority = priority;
+    }
+
+    private sealed class BedRow(string bedLabel, string status, string patientName, string demographics, string team, string allergies, string infection, string alerts, string edd, int dischargeProgress, string requests, int ews, string waitingFor)
+    {
+        public string BedLabel = bedLabel; public string Status = status; public string PatientName = patientName; public string Demographics = demographics; public string Team = team; public string Allergies = allergies; public string Infection = infection; public string Alerts = alerts; public string Edd = edd; public int DischargeProgress = dischargeProgress; public string Requests = requests; public int Ews = ews; public string WaitingFor = waitingFor;
+        public bool HasPatient => !string.IsNullOrWhiteSpace(PatientName);
+        public string StatusClass => Status.ToLowerInvariant().Replace(" / ", "-").Replace(" ", "-");
+        public void Assign(IncomingCard card) { PatientName = card.Name; Demographics = "MRN pending"; Team = card.Reason.Contains("Cardio") ? "Cardiology" : "General Surgery"; Status = "Occupied"; WaitingFor = "Admission"; }
+        public void MarkCleaning() { PatientName = ""; Demographics = ""; Status = "Cleaning"; WaitingFor = "Awaiting cleaning"; }
+    }
+}
