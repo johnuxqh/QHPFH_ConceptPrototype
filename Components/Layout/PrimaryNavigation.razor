@@ -46,6 +46,7 @@
 @code {
     [Inject] private QHPFH_ConceptPrototype.Components.Shells.NavigationState NavigationState { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;
+
     private readonly List<PrimaryNavItem> PrimaryItems =
     [
         new("myhub", "MyHub", false, []),
@@ -108,11 +109,9 @@
 
         if (string.IsNullOrEmpty(route))
         {
-"Bed Management" => "bed-management",
-"Ward Operations" => "ward-operations",
-"Allocation Centre" => "allocation-centre",
-_ => string.Empty}
-};
+            Nav.NavigateTo(string.Empty);
+            return;
+        }
 
         if (!string.IsNullOrEmpty(route))
         {
