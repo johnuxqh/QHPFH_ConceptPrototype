@@ -1,32 +1,94 @@
 @page "/bed-management"
+@inject NavigationManager Navigation
 
-<section class="page-shell-card bed-mgmt-page">
-    <header>
-        <h2>Bed Management</h2>
-        <p>Strategic and tactical bed capacity overview for flow managers, bed managers, and hospital operations.</p>
+<section class="page-shell-card bed-mgmt-page bm-overview-page">
+    <header class="bm-overview-header">
+        <h2>Bed Management Overview</h2>
+        <p>Statewide strategic and tactical capacity intelligence for bed managers, hospital operations, and flow leadership.</p>
     </header>
 
-    <section class="bm-capacity-banner amber">
-        <strong>Overview mode placeholder</strong>
-        <span>Ward Operations workflows (allocation, drag/drop, and nurse whiteboard actions) now live in Ward Operations.</span>
+    <section class="bm-filter-row">
+        <div class="bm-filter"><span>HHS</span><button>All</button></div>
+        <div class="bm-filter"><span>Facility</span><button>All</button></div>
+        <div class="bm-filter"><span>Ward</span><button>All</button></div>
     </section>
 
-    <div class="bm-summary-strip six">
-        <article class="bm-summary-item"><p>Total Physical Beds</p><strong>--</strong></article>
-        <article class="bm-summary-item"><p>Open Beds</p><strong>--</strong></article>
-        <article class="bm-summary-item"><p>Occupied Beds</p><strong>--</strong></article>
-        <article class="bm-summary-item"><p>Pending Beds</p><strong>--</strong><small>Cleaning • Maintenance • Blocked</small></article>
-        <article class="bm-summary-item"><p>Pressure Wards</p><strong>--</strong><small>Top constrained wards</small></article>
-        <article class="bm-summary-item"><p>Intervention Queue</p><strong>--</strong><small>Escalations and priorities</small></article>
+    <section class="bm-overview-cards">
+        <article class="bm-kpi-card"><p>Physical Capacity</p><strong>5,643</strong><small>Total beds</small></article>
+        <article class="bm-kpi-card"><p>Open Operational Beds</p><strong>1,243</strong><small>22% of capacity</small><em>▼ 86</em></article>
+        <article class="bm-kpi-card"><p>Beds Returning</p><strong>142</strong><small>Awaiting cleaning</small><em>▼ 18</em></article>
+        <article class="bm-kpi-card"><p>Operational Pressure</p><strong>87%</strong><small>High</small><div class="bm-pressure-track"><span style="width:87%"></span></div></article>
+        <article class="bm-kpi-card"><p>Capacity Delta (24h)</p><strong>+53</strong><small>6 OUT 11 IN</small></article>
+        <article class="bm-kpi-card"><p>Admissions Today</p><strong>245</strong><small>Planned: 182</small></article>
+        <article class="bm-kpi-card"><p>Delayed Flow Patients</p><strong>78</strong><small>12% of total</small></article>
+    </section>
+
+    <section class="bm-insight-grid">
+        <article class="bm-insight-card critical"><h4>3 wards are over capacity</h4><p>METS ICU, PC ICU &amp; Mackay Base ED are over occupied. Reasons being, theatre backlog &amp; a surge in admissions.</p><a href="#">View affected wards</a></article>
+        <article class="bm-insight-card warning"><h4>Cleaning backlog leading to 20% of capacity pressure</h4><p>A total of 212 beds await cleaning across the state. Logan Surgical &amp; Bundaberg with the highest backlog.</p><a href="#">View cleaning details</a></article>
+        <article class="bm-insight-card info"><h4>Elective surge expected tomorrow</h4><p>Elective admissions tomorrow are forecast to be 18% higher than today.</p><a href="#">View weekly planner</a></article>
+        <article class="bm-insight-card staffing"><h4>Staffing impact</h4><p>12 wards have reduced capacity due to insufficient staffing.</p><a href="#">View staffing impact</a></article>
+    </section>
+
+    <section class="bm-ward-table-wrap bm-overview-table-wrap">
+        <div class="bm-table-toolbar">
+            <div class="bm-view-row">
+                <button class="bm-ghost view active">List</button>
+                <button class="bm-ghost view">Grid</button>
+                <button class="bm-ghost view">Compact</button>
+            </div>
+            <div class="bm-toolbar-actions">
+                <button class="bm-ghost">Export</button>
+                <button class="bm-ghost">Update Capacity</button>
+            </div>
+        </div>
+
+        <table class="bm-ward-table bm-overview-table">
+            <thead>
+                <tr>
+                    <th>Hospital</th><th>Ward</th><th>Ward Type</th><th>Physical Beds</th><th>Open Beds</th><th>Occupied Beds</th><th>Occupancy %</th><th>Pressure</th><th>Elective Admissions</th><th>ED Add-ons</th><th>HITH Returns</th><th>Predicted Discharges</th><th>Actual Discharges</th><th>Delayed Discharge</th><th>Constraints / Reason</th><th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in Rows)
+                {
+                    <tr>
+                        <td>@row.Hospital</td><td>@row.Ward</td><td>@row.WardType</td><td>@row.PhysicalBeds</td><td>@row.OpenBeds</td><td>@row.OccupiedBeds</td><td>@row.Occupancy</td>
+                        <td><span class="bm-pressure-pill @row.PressureClass">@row.Pressure</span></td><td>@row.Elective</td><td>@row.EdAddons</td><td>@row.HithReturns</td><td>@row.PredictedDischarges</td><td>@row.ActualDischarges</td><td>@row.DelayedDischarge</td><td>@row.Constraints</td><td><button class="bm-mini-action">Review</button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+
+    <div class="bm-bottom-nav">
+        <button class="bm-primary" @onclick="GoToWardOperations">Go to Ward Operations</button>
     </div>
 
-    <section class="page-shell-card">
-        <h3>Coming next</h3>
-        <ul>
-            <li>Facility and ward capacity intelligence</li>
-            <li>Capacity risk and pressure indicators</li>
-            <li>Ward/facility comparative tables</li>
-            <li>Operational insight cards and escalation prompts</li>
-        </ul>
-    </section>
+    <footer class="bm-pressure-legend">
+        <span><i class="key low"></i>Low (&lt;80%)</span>
+        <span><i class="key medium"></i>Medium (80–89%)</span>
+        <span><i class="key high"></i>High (90–94%)</span>
+        <span><i class="key critical"></i>Critical (≥95%)</span>
+    </footer>
 </section>
+
+@code {
+    private void GoToWardOperations() => Navigation.NavigateTo("/ward-operations");
+
+    private static readonly List<BedOverviewRow> Rows =
+    [
+        new("Beaudesert Hospital", "General Medicine", "Medical", 42, 8, 34, "81%", "Medium", "medium", 4, 3, 1, 5, 3, 2, "Staffing gap"),
+        new("Beaudesert Hospital", "ED", "Emergency", 24, 2, 22, "92%", "High", "high", 1, 6, 0, 3, 2, 1, "ED surge"),
+        new("Bowen Hospital", "General Medicine", "Medical", 30, 7, 23, "77%", "Low", "low", 2, 1, 1, 4, 3, 1, "Stable"),
+        new("Bundaberg Hospital", "Surgical", "Surgical", 55, 3, 52, "95%", "Critical", "critical", 7, 3, 2, 6, 4, 4, "Cleaning backlog"),
+        new("Bundaberg Hospital", "General Medicine", "Medical", 60, 6, 54, "90%", "High", "high", 5, 2, 2, 8, 5, 3, "Delayed discharges"),
+        new("Cairns Hospital", "ED", "Emergency", 40, 4, 36, "90%", "High", "high", 2, 8, 1, 5, 4, 2, "Admission surge"),
+        new("Cairns Hospital", "ICU", "Critical Care", 22, 1, 21, "95%", "Critical", "critical", 1, 2, 0, 2, 1, 2, "Theatre overflow"),
+        new("Gold Coast Hospital", "ICU", "Critical Care", 36, 3, 33, "92%", "High", "high", 2, 4, 2, 4, 3, 2, "Step-down bottleneck"),
+        new("Gold Coast Hospital", "Surgical", "Surgical", 72, 10, 62, "86%", "Medium", "medium", 8, 3, 2, 9, 7, 2, "Elective intake"),
+        new("Logan Hospital", "General Medicine", "Medical", 68, 5, 63, "93%", "High", "high", 6, 4, 3, 7, 5, 4, "Cleaning + staffing")
+    ];
+
+    private record BedOverviewRow(string Hospital, string Ward, string WardType, int PhysicalBeds, int OpenBeds, int OccupiedBeds, string Occupancy, string Pressure, string PressureClass, int Elective, int EdAddons, int HithReturns, int PredictedDischarges, int ActualDischarges, int DelayedDischarge, string Constraints);
+}
