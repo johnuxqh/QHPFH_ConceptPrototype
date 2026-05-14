@@ -195,7 +195,7 @@
         var status = n % 7 == 0 ? "Open / Ready" : n % 6 == 0 ? "Cleaning" : "Occupied";
         var patient = feed[(n * 3) % feed.Count];
         var patientName = status == "Occupied" ? $"{patient.LastName.ToUpperInvariant()}, {patient.FirstName}" : string.Empty;
-        var demographics = status == "Occupied" ? $"MRN DEMO{n:000} | {patient.Age}y | {patient.Sex}" : string.Empty;
+        var demographics = status == "Occupied" ? $"MRN DEMO{n:000} | {patient.Age}y | {patient.Gender}" : string.Empty;
         return new($"Bed {n}", status, patientName, demographics, "General Surgery", status == "Occupied" ? "None" : "-", status == "Occupied" ? "No infection" : "-", "-", "26 May", status == "Occupied" ? 30 : 0, status == "Occupied" ? "Results pending" : "-", status == "Occupied" ? 2 : 0, status == "Open / Ready" ? "Available" : status == "Cleaning" ? "Awaiting cleaning" : "Clinical review");
     }
 
