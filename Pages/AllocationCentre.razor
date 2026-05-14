@@ -113,7 +113,7 @@
         _ => false
     };
 
-    private void OpenWardOperations() => Navigation.NavigateTo("/ward-operations");
+    private void OpenWardOperations() => Navigation.NavigateTo("ward-operations");
 
     private sealed record QueueLane(string Name, List<Models.PatientAdmission> Patients);
 }
