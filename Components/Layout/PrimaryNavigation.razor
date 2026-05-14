@@ -104,7 +104,10 @@
             _ => "/"
         };
 
-        Nav.NavigateTo(route);
+        if (!string.IsNullOrEmpty(route))
+        {
+            Nav.NavigateTo(route);
+        }
     }
 
     private sealed record PrimaryNavItem(string Key, string Label, bool HasSubMenu, List<string> SubItems);
