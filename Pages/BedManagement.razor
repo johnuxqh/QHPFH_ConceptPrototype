@@ -78,16 +78,16 @@
 
     private static readonly List<BedOverviewRow> Rows =
     [
-        new("Beaudesert Hospital", "General Medicine", "Medical", 42, 8, 34, "81%", "Medium", "medium", 4, 3, 1, 5, 3, 2, "Staffing gap"),
-        new("Beaudesert Hospital", "ED", "Emergency", 24, 2, 22, "92%", "High", "high", 1, 6, 0, 3, 2, 1, "ED surge"),
-        new("Bowen Hospital", "General Medicine", "Medical", 30, 7, 23, "77%", "Low", "low", 2, 1, 1, 4, 3, 1, "Stable"),
-        new("Bundaberg Hospital", "Surgical", "Surgical", 55, 3, 52, "95%", "Critical", "critical", 7, 3, 2, 6, 4, 4, "Cleaning backlog"),
-        new("Bundaberg Hospital", "General Medicine", "Medical", 60, 6, 54, "90%", "High", "high", 5, 2, 2, 8, 5, 3, "Delayed discharges"),
-        new("Cairns Hospital", "ED", "Emergency", 40, 4, 36, "90%", "High", "high", 2, 8, 1, 5, 4, 2, "Admission surge"),
-        new("Cairns Hospital", "ICU", "Critical Care", 22, 1, 21, "95%", "Critical", "critical", 1, 2, 0, 2, 1, 2, "Theatre overflow"),
-        new("Gold Coast Hospital", "ICU", "Critical Care", 36, 3, 33, "92%", "High", "high", 2, 4, 2, 4, 3, 2, "Step-down bottleneck"),
-        new("Gold Coast Hospital", "Surgical", "Surgical", 72, 10, 62, "86%", "Medium", "medium", 8, 3, 2, 9, 7, 2, "Elective intake"),
-        new("Logan Hospital", "General Medicine", "Medical", 68, 5, 63, "93%", "High", "high", 6, 4, 3, 7, 5, 4, "Cleaning + staffing")
+        new("Wayne Memorial", "General Medicine", "Medical", 42, 8, 34, "81%", "Medium", "medium", 4, 3, 1, 5, 3, 2, "Staffing gap"),
+        new("Wayne Memorial", "ED", "Emergency", 24, 2, 22, "92%", "High", "high", 1, 6, 0, 3, 2, 1, "ED surge"),
+        new("Daily Planet Medical", "General Medicine", "Medical", 30, 7, 23, "77%", "Low", "low", 2, 1, 1, 4, 3, 1, "Stable"),
+        new("Themyscira General", "Surgical", "Surgical", 55, 3, 52, "95%", "Critical", "critical", 7, 3, 2, 6, 4, 4, "Cleaning backlog"),
+        new("Themyscira General", "General Medicine", "Medical", 60, 6, 54, "90%", "High", "high", 5, 2, 2, 8, 5, 3, "Delayed discharges"),
+        new("Jedi Temple Infirmary", "ED", "Emergency", 40, 4, 36, "90%", "High", "high", 2, 8, 1, 5, 4, 2, "Admission surge"),
+        new("Jedi Temple Infirmary", "ICU", "Critical Care", 22, 1, 21, "95%", "Critical", "critical", 1, 2, 0, 2, 1, 2, "Theatre overflow"),
+        new("Enterprise Starbase", "ICU", "Critical Care", 36, 3, 33, "92%", "High", "high", 2, 4, 2, 4, 3, 2, "Step-down bottleneck"),
+        new("Enterprise Starbase", "Surgical", "Surgical", 72, 10, 62, "86%", "Medium", "medium", 8, 3, 2, 9, 7, 2, "Elective intake"),
+        new("Gotham Central", "General Medicine", "Medical", 68, 5, 63, "93%", "High", "high", 6, 4, 3, 7, 5, 4, "Cleaning + staffing")
     ];
 
     private record BedOverviewRow(string Hospital, string Ward, string WardType, int PhysicalBeds, int OpenBeds, int OccupiedBeds, string Occupancy, string Pressure, string PressureClass, int Elective, int EdAddons, int HithReturns, int PredictedDischarges, int ActualDischarges, int DelayedDischarge, string Constraints);
