@@ -122,3 +122,25 @@
 .bm-right-panel article{padding:8px}.bm-right-panel h4{font-size:.86rem}.bm-actions button{font-size:.74rem;min-height:34px}
 .bm-ward-table th{font-size:.74rem;font-weight:700;color:#24324a}.bm-ward-table td{font-size:.74rem;padding:7px}
 .bm-status-pill{font-size:.66rem}
+
+/* Bed Management overview (strategic/tactical) */
+.bm-overview-page{background:#f4f7fb}
+.bm-overview-header h2{margin-bottom:4px}.bm-overview-header p{margin-top:0;color:#55697f}
+.bm-overview-cards{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.bm-kpi-card{background:#fff;border:1px solid #dde5ef;border-radius:10px;padding:12px;box-shadow:0 1px 4px rgba(16,39,68,.06);min-height:118px}
+.bm-kpi-card p{margin:0;color:#5d7288;font-size:.75rem}.bm-kpi-card strong{display:block;font-size:1.7rem;line-height:1.2;color:#1f3350;margin-top:6px}.bm-kpi-card small{display:block;color:#6a7f95}.bm-kpi-card em{display:block;color:#ad3e22;font-style:normal;font-weight:700;margin-top:4px;font-size:.74rem}
+.bm-pressure-track{margin-top:8px;height:6px;background:#ecf1f7;border-radius:999px;overflow:hidden}.bm-pressure-track span{display:block;height:100%;background:linear-gradient(90deg,#2ca24d,#d97706,#c12b3d)}
+.bm-insight-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.bm-insight-card{background:#fff;border:1px solid #dde6f0;border-radius:10px;padding:12px;box-shadow:0 1px 3px rgba(20,36,60,.05)}
+.bm-insight-card h4{margin:0 0 6px;font-size:.88rem}.bm-insight-card p{margin:0 0 9px;font-size:.76rem;color:#556a80;line-height:1.35}.bm-insight-card a{font-size:.74rem;font-weight:700;text-decoration:none}
+.bm-insight-card.critical h4{color:#b3262f}.bm-insight-card.warning h4{color:#b26a05}.bm-insight-card.info h4{color:#1d5fbf}.bm-insight-card.staffing h4{color:#6b3fb0}
+.bm-table-toolbar{display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid #e8edf4;background:#fff}
+.bm-toolbar-actions{display:flex;gap:8px}
+.bm-overview-table{font-size:.72rem}.bm-overview-table th,.bm-overview-table td{white-space:nowrap}
+.bm-pressure-pill{padding:2px 7px;border-radius:12px;font-weight:700;font-size:.68rem;color:#fff}
+.bm-pressure-pill.low{background:#1f9c4e}.bm-pressure-pill.medium{background:#1377c9}.bm-pressure-pill.high{background:#dc7d16}.bm-pressure-pill.critical{background:#c63146}
+.bm-mini-action{border:1px solid #cfd9e6;background:#f9fbfe;padding:3px 8px;border-radius:5px;font-size:.68rem}
+.bm-bottom-nav{text-align:center;margin:14px 0 8px}.bm-primary{border:1px solid #2a61ad;background:#2f6cd6;color:#fff;padding:8px 16px;border-radius:6px;font-weight:600}
+.bm-pressure-legend{display:flex;justify-content:center;gap:16px;font-size:.74rem;color:#4f6278;padding-top:6px}
+.bm-pressure-legend .key{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
+.bm-pressure-legend .key.low{background:#1f9c4e}.bm-pressure-legend .key.medium{background:#1377c9}.bm-pressure-legend .key.high{background:#dc7d16}.bm-pressure-legend .key.critical{background:#c63146}
