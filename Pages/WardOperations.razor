@@ -26,6 +26,25 @@
         <button type="button" class="bm-ghost" @onclick="() => _showUtilities = true">More</button>
     </div>
 
+
+    @if (_showHandover)
+    {
+        <section class="bm-inline-sheet" role="status" aria-live="polite">
+            <strong>Handover</strong>
+            <span>Fictional demo handover workspace coming soon.</span>
+            <button type="button" class="bm-ghost" @onclick="() => _showHandover = false">Close</button>
+        </section>
+    }
+
+    @if (_showUtilities)
+    {
+        <section class="bm-inline-sheet" role="status" aria-live="polite">
+            <strong>More Utilities</strong>
+            <span>Fictional demo utility workspace coming soon.</span>
+            <button type="button" class="bm-ghost" @onclick="() => _showUtilities = false">Close</button>
+        </section>
+    }
+
     <section class="bm-capacity-banner red">
         <strong>HOSPITAL CAPACITY STATUS: RED</strong>
         <span>High demand across ED and inpatient flow. Prioritise confirmed discharges before 11:00. Escalate blocked beds to NUM.</span>
