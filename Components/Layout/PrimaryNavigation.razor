@@ -46,6 +46,7 @@
 @code {
     [Inject] private QHPFH_ConceptPrototype.Components.Shells.NavigationState NavigationState { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;
+
     private readonly List<PrimaryNavItem> PrimaryItems =
     [
         new("myhub", "MyHub", false, []),
@@ -60,7 +61,7 @@
     private string _activePrimaryKey = "dd";
     private string _activeSubItem = "DD Hub";
 
-    private IReadOnlyList<string> CurrentSubItems => PrimaryItems.First(x => x.Key == _activePrimaryKey).SubItems;
+    private IReadOnlyList<string> CurrentSubItems => GetSubItemsForKey(_activePrimaryKey);
 
     [Parameter] public bool IsDarkMode { get; set; }
     [Parameter] public bool IsCompact { get; set; }
@@ -69,7 +70,7 @@
     private void SelectPrimary(string key)
     {
         _activePrimaryKey = key;
-        _activeSubItem = CurrentSubItems.FirstOrDefault() ?? string.Empty;
+        _activeSubItem = GetSubItemsForKey(_activePrimaryKey).FirstOrDefault() ?? string.Empty;
         NavigationState.SetActive(_activePrimaryKey, _activeSubItem);
         NavigateForSelection(_activePrimaryKey, _activeSubItem);
     }
@@ -89,20 +90,28 @@
         NavigateForSelection(_activePrimaryKey, _activeSubItem);
     }
 
+    private IReadOnlyList<string> GetSubItemsForKey(string key) =>
+        PrimaryItems.FirstOrDefault(x => x.Key == key)?.SubItems ?? [];
+
     private void NavigateForSelection(string primaryKey, string subItem)
     {
-        if (primaryKey != "bed")
+        var route = primaryKey switch
         {
+            "bed" => subItem switch
+            {
+                "Bed Hub" or "Bed Management" => "bed-management",
+                "Ward Operations" => "ward-operations",
+                "Allocation Centre" => "allocation-centre",
+                _ => string.Empty
+            },
+            _ => string.Empty
+        };
+
+        if (string.IsNullOrEmpty(route))
+        {
+            Nav.NavigateTo(string.Empty);
             return;
         }
-
-        var route = subItem switch
-        {
-            "Bed Management" => "/bed-management",
-            "Ward Operations" => "/ward-operations",
-            "Allocation Centre" => "/allocation-centre",
-            _ => "/"
-        };
 
         Nav.NavigateTo(route);
     }
