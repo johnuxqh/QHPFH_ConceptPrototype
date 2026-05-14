@@ -108,11 +108,16 @@
 
         if (string.IsNullOrEmpty(route))
         {
-            Nav.NavigateTo(string.Empty);
-            return;
-        }
+"Bed Management" => "bed-management",
+"Ward Operations" => "ward-operations",
+"Allocation Centre" => "allocation-centre",
+_ => string.Empty
+};
 
-        Nav.NavigateTo(route);
+        if (!string.IsNullOrEmpty(route))
+        {
+            Nav.NavigateTo(route);
+        }
     }
 
     private sealed record PrimaryNavItem(string Key, string Label, bool HasSubMenu, List<string> SubItems);
