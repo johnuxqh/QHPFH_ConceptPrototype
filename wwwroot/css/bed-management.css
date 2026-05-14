@@ -144,3 +144,22 @@
 .bm-pressure-legend{display:flex;justify-content:center;gap:16px;font-size:.74rem;color:#4f6278;padding-top:6px}
 .bm-pressure-legend .key{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
 .bm-pressure-legend .key.low{background:#1f9c4e}.bm-pressure-legend .key.medium{background:#1377c9}.bm-pressure-legend .key.high{background:#dc7d16}.bm-pressure-legend .key.critical{background:#c63146}
+
+/* Allocation Centre placeholder */
+.allocation-centre-page{background:#f4f7fb}
+.ac-header h2{margin:0 0 4px}.ac-header p{margin:0 0 14px;color:#55697f}
+.ac-filter-row{margin-bottom:14px}
+.ac-layout{display:grid;grid-template-columns:1fr 320px;gap:12px;align-items:start}
+.ac-lanes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ac-lane-card{background:#fff;border:1px solid #dde5ef;border-radius:10px;padding:10px;min-height:210px}
+.ac-lane-card header{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:8px}
+.ac-lane-card h3{margin:0;font-size:.86rem;color:#1f3350}
+.ac-lane-card header span{font-size:.72rem;color:#5f7388}
+.ac-chip-list{display:grid;gap:7px}
+.ac-chip{border:1px solid #d9e2ed;background:#f9fbfe;border-radius:8px;padding:7px}
+.ac-chip strong{display:block;font-size:.77rem;color:#274563}
+.ac-chip small{font-size:.7rem;color:#5b6f84}
+.ac-destination-panel{display:grid;gap:10px}
+.ac-note{border:1px dashed #bfd0df;background:#fafdff;padding:12px;color:#54708a;font-size:.8rem;border-radius:8px}
+.ac-note p{margin:0}
+.ac-ward-link{width:100%}
