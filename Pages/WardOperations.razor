@@ -26,6 +26,25 @@
         <button type="button" class="bm-ghost" @onclick="() => _showUtilities = true">More</button>
     </div>
 
+
+    @if (_showHandover)
+    {
+        <section class="bm-inline-sheet" role="status" aria-live="polite">
+            <strong>Handover</strong>
+            <span>Fictional demo handover workspace coming soon.</span>
+            <button type="button" class="bm-ghost" @onclick="() => _showHandover = false">Close</button>
+        </section>
+    }
+
+    @if (_showUtilities)
+    {
+        <section class="bm-inline-sheet" role="status" aria-live="polite">
+            <strong>More Utilities</strong>
+            <span>Fictional demo utility workspace coming soon.</span>
+            <button type="button" class="bm-ghost" @onclick="() => _showUtilities = false">Close</button>
+        </section>
+    }
+
     <section class="bm-capacity-banner red">
         <strong>HOSPITAL CAPACITY STATUS: RED</strong>
         <span>High demand across ED and inpatient flow. Prioritise confirmed discharges before 11:00. Escalate blocked beds to NUM.</span>
@@ -178,14 +197,14 @@
 
     protected override void OnInitialized()
     {
-        BedRows = Enumerable.Range(1, 48).Select(CreateBed).ToList();
         var feed = DemoHubData.BuildPatientAdmissions();
+        BedRows = Enumerable.Range(1, 48).Select(n => CreateBed(n, feed)).ToList();
         IncomingByTab["ED"] = feed.Take(4).Select((p, i) => new IncomingCard($"ED{i + 1:000}", $"{p.LastName.ToUpperInvariant()}, {p.FirstName}", "Emergency admission", $"{DateTime.Now.AddMinutes(20 + i * 10):HH:mm}", i == 0 ? "High" : "Medium")).ToList();
         IncomingByTab["IHT"] = feed.Skip(20).Take(2).Select((p, i) => new IncomingCard($"IHT{i + 1:000}", $"{p.LastName.ToUpperInvariant()}, {p.FirstName}", "Inter-hospital transfer", $"{DateTime.Now.AddMinutes(35 + i * 10):HH:mm}", "Medium")).ToList();
         IncomingByTab["OPD"] = feed.Skip(40).Take(1).Select((p, i) => new IncomingCard($"OPD{i + 1:000}", $"{p.LastName.ToUpperInvariant()}, {p.FirstName}", "Post procedure", $"{DateTime.Now.AddMinutes(55):HH:mm}", "Low")).ToList();
     }
 
-    private BedRow CreateBed(int n)
+    private static BedRow CreateBed(int n, IReadOnlyList<Models.PatientAdmission> feed)
     {
         if (n == 1) return new($"Bed {n}", "Occupied", "WAYNE, Bruce", "MRN DEMO001 | 45y | M", "General Surgery", "Penicillin", "No infection", "Behavioural alert", "22 May", 75, "Bloods resulted", 2, "Discharge meds");
         if (n == 2) return new($"Bed {n}", "Occupied", "KENT, Clark", "MRN DEMO002 | 68y | M", "Cardiology", "NKA", "No infection", "Falls", "25 May", 25, "CXR resulted", 4, "Physio review");
@@ -193,7 +212,10 @@
         if (n == 8) return new($"Bed {n}", "Maintenance", "", "", "-", "-", "-", "Unavailable", "-", 0, "-", 0, "Maintenance review");
         if (n == 9) return new($"Bed {n}", "Blocked", "", "", "-", "-", "-", "Adjacent behaviour risk", "-", 0, "-", 0, "NUM hold");
         var status = n % 7 == 0 ? "Open / Ready" : n % 6 == 0 ? "Cleaning" : "Occupied";
-        return new($"Bed {n}", status, status == "Occupied" ? $"PATIENT, Demo{n:00}" : "", status == "Occupied" ? $"MRN DEMO{n:000} | 50y | F" : "", "General Surgery", status == "Occupied" ? "None" : "-", status == "Occupied" ? "No infection" : "-", "-", "26 May", status == "Occupied" ? 30 : 0, status == "Occupied" ? "Results pending" : "-", status == "Occupied" ? 2 : 0, status == "Open / Ready" ? "Available" : status == "Cleaning" ? "Awaiting cleaning" : "Clinical review");
+        var patient = feed[(n * 3) % feed.Count];
+        var patientName = status == "Occupied" ? $"{patient.LastName.ToUpperInvariant()}, {patient.FirstName}" : string.Empty;
+        var demographics = status == "Occupied" ? $"MRN DEMO{n:000} | {patient.Age}y | {patient.Sex}" : string.Empty;
+        return new($"Bed {n}", status, patientName, demographics, "General Surgery", status == "Occupied" ? "None" : "-", status == "Occupied" ? "No infection" : "-", "-", "26 May", status == "Occupied" ? 30 : 0, status == "Occupied" ? "Results pending" : "-", status == "Occupied" ? 2 : 0, status == "Open / Ready" ? "Available" : status == "Cleaning" ? "Awaiting cleaning" : "Clinical review");
     }
 
     private static void AllowDrop(DragEventArgs _) { }
