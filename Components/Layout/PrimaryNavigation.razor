@@ -98,13 +98,17 @@
 
         var route = subItem switch
         {
-            "Bed Management" => "/bed-management",
-            "Ward Operations" => "/ward-operations",
-            "Allocation Centre" => "/allocation-centre",
-            _ => "/"
+            "Bed Management" => "bed-management",
+            "Ward Operations" => "ward-operations",
+            "Allocation Centre" => "allocation-centre",
+            "Bed Hub" => "bed-management",
+            _ => string.Empty
         };
 
-        Nav.NavigateTo(route);
+        if (!string.IsNullOrEmpty(route))
+        {
+            Nav.NavigateTo(route);
+        }
     }
 
     private sealed record PrimaryNavItem(string Key, string Label, bool HasSubMenu, List<string> SubItems);
