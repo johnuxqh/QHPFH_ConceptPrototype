@@ -13,17 +13,23 @@
         <h2>Ward Operations</h2>
     </header>
 
-    <div class="bm-topbar">
-        <div class="bm-filter"><label>Facility</label><button type="button">QCH</button></div>
-        <div class="bm-filter"><label>HHS</label><button type="button">All</button></div>
-        <div class="bm-filter"><label>Ward</label><button type="button">8A Surgical</button></div>
-        <input class="bm-search" placeholder="Search patients, beds, notes" />
-        @foreach (var view in ViewModes)
-        {
-            <button type="button" class="bm-ghost view @(SelectedView == view ? "active" : null)" @onclick="() => SelectedView = view">@view</button>
-        }
-        <button type="button" class="bm-ghost" @onclick="() => _showHandover = true">Handover</button>
-        <button type="button" class="bm-ghost" @onclick="() => _showUtilities = true">More</button>
+    <div class="bm-topbar bm-topbar-compact">
+        <div class="bm-topbar-left">
+            <div class="bm-filter"><label>Facility</label><button type="button">QCH</button></div>
+            <div class="bm-filter"><label>HHS</label><button type="button">All</button></div>
+            <div class="bm-filter"><label>Ward</label><button type="button">8A Surgical</button></div>
+        </div>
+        <div class="bm-topbar-mid">
+            <input class="bm-search" placeholder="Search patients, beds, notes" />
+        </div>
+        <div class="bm-topbar-right">
+            @foreach (var view in ViewModes)
+            {
+                <button type="button" class="bm-ghost view @(SelectedView == view ? "active" : null)" @onclick="() => SelectedView = view">@view</button>
+            }
+            <button type="button" class="bm-ghost" @onclick="() => _showHandover = true">Handover</button>
+            <button type="button" class="bm-ghost" @onclick="() => _showUtilities = true">More</button>
+        </div>
     </div>
 
 
@@ -161,17 +167,22 @@
                         <button type="button" class="@(IncomingTab == tab ? "active" : null)" @onclick="() => IncomingTab = tab">@tab (@IncomingByTab[tab].Count)</button>
                     }
                 </div>
-                <div class="bm-cards">
+                <div class="bm-cards bm-cards-compact">
                     @foreach (var card in IncomingByTab[IncomingTab].Take(4))
                     {
-                        <article class="bm-patient-card" draggable="true" @ondragstart="() => StartDragFromIncoming(card)"><strong>@card.Code</strong><p>@card.Name</p><p>@card.Reason</p><p>@card.Meta</p><span class="bm-priority">@card.Priority</span></article>
+                        <article class="bm-patient-card bm-patient-card-compact" draggable="true" @ondragstart="() => StartDragFromIncoming(card)">
+                            <div class="bm-patient-row-top"><strong>@card.Code · @card.Meta</strong><span class="bm-priority">@card.Priority</span></div>
+                            <p class="bm-patient-name">@card.Name</p>
+                            <p class="bm-patient-reason">@card.Reason</p>
+                        </article>
                     }
                 </div>
+                <button type="button" class="bm-link bm-link-compact" @onclick="() => _showUtilities = true">View full allocation centre &gt;&gt;</button>
             </article>
 
             <article><h4>Quick Actions</h4><div class="bm-actions">@foreach (var action in ActionDefs){<button type="button" class="qa-drop @(_hoverAction == action.Key ? "hover" : null)" @ondragover="() => HoverAction(action.Key)" @ondragover:preventDefault="true" @ondragleave="() => _hoverAction = null" @ondrop="() => DropBedToAction(action.Key)"><MudIcon Icon="@action.Icon" Size="Size.Small" /> @action.Label</button>}</div></article>
             <article><h4>Drop Zones</h4><div class="bm-targets">@foreach (var target in MoveTargets){<div class="bm-move-target" @ondragover="AllowDrop" @ondragover:preventDefault="true" @ondrop="() => DropBedToTarget(target)">@target</div>}</div></article>
-            <article><h4>Recent Activity</h4><ul class="bm-activity">@foreach (var item in Activity.Take(8)){<li>@item</li>}</ul></article>
+            <article><h4>Recent Activity</h4><ul class="bm-activity">@foreach (var item in Activity.Take(4)){<li>@item</li>}</ul></article>
         </aside>
     </div>
 </section>
@@ -186,10 +197,10 @@
     private string _dragMode = string.Empty;
     private IncomingCard? _draggedIncoming;
     private BedRow? _draggedBed;
-    private static readonly string[] ViewModes = { "Map View", "List View", "Grid View" };
+    private static readonly string[] ViewModes = { "Grid View", "List View", "Map View" };
     private static readonly string[] IncomingTabs = { "ED", "IHT", "OPD", "Other" };
     private readonly List<string> Activity = new() { "12:20 Bed 3 marked Cleaning", "12:25 Bed 3 marked Ready", "12:26 Bed 4 blocked due to adjacent behaviour risk", "12:27 Maintenance requested for Bed 8" };
-    private readonly (string Key, string Label, string Icon)[] ActionDefs = { ("ready", "Mark Ready", Icons.Material.Outlined.CheckCircle), ("cleaning", "Mark Cleaning", Icons.Material.Outlined.CleaningServices), ("block", "Block Bed", Icons.Material.Outlined.Lock), ("maintenance", "Request Maintenance", Icons.Material.Outlined.Handyman), ("isolation", "Isolation", Icons.Material.Outlined.Shield), ("note", "Add Operational Note", Icons.Material.Outlined.StickyNote2) };
+    private readonly (string Key, string Label, string Icon)[] ActionDefs = { ("ready", "Mark Ready", Icons.Material.Outlined.CheckCircle), ("cleaning", "Mark Cleaning", Icons.Material.Outlined.CleaningServices), ("block", "Block Bed", Icons.Material.Outlined.Lock), ("maintenance", "Request Maintenance", Icons.Material.Outlined.Handyman), ("isolation", "Mark As Isolation", Icons.Material.Outlined.Shield), ("note", "Add Operational Note", Icons.Material.Outlined.StickyNote2) };
     private readonly Dictionary<string, List<IncomingCard>> IncomingByTab = new() { ["ED"] = new(), ["IHT"] = new(), ["OPD"] = new(), ["Other"] = new() };
     private readonly List<string> MoveTargets = new() { "IHT Returns Queue", "Pending Transfer", "Temporary Hold", "Discharge Pending" };
     private List<BedRow> BedRows = new();

@@ -163,3 +163,36 @@
 .ac-note{border:1px dashed #bfd0df;background:#fafdff;padding:12px;color:#54708a;font-size:.8rem;border-radius:8px}
 .ac-note p{margin:0}
 .ac-ward-link{width:100%}
+
+/* Ward Operations compact layout pass */
+.ward-ops header h2{margin:0 0 6px;}
+.ward-ops .bm-topbar-compact{display:grid;grid-template-columns:auto minmax(220px,1fr) auto;gap:8px;align-items:end;margin:0 0 8px;}
+.ward-ops .bm-topbar-left,.ward-ops .bm-topbar-right{display:flex;gap:6px;align-items:flex-end;flex-wrap:wrap}
+.ward-ops .bm-topbar-mid{min-width:0}
+.ward-ops .bm-filter{gap:4px}
+.ward-ops .bm-filter label{font-size:.64rem;color:#5e7084;line-height:1}
+.ward-ops .bm-filter button{height:34px;min-width:102px;padding:0 9px;border-radius:6px;font-size:.73rem}
+.ward-ops .bm-search{height:34px;width:100%;border-radius:6px;font-size:.74rem}
+.ward-ops .bm-ghost{height:34px;padding:0 10px;font-size:.72rem;border-radius:6px}
+.ward-ops .bm-capacity-banner{margin-bottom:8px;padding:8px 10px}
+.ward-ops .bm-summary-strip.six{margin-bottom:8px}
+.ward-ops .bm-main-grid{grid-template-columns:minmax(0,1fr) 300px;gap:8px;align-items:start}
+.ward-ops .bm-right-panel{gap:8px;position:sticky;top:66px}
+.ward-ops .bm-right-panel article{padding:8px}
+.ward-ops .bm-right-panel h4{font-size:.8rem;margin-bottom:6px}
+.ward-ops .bm-allocation-tabs{gap:4px;margin-bottom:6px}
+.ward-ops .bm-allocation-tabs button{padding:4px 7px;font-size:.68rem}
+.ward-ops .bm-cards-compact{gap:5px}
+.ward-ops .bm-patient-card-compact{padding:5px 6px;font-size:.69rem;border-radius:6px}
+.ward-ops .bm-patient-row-top{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:2px}
+.ward-ops .bm-patient-card-compact strong{margin:0;font-size:.69rem;line-height:1.15}
+.ward-ops .bm-patient-name{margin:0;font-size:.71rem;font-weight:600;color:#2f475f}
+.ward-ops .bm-patient-reason{margin:1px 0 0;font-size:.66rem;color:#607589}
+.ward-ops .bm-priority{font-size:.62rem;padding:1px 5px;white-space:nowrap}
+.ward-ops .bm-link-compact{margin-top:6px;font-size:.68rem;padding:0;background:none;border:0;color:#295e9b;cursor:pointer;text-align:left}
+.ward-ops .bm-actions,.ward-ops .bm-targets{display:grid;grid-template-columns:1fr;gap:6px}
+.ward-ops .bm-actions .qa-drop,.ward-ops .bm-targets .bm-move-target{min-height:50px;border:1px dashed #b8cce3;background:#f8fbff;border-radius:7px;padding:7px 9px;display:flex;align-items:center;gap:8px;font-size:.72rem;color:#27445f}
+.ward-ops .bm-actions .qa-drop .mud-icon-root{font-size:1.2rem}
+.ward-ops .bm-move-target:hover,.ward-ops .qa-drop.hover{background:#eaf3ff;border-color:#7ca4d8}
+.ward-ops .bm-activity{display:grid;gap:3px}
+.ward-ops .bm-activity li{font-size:.69rem;line-height:1.2}
