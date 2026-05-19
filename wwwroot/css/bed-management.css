@@ -215,3 +215,36 @@
 .bm-grid-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.7rem}
 .bm-pagination{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:7px 5px;font-size:.72rem;border-top:1px solid #e2e8f1;background:#fff}
 .bm-pagination select,.bm-pagination input{height:26px;border:1px solid #cfd9e6;border-radius:4px;padding:0 6px}
+
+/* Bed management table density optimisation */
+.bm-overview-table{table-layout:auto}
+.bm-overview-table th{white-space:normal;line-height:1.15;padding:5px 6px;vertical-align:middle;text-align:left;font-size:.71rem}
+.bm-overview-table td{white-space:nowrap;padding:5px 6px;vertical-align:middle;line-height:1.15}
+
+/* list view column efficiency */
+.bm-overview-table:not(.compact) th:nth-child(1),.bm-overview-table:not(.compact) td:nth-child(1){min-width:170px}
+.bm-overview-table:not(.compact) th:nth-child(2),.bm-overview-table:not(.compact) td:nth-child(2){min-width:120px}
+.bm-overview-table:not(.compact) th:nth-child(3),.bm-overview-table:not(.compact) td:nth-child(3){min-width:96px}
+.bm-overview-table:not(.compact) th:nth-child(4),.bm-overview-table:not(.compact) td:nth-child(4),
+.bm-overview-table:not(.compact) th:nth-child(5),.bm-overview-table:not(.compact) td:nth-child(5),
+.bm-overview-table:not(.compact) th:nth-child(6),.bm-overview-table:not(.compact) td:nth-child(6),
+.bm-overview-table:not(.compact) th:nth-child(7),.bm-overview-table:not(.compact) td:nth-child(7){min-width:66px}
+.bm-overview-table:not(.compact) th:nth-child(8),.bm-overview-table:not(.compact) td:nth-child(8),
+.bm-overview-table:not(.compact) th:nth-child(10),.bm-overview-table:not(.compact) td:nth-child(10),
+.bm-overview-table:not(.compact) th:nth-child(11),.bm-overview-table:not(.compact) td:nth-child(11){min-width:62px}
+.bm-overview-table:not(.compact) th:nth-child(9),.bm-overview-table:not(.compact) td:nth-child(9),
+.bm-overview-table:not(.compact) th:nth-child(12),.bm-overview-table:not(.compact) td:nth-child(12),
+.bm-overview-table:not(.compact) th:nth-child(13),.bm-overview-table:not(.compact) td:nth-child(13),
+.bm-overview-table:not(.compact) th:nth-child(14),.bm-overview-table:not(.compact) td:nth-child(14){min-width:88px}
+.bm-overview-table:not(.compact) th:nth-child(15),.bm-overview-table:not(.compact) td:nth-child(15){min-width:150px;white-space:normal}
+.bm-overview-table:not(.compact) th:nth-child(16),.bm-overview-table:not(.compact) td:nth-child(16){min-width:64px}
+
+/* compact view efficiency */
+.bm-overview-table.compact th:nth-child(1),.bm-overview-table.compact td:nth-child(1){min-width:170px}
+.bm-overview-table.compact th:nth-child(2),.bm-overview-table.compact td:nth-child(2){min-width:120px}
+.bm-overview-table.compact th:nth-child(n+3):nth-child(-n+7),.bm-overview-table.compact td:nth-child(n+3):nth-child(-n+7){min-width:70px}
+.bm-overview-table.compact th:nth-child(8),.bm-overview-table.compact td:nth-child(8){min-width:145px;white-space:normal}
+.bm-overview-table.compact th:nth-child(9),.bm-overview-table.compact td:nth-child(9){min-width:64px}
+
+.bm-overview-table{min-width:1260px}
+.bm-overview-table.compact{min-width:920px}
