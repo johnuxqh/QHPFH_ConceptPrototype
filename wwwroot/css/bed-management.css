@@ -264,3 +264,49 @@
 .ward-ops .bm-inline-actions .mud-icon-root.mud-svg-icon.mud-icon-size-small{max-width:25px;max-height:25px}
 .ward-ops .bm-actions .qa-drop,.ward-ops .bm-targets .bm-move-target{min-height:40px;border:1px dashed #b8cce3;background:#f8fbff;border-radius:7px;padding:7px 9px;display:flex;align-items:center;gap:8px;font-size:.72rem;color:#27445f}
 .ward-ops .bm-actions .qa-drop .mud-icon-root,.ward-ops .bm-actions .qa-drop svg{width:32px;height:32px;font-size:32px;max-width:40px;max-height:40px;flex:0 0 auto}
+
+/* Bed Management scoped icon standardisation */
+.bed-mgmt-page {
+  --bm-action-icon-size: 40px;
+}
+.bed-mgmt-page .mud-icon-root,
+.bed-mgmt-page .mud-svg-icon,
+.bed-mgmt-page .mud-icon-size-small,
+.bed-mgmt-page .bm-action-icon,
+.bed-mgmt-page .bm-action-icon-wrap {
+  width: var(--bm-action-icon-size);
+  height: var(--bm-action-icon-size);
+  min-width: var(--bm-action-icon-size);
+  min-height: var(--bm-action-icon-size);
+  max-width: var(--bm-action-icon-size);
+  max-height: var(--bm-action-icon-size);
+  object-fit: contain;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.bed-mgmt-page .bm-action-icon-wrap{vertical-align:middle}
+.bed-mgmt-page .bm-overview-table.compact{--bm-action-icon-size:34px}
+.bed-mgmt-page .bm-overview-table td:last-child{white-space:nowrap}
+
+.bed-mgmt-page .bm-toolbar-actions{flex-wrap:wrap;justify-content:flex-end}
+.bed-mgmt-page .bm-ghost.version.active{background:#eaf2ff;border-color:#8fb0cb}
+.bed-mgmt-page .bm-overview-table{min-width:100%}
+.bed-mgmt-page .bm-responsive-table{overflow-x:auto}
+.bed-mgmt-page .bm-overview-gridcards{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.bed-mgmt-page .bm-overview-gridcards.v2 .bm-overview-gridcard{border-left:4px solid #2f6cd6}
+.bed-mgmt-page .bm-overview-table.compact th,
+.bed-mgmt-page .bm-overview-table.compact td{padding:3px 4px;font-size:.68rem;line-height:1.05}
+.bed-mgmt-page .bm-overview-table:not(.compact) th,
+.bed-mgmt-page .bm-overview-table:not(.compact) td{padding:6px 7px}
+
+@media (max-width: 1280px){
+  .bed-mgmt-page .bm-overview-cards{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .bed-mgmt-page .bm-insight-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width: 900px){
+  .bed-mgmt-page .bm-overview-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .bed-mgmt-page .bm-filter-row-compact{flex-wrap:wrap}
+}
