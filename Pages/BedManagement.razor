@@ -67,7 +67,7 @@
                         <header><strong>@row.Hospital</strong><span>@row.Ward</span></header>
                         <p>@row.WardType</p><p>Physical @row.PhysicalBeds • Open @row.OpenBeds • Occupied @row.OccupiedBeds</p><p>Occupancy @row.Occupancy</p>
                         @if (SelectedVersion=="V2") { <p>Flow: Adm @(row.Elective + row.EdAddons + row.HithReturns) • Discharge @row.ActualDischarges</p> }
-                        <div class="bm-grid-foot"><span class="bm-pressure-pill @row.PressureClass">@row.Pressure</span><span>@row.Constraints</span><span class="bm-action-icon-wrap"><img src="https://johnuxqh.github.io/QHPFH_ConceptPrototype/images/show.png" alt="View" class="bm-action-icon" /></span></div>
+                        <div class="bm-grid-foot"><span class="bm-pressure-pill @row.PressureClass">@row.Pressure</span><span>@row.Constraints</span><span class="bm-action-icon-wrap"><img src="/images/show.png" alt="View" class="bm-action-icon" /></span></div>
                     </article>
                 }
             </div>
@@ -96,15 +96,15 @@
                         <tr>
                             @if (SelectedVersion=="V2" && SelectedView!="Compact")
                             {
-                                <td>@row.Hospital</td><td>@row.Ward</td><td>@row.OpenBeds/@row.PhysicalBeds</td><td>@row.Occupancy</td><td><span class="bm-pressure-pill @row.PressureClass">@row.Pressure</span></td><td>@row.Constraints</td><td>@(row.Elective + row.EdAddons + row.HithReturns)</td><td>@row.ActualDischarges</td><td>@row.DelayedDischarge</td><td>@row.WardType</td><td><span class="bm-action-icon-wrap"><img src="https://johnuxqh.github.io/QHPFH_ConceptPrototype/images/show.png" alt="View" class="bm-action-icon" /></span><span class="bm-action-icon-wrap"><img src="https://johnuxqh.github.io/QHPFH_ConceptPrototype/images/edit.png" alt="Edit" class="bm-action-icon" /></span></td>
+                                <td>@row.Hospital</td><td>@row.Ward</td><td>@row.OpenBeds/@row.PhysicalBeds</td><td>@row.Occupancy</td><td><span class="bm-pressure-pill @row.PressureClass">@row.Pressure</span></td><td>@row.Constraints</td><td>@(row.Elective + row.EdAddons + row.HithReturns)</td><td>@row.ActualDischarges</td><td>@row.DelayedDischarge</td><td>@row.WardType</td><td><span class="bm-action-icon-wrap"><img src="/images/show.png" alt="View" class="bm-action-icon" /></span><span class="bm-action-icon-wrap"><img src="/images/edit.png" alt="Edit" class="bm-action-icon" /></span></td>
                             }
                             else if (SelectedView == "Compact")
                             {
-                                <td>@row.Hospital</td><td>@row.Ward</td><td>@row.OpenBeds</td><td>@row.Occupancy</td><td><span class="bm-pressure-pill @row.PressureClass">@row.Pressure</span></td><td>@(row.Elective + row.EdAddons + row.HithReturns)</td><td>@row.ActualDischarges</td><td>@row.Constraints</td><td><span class="bm-action-icon-wrap"><img src="https://johnuxqh.github.io/QHPFH_ConceptPrototype/images/show.png" alt="View" class="bm-action-icon" /></span><span class="bm-action-icon-wrap"><img src="https://johnuxqh.github.io/QHPFH_ConceptPrototype/images/edit.png" alt="Edit" class="bm-action-icon" /></span></td>
+                                <td>@row.Hospital</td><td>@row.Ward</td><td>@row.OpenBeds</td><td>@row.Occupancy</td><td><span class="bm-pressure-pill @row.PressureClass">@row.Pressure</span></td><td>@(row.Elective + row.EdAddons + row.HithReturns)</td><td>@row.ActualDischarges</td><td>@row.Constraints</td><td><span class="bm-action-icon-wrap"><img src="/images/show.png" alt="View" class="bm-action-icon" /></span><span class="bm-action-icon-wrap"><img src="/images/edit.png" alt="Edit" class="bm-action-icon" /></span></td>
                             }
                             else
                             {
-                                <td>@row.Hospital</td><td>@row.Ward</td><td>@row.WardType</td><td>@row.PhysicalBeds</td><td>@row.OpenBeds</td><td>@row.OccupiedBeds</td><td>@row.Occupancy</td><td><span class="bm-pressure-pill @row.PressureClass">@row.Pressure</span></td><td>@row.Elective</td><td>@row.EdAddons</td><td>@row.HithReturns</td><td>@row.PredictedDischarges</td><td>@row.ActualDischarges</td><td>@row.DelayedDischarge</td><td>@row.Constraints</td><td><span class="bm-action-icon-wrap"><img src="https://johnuxqh.github.io/QHPFH_ConceptPrototype/images/show.png" alt="View" class="bm-action-icon" /></span><span class="bm-action-icon-wrap"><img src="https://johnuxqh.github.io/QHPFH_ConceptPrototype/images/edit.png" alt="Edit" class="bm-action-icon" /></span></td>
+                                <td>@row.Hospital</td><td>@row.Ward</td><td>@row.WardType</td><td>@row.PhysicalBeds</td><td>@row.OpenBeds</td><td>@row.OccupiedBeds</td><td>@row.Occupancy</td><td><span class="bm-pressure-pill @row.PressureClass">@row.Pressure</span></td><td>@row.Elective</td><td>@row.EdAddons</td><td>@row.HithReturns</td><td>@row.PredictedDischarges</td><td>@row.ActualDischarges</td><td>@row.DelayedDischarge</td><td>@row.Constraints</td><td><span class="bm-action-icon-wrap"><img src="/images/show.png" alt="View" class="bm-action-icon" /></span><span class="bm-action-icon-wrap"><img src="/images/edit.png" alt="Edit" class="bm-action-icon" /></span></td>
                             }
                         </tr>
                     }
