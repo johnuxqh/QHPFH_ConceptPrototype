@@ -1,11 +1,10 @@
 @page "/bed-management"
 @using QHPFH_ConceptPrototype.Data
 @using MudBlazor
-@inject NavigationManager Navigation
 
 <section class="page-shell-card bed-mgmt-page bm-overview-page">
     <header class="bm-overview-header">
-        <h3>Bed Management Overview</h3>
+        <h3>Bed Management</h3>
     </header>
 
     <section class="bm-filter-row bm-filter-row-compact">
@@ -21,18 +20,19 @@
                 <div class="bm-kpi-top"><span class="bm-kpi-icon"><MudIcon Icon="@kpi.Icon" Size="Size.Small" /></span><p>@kpi.Title</p></div>
                 <strong>@kpi.Value</strong>
                 <small>@kpi.Subtitle</small>
-                @if (!string.IsNullOrWhiteSpace(kpi.Delta)) { <em>@kpi.Delta</em> }
-                @if (kpi.Progress > 0) { <div class="bm-pressure-track"><span style="width:@($"{kpi.Progress}%")"></span></div> }
             </article>
         }
     </section>
 
-    <section class="bm-insight-grid">
-        <article class="bm-insight-card critical"><h4>3 wards are over capacity</h4><p>METS ICU, PC ICU &amp; Mackay Base ED are over occupied. Reasons being, theatre backlog &amp; a surge in admissions.</p><a href="#">View affected wards</a></article>
-        <article class="bm-insight-card warning"><h4>Cleaning backlog leading to 20% of capacity pressure</h4><p>A total of 212 beds await cleaning across the state. Logan Surgical &amp; Bundaberg with the highest backlog.</p><a href="#">View cleaning details</a></article>
-        <article class="bm-insight-card info"><h4>Elective surge expected tomorrow</h4><p>Elective admissions tomorrow are forecast to be 18% higher than today.</p><a href="#">View weekly planner</a></article>
-        <article class="bm-insight-card staffing"><h4>Staffing impact</h4><p>12 wards have reduced capacity due to insufficient staffing.</p><a href="#">View staffing impact</a></article>
-    </section>
+    @if (SelectedVersion == "V1")
+    {
+        <section class="bm-insight-grid">
+            <article class="bm-insight-card critical"><h4>3 wards are over capacity</h4><p>METS ICU, PC ICU & Mackay Base ED are over occupied.</p><a href="#">View affected wards</a></article>
+            <article class="bm-insight-card warning"><h4>Cleaning backlog impacting capacity</h4><p>A total of 212 beds await cleaning across the state.</p><a href="#">View cleaning details</a></article>
+            <article class="bm-insight-card info"><h4>Elective surge expected tomorrow</h4><p>Elective admissions tomorrow are forecast to be 18% higher than today.</p><a href="#">View weekly planner</a></article>
+            <article class="bm-insight-card staffing"><h4>Staffing impact</h4><p>12 wards have reduced capacity due to insufficient staffing.</p><a href="#">View staffing impact</a></article>
+        </section>
+    }
 
     <section class="bm-ward-table-wrap bm-overview-table-wrap">
         <div class="bm-table-toolbar">
@@ -42,24 +42,30 @@
                     <button class="bm-ghost view @(SelectedView == view ? "active" : null)" @onclick="() => SetView(view)">@view</button>
                 }
             </div>
-            <div class="bm-toolbar-actions"><button class="bm-ghost">Export</button><button class="bm-ghost">Update Capacity</button></div>
+            <div class="bm-toolbar-actions">
+                <button class="bm-ghost version @(SelectedVersion=="V1"?"active":null)" @onclick='() => SetVersion("V1")'>V1 Overview</button>
+                <button class="bm-ghost version @(SelectedVersion=="V2"?"active":null)" @onclick='() => SetVersion("V2")'>V2 Operational</button>
+                <button class="bm-ghost">Export</button><button class="bm-ghost">Update Capacity</button><button class="bm-ghost">Update Data</button>
+            </div>
         </div>
 
         @if (SelectedView == "Grid")
         {
-            <div class="bm-overview-gridcards">
+            <div class="bm-overview-gridcards @(SelectedVersion=="V2"?"v2":null)">
                 @foreach (var row in PagedRows)
                 {
                     <article class="bm-overview-gridcard">
                         <header><strong>@row.Hospital</strong><span>@row.Ward</span></header>
                         <p>@row.WardType</p><p>Physical @row.PhysicalBeds • Open @row.OpenBeds • Occupied @row.OccupiedBeds</p><p>Occupancy @row.Occupancy</p>
-                        <div class="bm-grid-foot"><span class="bm-pressure-pill @row.PressureClass">@row.Pressure</span><span>@row.Constraints</span><img src="assets/reference/show.png" alt="View" class="bm-icon-btn" /></div>
+                        @if (SelectedVersion=="V2") { <p>Flow: Adm @(row.Elective + row.EdAddons + row.HithReturns) • Discharge @row.ActualDischarges</p> }
+                        <div class="bm-grid-foot"><span class="bm-pressure-pill @row.PressureClass">@row.Pressure</span><span>@row.Constraints</span><span class="bm-action-icon-wrap"><img src="/images/show.png" alt="View" class="bm-action-icon" /></span></div>
                     </article>
                 }
             </div>
         }
         else
         {
+            <div class="bm-responsive-table">
             <table class="bm-ward-table bm-overview-table @(SelectedView == "Compact" ? "compact" : null)">
                 <thead>
                     <tr>
@@ -73,29 +79,24 @@
                     @foreach (var row in PagedRows)
                     {
                         <tr>
-                            @if (SelectedView == "Compact")
+                            @if (SelectedVersion=="V2" && SelectedView!="Compact")
                             {
-                                <td>@row.Hospital</td><td>@row.Ward</td><td>@row.OpenBeds</td><td>@row.Occupancy</td><td><span class="bm-pressure-pill @row.PressureClass">@row.Pressure</span></td><td>@(row.Elective + row.EdAddons + row.HithReturns)</td><td>@row.ActualDischarges</td><td>@row.Constraints</td><td><img src="assets/reference/show.png" alt="View" class="bm-icon-btn" /><MudIcon Icon="@Icons.Material.Filled.Edit" Size="Size.Small" /></td>
+                                <td>@row.Hospital</td><td>@row.Ward</td><td>@row.OpenBeds/@row.PhysicalBeds</td><td>@row.Occupancy</td><td><span class="bm-pressure-pill @row.PressureClass">@row.Pressure</span></td><td>@row.Constraints</td><td>@(row.Elective + row.EdAddons + row.HithReturns)</td><td>@row.ActualDischarges</td><td>@row.DelayedDischarge</td><td>@row.WardType</td><td><span class="bm-action-icon-wrap"><img src="/images/show.png" alt="View" class="bm-action-icon" /></span><span class="bm-action-icon-wrap"><img src="/images/edit.png" alt="Edit" class="bm-action-icon" /></span></td>
+                            }
+                            else if (SelectedView == "Compact")
+                            {
+                                <td>@row.Hospital</td><td>@row.Ward</td><td>@row.OpenBeds</td><td>@row.Occupancy</td><td><span class="bm-pressure-pill @row.PressureClass">@row.Pressure</span></td><td>@(row.Elective + row.EdAddons + row.HithReturns)</td><td>@row.ActualDischarges</td><td>@row.Constraints</td><td><span class="bm-action-icon-wrap"><img src="/images/show.png" alt="View" class="bm-action-icon" /></span><span class="bm-action-icon-wrap"><img src="/images/edit.png" alt="Edit" class="bm-action-icon" /></span></td>
                             }
                             else
                             {
-                                <td>@row.Hospital</td><td>@row.Ward</td><td>@row.WardType</td><td>@row.PhysicalBeds</td><td>@row.OpenBeds</td><td>@row.OccupiedBeds</td><td>@row.Occupancy</td><td><span class="bm-pressure-pill @row.PressureClass">@row.Pressure</span></td><td>@row.Elective</td><td>@row.EdAddons</td><td>@row.HithReturns</td><td>@row.PredictedDischarges</td><td>@row.ActualDischarges</td><td>@row.DelayedDischarge</td><td>@row.Constraints</td><td><img src="assets/reference/show.png" alt="View" class="bm-icon-btn" /><MudIcon Icon="@Icons.Material.Filled.Edit" Size="Size.Small" /></td>
+                                <td>@row.Hospital</td><td>@row.Ward</td><td>@row.WardType</td><td>@row.PhysicalBeds</td><td>@row.OpenBeds</td><td>@row.OccupiedBeds</td><td>@row.Occupancy</td><td><span class="bm-pressure-pill @row.PressureClass">@row.Pressure</span></td><td>@row.Elective</td><td>@row.EdAddons</td><td>@row.HithReturns</td><td>@row.PredictedDischarges</td><td>@row.ActualDischarges</td><td>@row.DelayedDischarge</td><td>@row.Constraints</td><td><span class="bm-action-icon-wrap"><img src="/images/show.png" alt="View" class="bm-action-icon" /></span><span class="bm-action-icon-wrap"><img src="/images/edit.png" alt="Edit" class="bm-action-icon" /></span></td>
                             }
                         </tr>
                     }
                 </tbody>
             </table>
+            </div>
         }
-
-        <div class="bm-pagination">
-            <span>Showing @StartRow-@EndRow of @FilteredRows.Count records</span>
-            <span>Page @CurrentPage of @TotalPages</span>
-            <button class="bm-ghost" @onclick="PrevPage" disabled="@(CurrentPage == 1)">Previous</button>
-            <button class="bm-ghost" @onclick="NextPage" disabled="@(CurrentPage == TotalPages)">Next</button>
-            <select @bind="PageSize">@foreach (var size in new[] {10,12,25,50}) { <option value="@size">@size</option> }</select>
-            <input type="number" min="1" max="@TotalPages" @bind="PageInput" @bind:event="oninput" style="width:60px" />
-            <button class="bm-ghost" @onclick="GoToPage">Go</button>
-        </div>
     </section>
 </section>
 
@@ -104,39 +105,32 @@
     private string SelectedFacility = DemoReferenceData.All;
     private string SelectedWard = DemoReferenceData.All;
     private string SelectedView = "List";
+    private string SelectedVersion = "V1";
     private string SortColumn = "Hospital";
     private bool SortAsc = true;
     private int CurrentPage = 1;
     private int PageSize = 12;
-    private int PageInput = 1;
 
     private IReadOnlyList<string> HhsOptions => DemoReferenceData.HhsOptions;
     private IReadOnlyList<string> FacilityOptions => [DemoReferenceData.All, ..(SelectedHhs == DemoReferenceData.All ? DemoReferenceData.FacilitiesByHhs.SelectMany(x => x.Value).Distinct().Order() : DemoReferenceData.FacilitiesByHhs.GetValueOrDefault(SelectedHhs, []).Order())];
     private IReadOnlyList<string> WardOptions => [DemoReferenceData.All, ..Rows.Select(x => x.Ward).Distinct().Order()];
-
     private List<BedOverviewRow> FilteredRows => Rows.Where(r => (SelectedFacility == DemoReferenceData.All || r.Hospital == SelectedFacility) && (SelectedWard == DemoReferenceData.All || r.Ward == SelectedWard)).ToList();
     private List<BedOverviewRow> SortedRows => SortAsc ? FilteredRows.OrderBy(GetSortValue).ToList() : FilteredRows.OrderByDescending(GetSortValue).ToList();
     private List<BedOverviewRow> PagedRows => SortedRows.Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToList();
-    private int TotalPages => Math.Max(1, (int)Math.Ceiling(FilteredRows.Count / (double)PageSize));
-    private int StartRow => FilteredRows.Count == 0 ? 0 : ((CurrentPage - 1) * PageSize) + 1;
-    private int EndRow => Math.Min(CurrentPage * PageSize, FilteredRows.Count);
 
-    private List<(string Key, string Label)> CurrentColumns => SelectedView == "Compact" ?
-        [("Hospital", "Hospital"), ("Ward", "Ward"), ("OpenBeds", "Open Beds"), ("Occupancy", "Occupancy %"), ("Pressure", "Pressure"), ("Admissions", "Admissions"), ("Discharges", "Discharges"), ("Constraints", "Constraint"), ("Actions", "Action")] :
-        [("Hospital", "Hospital"), ("Ward", "Ward"), ("WardType", "Ward Type"), ("PhysicalBeds", "Physical Beds"), ("OpenBeds", "Open Beds"), ("OccupiedBeds", "Occupied Beds"), ("Occupancy", "Occupancy %"), ("Pressure", "Pressure"), ("Elective", "Elective Admissions"), ("EdAddons", "ED Add-ons"), ("HithReturns", "HITH Returns"), ("PredictedDischarges", "Predicted Discharges"), ("ActualDischarges", "Actual Discharges"), ("DelayedDischarge", "Delayed Discharge"), ("Constraints", "Constraints / Reason"), ("Actions", "Actions")];
+    private List<(string Key, string Label)> CurrentColumns => SelectedView == "Compact"
+        ? [("Hospital", "Hospital"), ("Ward", "Ward"), ("OpenBeds", "Open Beds"), ("Occupancy", "Occupancy %"), ("Pressure", "Pressure"), ("Admissions", "Admissions"), ("Discharges", "Discharges"), ("Constraints", "Constraint"), ("Actions", "Actions")]
+        : SelectedVersion == "V2"
+        ? [("Hospital", "Hospital"), ("Ward", "Ward"), ("Capacity", "Capacity (Live)"), ("Occupancy", "Occupancy"), ("Pressure", "Pressure"), ("Constraints", "Pressure & Constraints"), ("Admissions", "Admissions & Flow"), ("Discharges", "Actual Discharges"), ("DelayedDischarge", "Delayed Discharge"), ("Staffing", "Staffing"), ("Actions", "Actions")]
+        : [("Hospital", "Hospital"), ("Ward", "Ward"), ("WardType", "Ward Type"), ("PhysicalBeds", "Physical Beds"), ("OpenBeds", "Open Beds"), ("OccupiedBeds", "Occupied Beds"), ("Occupancy", "Occupancy %"), ("Pressure", "Pressure"), ("Elective", "Elective Admissions"), ("EdAddons", "ED Add-ons"), ("HithReturns", "HITH Returns"), ("PredictedDischarges", "Predicted Discharges"), ("ActualDischarges", "Actual Discharges"), ("DelayedDischarge", "Delayed Discharge"), ("Constraints", "Constraints / Reason"), ("Actions", "Actions")];
 
     private object GetSortValue(BedOverviewRow x) => SortColumn switch { "Ward" => x.Ward, "WardType" => x.WardType, "PhysicalBeds" => x.PhysicalBeds, "OpenBeds" => x.OpenBeds, "OccupiedBeds" => x.OccupiedBeds, "Occupancy" => x.OccupancyValue, "Pressure" => x.Pressure, "Elective" => x.Elective, "EdAddons" => x.EdAddons, "HithReturns" => x.HithReturns, "PredictedDischarges" => x.PredictedDischarges, "ActualDischarges" => x.ActualDischarges, "DelayedDischarge" => x.DelayedDischarge, _ => x.Hospital };
-    private void SortBy(string key) { if (key == "Actions" || key == "Admissions" || key == "Discharges" || key == "Constraints") return; if (SortColumn == key) SortAsc = !SortAsc; else { SortColumn = key; SortAsc = true; } }
+    private void SortBy(string key) { if (key is "Actions" or "Admissions" or "Discharges" or "Constraints" or "Capacity" or "Staffing") return; if (SortColumn == key) SortAsc = !SortAsc; else { SortColumn = key; SortAsc = true; } }
     private void SetView(string view) { SelectedView = view; CurrentPage = 1; }
-    private void PrevPage() { if (CurrentPage > 1) CurrentPage--; }
-    private void NextPage() { if (CurrentPage < TotalPages) CurrentPage++; }
-    private void GoToPage() => CurrentPage = Math.Clamp(PageInput, 1, TotalPages);
+    private void SetVersion(string version) => SelectedVersion = version;
 
-    private readonly List<KpiItem> Kpis = [new("Physical Capacity", "5,643", "Total beds", Icons.Material.Filled.Bed, "kpi-blue", "", 0), new("Open Operational Beds", "1,243", "22% of capacity", Icons.Material.Filled.KingBed, "kpi-green", "▼ 86", 0), new("Beds Returning", "142", "Awaiting cleaning", Icons.Material.Filled.CleaningServices, "kpi-orange", "▼ 18", 0), new("Operational Pressure", "87%", "High", Icons.Material.Filled.Speed, "kpi-red", "", 87), new("Capacity Delta (24h)", "+53", "6 OUT 11 IN", Icons.Material.Filled.BarChart, "kpi-purple", "▲ 53", 0), new("Admissions Today", "245", "Planned: 182", Icons.Material.Filled.Groups, "kpi-teal", "▲ 21", 0), new("Delayed Flow Patients", "78", "12% of total", Icons.Material.Filled.PersonOff, "kpi-critical", "▲ 4", 0)];
-
-    private static readonly List<BedOverviewRow> Rows =
-    [new("Royal Brisbane and Women's Hospital", "General Medicine", "Medical", 42, 8, 34, "81%", "Medium", "medium", 4, 3, 1, 5, 3, 2, "Staffing gap"),new("Logan Hospital", "ED", "Emergency", 24, 2, 22, "92%", "High", "high", 1, 6, 0, 3, 2, 1, "ED surge"),new("Bundaberg Hospital", "General Medicine", "Medical", 30, 7, 23, "77%", "Low", "low", 2, 1, 1, 4, 3, 1, "Stable"),new("Mackay Base Hospital", "Surgical", "Surgical", 55, 3, 52, "95%", "Critical", "critical", 7, 3, 2, 6, 4, 4, "Cleaning backlog"),new("Townsville University Hospital", "General Medicine", "Medical", 60, 6, 54, "90%", "High", "high", 5, 2, 2, 8, 5, 3, "Delayed discharges"),new("Princess Alexandra Hospital", "ED", "Emergency", 40, 4, 36, "90%", "High", "high", 2, 8, 1, 5, 4, 2, "Admission surge"),new("Royal Brisbane and Women's Hospital", "ICU", "Critical Care", 22, 1, 21, "95%", "Critical", "critical", 1, 2, 0, 2, 1, 2, "Theatre overflow"),new("Gold Coast University Hospital", "ICU", "Critical Care", 36, 3, 33, "92%", "High", "high", 2, 4, 2, 4, 3, 2, "Step-down bottleneck"),new("Queensland Children's Hospital", "Surgical", "Surgical", 72, 10, 62, "86%", "Medium", "medium", 8, 3, 2, 9, 7, 2, "Elective intake"),new("Cairns Hospital", "General Medicine", "Medical", 68, 5, 63, "93%", "High", "high", 6, 4, 3, 7, 5, 4, "Cleaning + staffing")];
-
-    private record KpiItem(string Title, string Value, string Subtitle, string Icon, string ColorClass, string Delta, int Progress);
+    private readonly List<KpiItem> Kpis = [new("Physical Capacity", "5,643", "Total beds", Icons.Material.Filled.Bed, "kpi-blue"), new("Open Operational Beds", "1,243", "22% of capacity", Icons.Material.Filled.KingBed, "kpi-green"), new("Beds Returning", "142", "Awaiting cleaning", Icons.Material.Filled.CleaningServices, "kpi-orange"), new("Operational Pressure", "87%", "High", Icons.Material.Filled.Speed, "kpi-red"), new("Capacity Delta (24h)", "+53", "6 OUT 11 IN", Icons.Material.Filled.BarChart, "kpi-purple"), new("Admissions Today", "245", "Planned: 182", Icons.Material.Filled.Groups, "kpi-teal"), new("Delayed Flow Patients", "78", "12% of total", Icons.Material.Filled.PersonOff, "kpi-critical")];
+    private static readonly List<BedOverviewRow> Rows = [new("Royal Brisbane and Women's Hospital", "General Medicine", "Medical", 42, 8, 34, "81%", "Medium", "medium", 4, 3, 1, 5, 3, 2, "Staffing gap"),new("Logan Hospital", "ED", "Emergency", 24, 2, 22, "92%", "High", "high", 1, 6, 0, 3, 2, 1, "ED surge"),new("Bundaberg Hospital", "General Medicine", "Medical", 30, 7, 23, "77%", "Low", "low", 2, 1, 1, 4, 3, 1, "Stable"),new("Mackay Base Hospital", "Surgical", "Surgical", 55, 3, 52, "95%", "Critical", "critical", 7, 3, 2, 6, 4, 4, "Cleaning backlog"),new("Townsville University Hospital", "General Medicine", "Medical", 60, 6, 54, "90%", "High", "high", 5, 2, 2, 8, 5, 3, "Delayed discharges")];
+    private record KpiItem(string Title, string Value, string Subtitle, string Icon, string ColorClass);
     private record BedOverviewRow(string Hospital, string Ward, string WardType, int PhysicalBeds, int OpenBeds, int OccupiedBeds, string Occupancy, string Pressure, string PressureClass, int Elective, int EdAddons, int HithReturns, int PredictedDischarges, int ActualDischarges, int DelayedDischarge, string Constraints) { public int OccupancyValue => int.TryParse(Occupancy.Replace("%", string.Empty), out var value) ? value : 0; }
 }
