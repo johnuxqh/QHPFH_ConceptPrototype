@@ -34,6 +34,15 @@
         </section>
     }
 
+    @if (SelectedVersion == "V2")
+    {
+        <section class="bm-v2-ops-strip">
+            <article><h4>Shift pressure</h4><strong>5 Critical Wards</strong><p>Immediate coordinator review required.</p></article>
+            <article><h4>Staffing constraints</h4><strong>12 Wards impacted</strong><p>Roster shortfalls reducing open beds.</p></article>
+            <article><h4>Discharge flow risk</h4><strong>78 Delayed patients</strong><p>Escalate discharge planning and transport.</p></article>
+        </section>
+    }
+
     <section class="bm-ward-table-wrap bm-overview-table-wrap">
         <div class="bm-table-toolbar">
             <div class="bm-view-row">
@@ -68,6 +77,12 @@
             <div class="bm-responsive-table">
             <table class="bm-ward-table bm-overview-table @(SelectedView == "Compact" ? "compact" : null)">
                 <thead>
+                    @if (SelectedVersion == "V2" && SelectedView != "Compact")
+                    {
+                        <tr class="bm-group-head">
+                            <th colspan="2">Ward</th><th colspan="2">Capacity</th><th colspan="2">Pressure</th><th colspan="2">Admissions & Flow</th><th colspan="2">Delayed / Staffing</th><th>Actions</th>
+                        </tr>
+                    }
                     <tr>
                         @foreach (var col in CurrentColumns)
                         {
