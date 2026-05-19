@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Components.Web
 @using MudBlazor
 @using QHPFH_ConceptPrototype.Data
+@inject NavigationManager Navigation
 
 <section class="page-shell-card bed-mgmt-page ward-ops">
     @if (!string.IsNullOrWhiteSpace(_toastMessage))
@@ -15,8 +16,8 @@
 
     <div class="bm-topbar bm-topbar-compact">
         <div class="bm-topbar-left">
+            <div class="bm-filter"><label>HHS</label><button type="button">Metro North</button></div>
             <div class="bm-filter"><label>Facility</label><button type="button">QCH</button></div>
-            <div class="bm-filter"><label>HHS</label><button type="button">All</button></div>
             <div class="bm-filter"><label>Ward</label><button type="button">8A Surgical</button></div>
         </div>
         <div class="bm-topbar-mid">
@@ -117,8 +118,8 @@
                                 @foreach (var bed in bay.Value)
                                 {
                                     <article class="bm-bed-tile state-@bed.StatusClass" draggable="true" @ondragstart="() => StartDragBedForAction(bed)" @ondragover="AllowDrop" @ondragover:preventDefault="true" @ondrop="() => DropPatientToBed(bed)">
-                                        <div class="bm-bed-tile-head"><strong>@bed.BedLabel</strong><span class="bm-status-pill"><MudIcon Icon="@StatusIcon(bed.Status)" Size="Size.Small" /></span></div>
-                                        <div>@(bed.HasPatient ? bed.PatientName : "—")</div>
+                                        <div class="bm-bed-tile-head"><strong>@bed.BedLabel</strong><span class="bm-status-pill"><MudIcon Icon="@StatusIcon(bed.Status)" Size="Size.Small" /> @bed.Status</span></div>
+                                        <div class="bm-bed-patient-name">@(bed.HasPatient ? bed.PatientName : "—")</div>
                                         <small class="bm-bed-note-short">@bed.WaitingFor</small>
                                         <div class="bm-inline-actions">
                                             @foreach (var action in ActionDefs)
@@ -177,7 +178,7 @@
                         </article>
                     }
                 </div>
-                <button type="button" class="bm-link bm-link-compact" @onclick="() => _showUtilities = true">View full allocation centre &gt;&gt;</button>
+                <button type="button" class="bm-link bm-link-compact" @onclick="GoToAllocationCentre">View full Allocation Centre &gt;&gt;</button>
             </article>
 
             <article><h4>Quick Actions</h4><div class="bm-actions">@foreach (var action in ActionDefs){<button type="button" class="qa-drop @(_hoverAction == action.Key ? "hover" : null)" @ondragover="() => HoverAction(action.Key)" @ondragover:preventDefault="true" @ondragleave="() => _hoverAction = null" @ondrop="() => DropBedToAction(action.Key)"><MudIcon Icon="@action.Icon" Size="Size.Small" /> @action.Label</button>}</div></article>
@@ -266,6 +267,7 @@
 
     private static string StatusIcon(string status) => status switch { "Occupied" => Icons.Material.Outlined.Person, "Open / Ready" => Icons.Material.Outlined.CheckCircle, "Cleaning" => Icons.Material.Outlined.CleaningServices, "Blocked" => Icons.Material.Outlined.Lock, "Maintenance" => Icons.Material.Outlined.Handyman, "Isolation / Specialist" => Icons.Material.Outlined.Shield, _ => Icons.Material.Outlined.Bed };
     private static string ActionText(string key) => key switch { "ready" => "marked Ready", "cleaning" => "marked Cleaning", "block" => "blocked", "maintenance" => "maintenance requested", "isolation" => "marked Isolation", _ => "note added" };
+    private void GoToAllocationCentre() => Navigation.NavigateTo("/allocation-centre");
     private void Log(string message){Activity.Insert(0, $"{DateTime.Now:HH:mm} {message}"); _toastMessage = message;}
 
     private sealed class IncomingCard { public IncomingCard(string code, string name, string reason, string meta, string priority){Code = code;Name = name;Reason = reason;Meta = meta;Priority = priority;} public string Code { get; } public string Name { get; } public string Reason { get; } public string Meta { get; } public string Priority { get; } }
