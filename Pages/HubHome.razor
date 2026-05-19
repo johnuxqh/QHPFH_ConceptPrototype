@@ -2,7 +2,11 @@
 @page "/"
 @implements IDisposable
 
-@if (IsBedManagementPage)
+@if (IsBedAndWardHubPage)
+{
+    <BedWardHub />
+}
+else if (IsBedManagementPage)
 {
     <BedManagement />
 }
@@ -20,6 +24,10 @@ else
 }
 
 @code {
+    private bool IsBedAndWardHubPage =>
+        NavigationState.ActivePrimaryKey == "bed" &&
+        NavigationState.ActiveSubItem == "Bed and Ward Hub";
+
     private bool IsBedManagementPage =>
         NavigationState.ActivePrimaryKey == "bed" &&
         NavigationState.ActiveSubItem == "Bed Management";

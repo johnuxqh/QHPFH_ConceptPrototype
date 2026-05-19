@@ -52,7 +52,7 @@
         new("myhub", "MyHub", false, []),
         new("hospital", "Hospital Overview", false, []),
         new("dd", "Delayed Discharge", true, ["DD Hub", "Patient Management", "Census Management", "DDP Census"]),
-        new("bed", "Bed & Ward", true, ["Bed Hub", "Bed Management", "Ward Operations", "Allocation Centre"]),
+        new("bed", "Bed & Ward", true, ["Bed and Ward Hub", "Bed Management", "Ward Operations", "Allocation Centre"]),
         new("scenario", "Scenario Mapping", false, []),
         new("journey", "Patient Journey", false, []),
         new("apps", "Connected Apps", false, [])
@@ -99,7 +99,8 @@
         {
             "bed" => subItem switch
             {
-                "Bed Hub" or "Bed Management" => "bed-management",
+                "Bed and Ward Hub" => "bed-and-ward-hub",
+                "Bed Management" => "bed-management",
                 "Ward Operations" => "ward-operations",
                 "Allocation Centre" => "allocation-centre",
                 _ => string.Empty
