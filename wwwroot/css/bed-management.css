@@ -380,3 +380,8 @@
 .bm-kpi-info-btn:hover,.bm-kpi-info-btn:focus-visible{background:#e9f2ff;border-color:#99b4d3;outline:none}
 .bm-kpi-info-menu .mud-popover{max-width:280px}
 .bm-kpi-info-content{padding:8px 10px;font-size:.72rem;line-height:1.35;color:#334b64;max-width:260px;white-space:normal}
+
+.bm-kpi-info-menu .mud-list{min-width:220px;max-width:280px}
+.bm-kpi-info-menu .mud-menu-item.bm-kpi-info-item{white-space:normal;line-height:1.35;align-items:flex-start;opacity:1;cursor:default;padding:8px 10px;color:#334b64}
+.bm-kpi-info-menu .mud-menu-item.bm-kpi-info-item.mud-disabled{color:#334b64;opacity:1}
+.bm-kpi-info-menu .mud-popover-open{z-index:1600}
