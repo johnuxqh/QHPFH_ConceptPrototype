@@ -132,7 +132,7 @@
 .bm-pressure-track{margin-top:8px;height:6px;background:#ecf1f7;border-radius:999px;overflow:hidden}.bm-pressure-track span{display:block;height:100%;background:linear-gradient(90deg,#2ca24d,#d97706,#c12b3d)}
 .bm-insight-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
 .bm-insight-card{background:#fff;border:1px solid #dde6f0;border-radius:10px;padding:12px;box-shadow:0 1px 3px rgba(20,36,60,.05)}
-.bm-insight-card h4{margin:0 0 6px;font-size:.88rem}.bm-insight-card p{margin:0 0 9px;font-size:.76rem;color:#556a80;line-height:1.35}.bm-insight-card a{font-size:.74rem;font-weight:700;text-decoration:none}
+.bm-insight-card h4{margin:0 0 6px;font-size:.88rem}.bm-insight-card p{margin:0 0 9px;font-size:.76rem;color:#556a80;line-height:1.35}.bm-insight-card a{font-size:.74rem;font-weight:700;text-decoration:none}.bm-insight-action{border:0;background:none;padding:0;font-size:.74rem;font-weight:700;color:#1d5fbf;cursor:pointer}
 .bm-insight-card.critical h4{color:#b3262f}.bm-insight-card.warning h4{color:#b26a05}.bm-insight-card.info h4{color:#1d5fbf}.bm-insight-card.staffing h4{color:#6b3fb0}
 .bm-table-toolbar{display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid #e8edf4;background:#fff}
 .bm-toolbar-actions{display:flex;gap:8px}
@@ -198,6 +198,11 @@
 .ward-ops .bm-activity li{font-size:.69rem;line-height:1.2}
 
 .bm-overview-header h3{margin:2px 0 6px;font-size:1.1rem;color:#1c2f49}
+.bm-overview-header-row{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+.bm-access-selector{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.bm-access-selector label{font-size:.68rem;color:#597089}
+.bm-access-selector select{height:30px;min-width:150px;border:1px solid #cfd9e6;background:#fff;border-radius:6px;padding:0 8px;font-size:.74rem}
+.bm-scope-context{margin:0 0 8px;font-size:.72rem;color:#486483;font-weight:600}
 .bm-filter-row-compact{gap:8px;margin-bottom:8px}.bm-filter-row-compact .bm-filter{gap:4px}.bm-filter-row-compact .bm-filter label{font-size:.68rem;color:#597089}.bm-filter-row-compact .bm-filter select{height:30px;min-width:130px;max-width:150px;border:1px solid #cfd9e6;background:#fff;border-radius:6px;padding:0 8px;font-size:.74rem}
 .bm-kpi-card,.bm-insight-card{padding:8px}
 .bm-kpi-top{display:flex;align-items:center;gap:6px}.bm-kpi-icon{width:24px;height:24px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center}

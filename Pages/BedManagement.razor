@@ -3,13 +3,28 @@
 @using MudBlazor
 
 <section class="page-shell-card bed-mgmt-page bm-overview-page" @onclick="CloseKpiInfo" @onkeydown="HandleKeydown" tabindex="0">
-    <header class="bm-overview-header">
+    <header class="bm-overview-header bm-overview-header-row">
         <h3>Bed Management</h3>
+        <div class="bm-access-selector">
+            <label>Access view</label>
+            <select @bind="SelectedAccessView" @bind:after="OnAccessViewChanged">
+                <option value="statewide">Statewide</option>
+                <option value="qch-bed-manager">QCH Bed Manager</option>
+            </select>
+        </div>
     </header>
 
+    @if (IsQchAccess)
+    {
+        <p class="bm-scope-context">QCH facility view — Queensland Children’s Hospital</p>
+    }
+
     <section class="bm-filter-row bm-filter-row-compact">
-        <div class="bm-filter"><label>HHS</label><select @bind="SelectedHhs">@foreach (var hhs in HhsOptions){<option value="@hhs">@hhs</option>}</select></div>
-        <div class="bm-filter"><label>Facility</label><select @bind="SelectedFacility">@foreach (var facility in FacilityOptions){<option value="@facility">@facility</option>}</select></div>
+        @if (!IsQchAccess)
+        {
+            <div class="bm-filter"><label>HHS</label><select @bind="SelectedHhs" @bind:after="OnHhsChanged">@foreach (var hhs in HhsOptions){<option value="@hhs">@hhs</option>}</select></div>
+            <div class="bm-filter"><label>Facility</label><select @bind="SelectedFacility">@foreach (var facility in FacilityOptions){<option value="@facility">@facility</option>}</select></div>
+        }
         <div class="bm-filter"><label>Ward</label><select @bind="SelectedWard">@foreach (var ward in WardOptions){<option value="@ward">@ward</option>}</select></div>
     </section>
 
@@ -37,10 +52,10 @@
     @if (SelectedVersion == "V1")
     {
         <section class="bm-insight-grid">
-            <article class="bm-insight-card critical"><h4>3 wards are over capacity</h4><p>METS ICU, PC ICU & Mackay Base ED are over occupied.</p><a href="#">View affected wards</a></article>
-            <article class="bm-insight-card warning"><h4>Cleaning backlog impacting capacity</h4><p>A total of 212 beds await cleaning across the state.</p><a href="#">View cleaning details</a></article>
-            <article class="bm-insight-card info"><h4>Elective surge expected tomorrow</h4><p>Elective admissions tomorrow are forecast to be 18% higher than today.</p><a href="#">View weekly planner</a></article>
-            <article class="bm-insight-card staffing"><h4>Staffing impact</h4><p>12 wards have reduced capacity due to insufficient staffing.</p><a href="#">View staffing impact</a></article>
+            <article class="bm-insight-card critical"><h4>3 wards are over capacity</h4><p>@OverCapacityText</p><button type="button" class="bm-insight-action" @onclick='() => ApplyInsightFilter("over-capacity")'>View affected wards</button></article>
+            <article class="bm-insight-card warning"><h4>Cleaning backlog impacting capacity</h4><p>@DelayedRiskText</p><button type="button" class="bm-insight-action" @onclick='() => ApplyInsightFilter("delayed-risk")'>View delayed discharge risk</button></article>
+            <article class="bm-insight-card info"><h4>Elective surge expected tomorrow</h4><p>Elective admissions tomorrow are forecast to be 18% higher than today.</p><button type="button" class="bm-insight-action" @onclick="ClearInsightFilter">Clear filter</button></article>
+            <article class="bm-insight-card staffing"><h4>Staffing impact</h4><p>12 wards have reduced capacity due to insufficient staffing.</p><button type="button" class="bm-insight-action" @onclick="ClearInsightFilter">Reset wards</button></article>
         </section>
     }
 
@@ -126,9 +141,16 @@
 </section>
 
 @code {
+    private const string AccessStatewide = "statewide";
+    private const string AccessQchBedManager = "qch-bed-manager";
+    private const string QchHhs = "Children's Health Queensland";
+    private const string QchFacility = "Queensland Children's Hospital";
+
+    private string SelectedAccessView = AccessStatewide;
     private string SelectedHhs = DemoReferenceData.All;
     private string SelectedFacility = DemoReferenceData.All;
-    private string SelectedWard = DemoReferenceData.All;
+    private string SelectedWard = AllWards;
+    private string ActiveInsightFilter = string.Empty;
     private string SelectedView = "List";
     private string SelectedVersion = "V1";
     private string SortColumn = "Hospital";
@@ -136,10 +158,12 @@
     private int CurrentPage = 1;
     private int PageSize = 12;
 
+    private const string AllWards = "All wards";
+    private bool IsQchAccess => SelectedAccessView == AccessQchBedManager;
     private IReadOnlyList<string> HhsOptions => DemoReferenceData.HhsOptions;
     private IReadOnlyList<string> FacilityOptions => [DemoReferenceData.All, ..(SelectedHhs == DemoReferenceData.All ? DemoReferenceData.FacilitiesByHhs.SelectMany(x => x.Value).Distinct().Order() : DemoReferenceData.FacilitiesByHhs.GetValueOrDefault(SelectedHhs, []).Order())];
-    private IReadOnlyList<string> WardOptions => [DemoReferenceData.All, ..Rows.Select(x => x.Ward).Distinct().Order()];
-    private List<BedOverviewRow> FilteredRows => Rows.Where(r => (SelectedFacility == DemoReferenceData.All || r.Hospital == SelectedFacility) && (SelectedWard == DemoReferenceData.All || r.Ward == SelectedWard)).ToList();
+    private IReadOnlyList<string> WardOptions => GetAvailableWardOptions();
+    private List<BedOverviewRow> FilteredRows => GetScopedBedManagementRows();
     private List<BedOverviewRow> SortedRows => SortAsc ? FilteredRows.OrderBy(GetSortValue).ToList() : FilteredRows.OrderByDescending(GetSortValue).ToList();
     private List<BedOverviewRow> PagedRows => SortedRows.Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToList();
 
@@ -167,6 +191,88 @@
         if (args.Key == "Escape") OpenKpiInfoTitle = null;
     }
 
+    private string OverCapacityText => $"{Rows.Count(r => r.Pressure == "Critical")} wards are over occupied in the current scope.";
+    private string DelayedRiskText => $"{Rows.Count(r => r.DelayedDischarge >= 4)} wards are showing delayed discharge risk.";
+
+    private void OnAccessViewChanged()
+    {
+        ApplyAccessScope();
+        ClearInsightFilter();
+    }
+
+    private void OnHhsChanged()
+    {
+        if (SelectedHhs != QchHhs && SelectedFacility == QchFacility)
+        {
+            SelectedFacility = DemoReferenceData.All;
+        }
+    }
+
+    private void ApplyAccessScope()
+    {
+        if (IsQchAccess)
+        {
+            SelectedHhs = QchHhs;
+            SelectedFacility = QchFacility;
+            SelectedWard = AllWards;
+        }
+        else
+        {
+            SelectedHhs = DemoReferenceData.All;
+            SelectedFacility = DemoReferenceData.All;
+            SelectedWard = AllWards;
+        }
+    }
+
+    private List<string> GetAvailableWardOptions()
+    {
+        var sourceRows = IsQchAccess
+            ? Rows.Where(x => x.Hhs == QchHhs && x.Facility == QchFacility)
+            : Rows.Where(x => SelectedFacility == DemoReferenceData.All || x.Facility == SelectedFacility);
+
+        return [AllWards, .. sourceRows.Select(x => x.Ward).Distinct().Order()];
+    }
+
+    private List<BedOverviewRow> GetScopedBedManagementRows()
+    {
+        IEnumerable<BedOverviewRow> scoped = Rows;
+        if (IsQchAccess)
+        {
+            scoped = scoped.Where(r => r.Hhs == QchHhs && r.Facility == QchFacility);
+        }
+        else
+        {
+            if (SelectedHhs != DemoReferenceData.All)
+            {
+                scoped = scoped.Where(r => r.Hhs == SelectedHhs);
+            }
+            if (SelectedFacility != DemoReferenceData.All)
+            {
+                scoped = scoped.Where(r => r.Facility == SelectedFacility);
+            }
+        }
+
+        if (SelectedWard != AllWards)
+        {
+            scoped = scoped.Where(r => r.Ward == SelectedWard);
+        }
+
+        if (!string.IsNullOrWhiteSpace(ActiveInsightFilter))
+        {
+            scoped = ActiveInsightFilter switch
+            {
+                "over-capacity" => scoped.Where(r => r.Pressure == "Critical"),
+                "delayed-risk" => scoped.Where(r => r.DelayedDischarge >= 4),
+                _ => scoped
+            };
+        }
+
+        return scoped.ToList();
+    }
+
+    private void ApplyInsightFilter(string filterKey) => ActiveInsightFilter = filterKey;
+    private void ClearInsightFilter() => ActiveInsightFilter = string.Empty;
+
 
     private readonly List<KpiItem> Kpis =
     [
@@ -178,7 +284,35 @@
         new("Admissions Today", "245", "Planned: 182", Icons.Material.Filled.Groups, "kpi-teal", "Patients expected or confirmed for admission into the selected ward, facility or view today."),
         new("Delayed Flow Patients", "78", "12% of total", Icons.Material.Filled.PersonOff, "kpi-critical", "Patients who are medically ready or progressing toward discharge but remain in hospital due to outstanding discharge barriers.")
     ];
-    private static readonly List<BedOverviewRow> Rows = [new("Royal Brisbane and Women's Hospital", "General Medicine", "Medical", 42, 8, 34, "81%", "Medium", "medium", 4, 3, 1, 5, 3, 2, "Staffing gap"),new("Logan Hospital", "ED", "Emergency", 24, 2, 22, "92%", "High", "high", 1, 6, 0, 3, 2, 1, "ED surge"),new("Bundaberg Hospital", "General Medicine", "Medical", 30, 7, 23, "77%", "Low", "low", 2, 1, 1, 4, 3, 1, "Stable"),new("Mackay Base Hospital", "Surgical", "Surgical", 55, 3, 52, "95%", "Critical", "critical", 7, 3, 2, 6, 4, 4, "Cleaning backlog"),new("Townsville University Hospital", "General Medicine", "Medical", 60, 6, 54, "90%", "High", "high", 5, 2, 2, 8, 5, 3, "Delayed discharges")];
+    private static readonly List<BedOverviewRow> Rows =
+    [
+        new("Metro North HHS", "Royal Brisbane and Women's Hospital", "General Medicine", "Medical", 42, 8, 34, "81%", "Medium", "medium", 4, 3, 1, 5, 3, 2, "Staffing gap"),
+        new("Metro South HHS", "Logan Hospital", "ED", "Emergency", 24, 2, 22, "92%", "High", "high", 1, 6, 0, 3, 2, 1, "ED surge"),
+        new("Wide Bay HHS", "Bundaberg Hospital", "General Medicine", "Medical", 30, 7, 23, "77%", "Low", "low", 2, 1, 1, 4, 3, 1, "Stable"),
+        new("Mackay HHS", "Mackay Base Hospital", "Surgical", "Surgical", 55, 3, 52, "95%", "Critical", "critical", 7, 3, 2, 6, 4, 4, "Cleaning backlog"),
+        new("Townsville HHS", "Townsville University Hospital", "General Medicine", "Medical", 60, 6, 54, "90%", "High", "high", 5, 2, 2, 8, 5, 3, "Delayed discharges"),
+        new(QchHhs, QchFacility, "PICU", "Paediatric Intensive Care Unit", 36, 2, 34, "94%", "Critical", "critical", 3, 4, 1, 3, 1, 5, "Over capacity pressure"),
+        new(QchHhs, QchFacility, "ED SSTA", "Emergency Department Short Stay Treatment Area", 18, 1, 17, "94%", "Critical", "critical", 1, 6, 0, 2, 1, 4, "ED flow backlog"),
+        new(QchHhs, QchFacility, "12A", "Surgical & Orthopaedics", 28, 4, 24, "86%", "High", "high", 5, 2, 1, 5, 3, 3, "Elective surge"),
+        new(QchHhs, QchFacility, "11A", "General Medicine", 24, 5, 19, "79%", "Medium", "medium", 3, 2, 1, 4, 3, 2, "Stable flow"),
+        new(QchHhs, QchFacility, "11B", "Cardiology", 24, 2, 22, "92%", "High", "high", 2, 2, 1, 3, 2, 4, "Complex discharge"),
+        new(QchHhs, QchFacility, "10A", "Respiratory", 24, 3, 21, "88%", "High", "high", 2, 3, 0, 4, 3, 3, "Respiratory season"),
+        new(QchHhs, QchFacility, "10B", "Neurology", 24, 4, 20, "83%", "Medium", "medium", 2, 2, 0, 3, 2, 2, "Moderate demand"),
+        new(QchHhs, QchFacility, "9A", "Oncology", 24, 2, 22, "92%", "High", "high", 4, 1, 0, 2, 1, 3, "Stepdown delayed"),
+        new(QchHhs, QchFacility, "9B", "Rehabilitation / General Paediatrics", 24, 6, 18, "75%", "Low", "low", 1, 1, 0, 4, 3, 1, "Lower acuity"),
+        new(QchHhs, QchFacility, "8A", "Specialist Paediatrics", 16, 2, 14, "88%", "High", "high", 1, 2, 0, 2, 1, 2, "Specialist wait"),
+        new(QchHhs, QchFacility, "8BA", "Paediatric Care Area A", 11, 1, 10, "91%", "High", "high", 1, 1, 0, 2, 1, 2, "Capacity tight"),
+        new(QchHhs, QchFacility, "8BC", "Paediatric Care Area C", 9, 1, 8, "89%", "High", "high", 0, 1, 0, 1, 1, 1, "Limited surge beds"),
+        new(QchHhs, QchFacility, "5D", "Adolescent Ward", 24, 5, 19, "79%", "Medium", "medium", 2, 2, 0, 4, 3, 2, "Routine variation"),
+        new(QchHhs, QchFacility, "4C", "Infant Medical Ward", 22, 2, 20, "91%", "High", "high", 2, 3, 0, 3, 2, 4, "Delayed family support"),
+        new(QchHhs, QchFacility, "HITH", "Hospital in the Home", 0, 0, 0, "0%", "Low", "low", 6, 0, 8, 5, 6, 0, "Virtual capacity stream"),
+        new(QchHhs, QchFacility, "Jacaranda Place", "Mental Health Unit", 12, 1, 11, "92%", "High", "high", 1, 1, 0, 2, 1, 3, "Length of stay pressure"),
+        new(QchHhs, QchFacility, "Ellen Barron Centre", "Sleep Centre", 20, 4, 16, "80%", "Medium", "medium", 1, 1, 0, 3, 2, 1, "Planned throughput")
+    ];
     private record KpiItem(string Title, string Value, string Subtitle, string Icon, string ColorClass, string InfoText, bool ShowInfoIcon = true);
-    private record BedOverviewRow(string Hospital, string Ward, string WardType, int PhysicalBeds, int OpenBeds, int OccupiedBeds, string Occupancy, string Pressure, string PressureClass, int Elective, int EdAddons, int HithReturns, int PredictedDischarges, int ActualDischarges, int DelayedDischarge, string Constraints) { public int OccupancyValue => int.TryParse(Occupancy.Replace("%", string.Empty), out var value) ? value : 0; }
+    private record BedOverviewRow(string Hhs, string Facility, string Ward, string WardType, int PhysicalBeds, int OpenBeds, int OccupiedBeds, string Occupancy, string Pressure, string PressureClass, int Elective, int EdAddons, int HithReturns, int PredictedDischarges, int ActualDischarges, int DelayedDischarge, string Constraints)
+    {
+        public string Hospital => Facility;
+        public int OccupancyValue => int.TryParse(Occupancy.Replace("%", string.Empty), out var value) ? value : 0;
+    }
 }
