@@ -355,3 +355,28 @@
 .bed-mgmt-page .bm-overview-gridcard{padding:10px;border-radius:10px}
 .bed-mgmt-page .bm-overview-gridcards.v2 .bm-overview-gridcard{background:#fcfeff;box-shadow:0 1px 2px rgba(17,41,71,.08)}
 @media (max-width:980px){.bed-mgmt-page .bm-v2-ops-strip{grid-template-columns:1fr}.bed-mgmt-page .bm-view-row{width:100%}.bed-mgmt-page .bm-toolbar-actions{width:100%}}
+
+/* Ward View updates */
+.ward-ops{--bm-action-icon-size:16px}
+.ward-ops .ward-summary-strip{grid-template-columns:repeat(5,minmax(0,1fr));margin-bottom:10px}
+.ward-ops .bm-info-icon{font-size:.95rem;color:#315f95;vertical-align:middle}
+.ward-allocation-highlight{display:grid;grid-template-columns:200px minmax(0,1fr);gap:10px;border:1px solid #bed0e7;background:#eef5ff;border-radius:10px;padding:10px;margin-bottom:10px}
+.expected-admissions-box{background:#fff;border:1px solid #c7d8ee;border-radius:8px;padding:10px;display:grid;gap:4px;align-content:start}
+.expected-admissions-box p{margin:0;font-size:.76rem;color:#36526f;font-weight:700}
+.expected-admissions-box strong{font-size:2rem;line-height:1;color:#1f4f8d}
+.ward-allocation-highlight h4{margin:0 0 6px;color:#193e67}
+.incoming-plan-list{grid-template-columns:repeat(2,minmax(180px,1fr));gap:8px}
+.future-bed-label{display:grid;gap:3px;font-size:.66rem;color:#546e88;margin-top:4px}
+.future-bed-label select{height:28px;border:1px solid #c5d4e5;border-radius:5px;font-size:.69rem;padding:0 6px;background:#fff}
+.future-allocation-chip{margin-top:4px;display:inline-block;background:#e7f0ff;border:1px solid #9db8e4;color:#1f4f8e;border-radius:10px;padding:2px 6px;font-size:.62rem}
+.bm-ward-table th.actions-col,.bm-ward-table td:last-child{width:74px;max-width:74px}
+.compact-actions{gap:4px}
+.compact-actions button{width:22px;height:22px;border:1px solid #cad8e8;border-radius:4px;padding:0;background:#f8fbff}
+
+/* Bed Management KPI info tooltips */
+.bm-kpi-card{position:relative}
+.bm-kpi-info-wrap{position:absolute;top:6px;right:6px;z-index:2}
+.bm-kpi-info-btn{width:17px;height:17px;border-radius:50%;border:1px solid #bfd0e3;background:#f5f9ff;color:#3b638f;font-size:.66rem;line-height:1;font-weight:700;display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
+.bm-kpi-info-btn:hover,.bm-kpi-info-btn:focus-visible{background:#e9f2ff;border-color:#99b4d3;outline:none}
+.bm-kpi-info-menu .mud-popover{max-width:280px}
+.bm-kpi-info-content{padding:8px 10px;font-size:.72rem;line-height:1.35;color:#334b64;max-width:260px;white-space:normal}
