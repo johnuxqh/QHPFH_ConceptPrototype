@@ -270,7 +270,5 @@ else
         public string FutureAllocation { get; set; } = string.Empty;
         public bool HasPatient => !string.IsNullOrWhiteSpace(PatientName);
         public string StatusClass => Status.ToLowerInvariant().Replace(" / ", "-").Replace(" ", "-");
-        public void Assign(IncomingCard card){PatientName = card.Name; Demographics = "MRN pending"; Team = "General Surgery"; Allergies = "Review on admission"; Status = "Occupied"; WaitingFor = "Admission";}
-        public void MarkCleaning(){PatientName = string.Empty; Demographics = string.Empty; Status = "Cleaning"; WaitingFor = "Awaiting cleaning";}
     }
 }
