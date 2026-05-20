@@ -23,13 +23,13 @@
                         <MudMenu Dense="true"
                                  AnchorOrigin="Origin.BottomRight"
                                  TransformOrigin="Origin.TopRight"
-                                 Class="bm-kpi-info-menu">
+                                 Class="bm-kpi-info-menu"
+                                 CloseOnClick="true"
+                                 OffsetY="true">
                             <ActivatorContent>
                                 <button type="button" class="bm-kpi-info-btn" aria-label="More information about @kpi.Title">i</button>
                             </ActivatorContent>
-                            <ChildContent>
-                                <MudMenuItem Disabled="true" Class="bm-kpi-info-item">@kpi.InfoText</MudMenuItem>
-                            </ChildContent>
+                            <MudMenuItem Disabled="true" Class="bm-kpi-info-item">@kpi.InfoText</MudMenuItem>
                         </MudMenu>
                     </div>
                 }
