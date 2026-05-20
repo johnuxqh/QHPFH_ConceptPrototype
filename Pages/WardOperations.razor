@@ -9,8 +9,8 @@
     </header>
 
     <div class="bm-view-row">
-        <button class="bm-ghost version @(WardVersion=="V1"?"active":null)" @onclick="() => WardVersion = 'V1'">Version 1</button>
-        <button class="bm-ghost version @(WardVersion=="V2"?"active":null)" @onclick="() => WardVersion = 'V2'">Version 2 (Interactive)</button>
+        <button class="bm-ghost version @(WardVersion=="V1"?"active":null)" @onclick='() => WardVersion = "V1"'>Version 1</button>
+        <button class="bm-ghost version @(WardVersion=="V2"?"active":null)" @onclick='() => WardVersion = "V2"'>Version 2 (Interactive)</button>
     </div>
 
     @if (WardVersion == "V1")
