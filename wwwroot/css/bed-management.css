@@ -372,3 +372,11 @@
 .bm-ward-table th.actions-col,.bm-ward-table td:last-child{width:74px;max-width:74px}
 .compact-actions{gap:4px}
 .compact-actions button{width:22px;height:22px;border:1px solid #cad8e8;border-radius:4px;padding:0;background:#f8fbff}
+
+/* Bed Management KPI info tooltips */
+.bm-kpi-card{position:relative}
+.bm-kpi-info-wrap{position:absolute;top:6px;right:6px;z-index:2}
+.bm-kpi-info-btn{width:17px;height:17px;border-radius:50%;border:1px solid #bfd0e3;background:#f5f9ff;color:#3b638f;font-size:.66rem;line-height:1;font-weight:700;display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
+.bm-kpi-info-btn:hover,.bm-kpi-info-btn:focus-visible{background:#e9f2ff;border-color:#99b4d3;outline:none}
+.bm-kpi-info-menu .mud-popover{max-width:280px}
+.bm-kpi-info-content{padding:8px 10px;font-size:.72rem;line-height:1.35;color:#334b64;max-width:260px;white-space:normal}
