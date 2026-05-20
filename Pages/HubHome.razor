@@ -2,7 +2,11 @@
 @page "/"
 @implements IDisposable
 
-@if (IsBedAndWardHubPage)
+@if (IsHomePage)
+{
+    <ConceptHomeLanding />
+}
+else if (IsBedAndWardHubPage)
 {
     <BedWardHub />
 }
@@ -20,10 +24,14 @@ else if (IsAllocationCentrePage)
 }
 else
 {
-    <ConceptHomeLanding />
+    <section class="page-shell-card" style="padding:24px;">
+        <h3>Content in design</h3>
+        <p>Future release modules.</p>
+    </section>
 }
 
 @code {
+    private bool IsHomePage => NavigationState.ActivePrimaryKey == "home";
     private bool IsBedAndWardHubPage =>
         NavigationState.ActivePrimaryKey == "bed" &&
         NavigationState.ActiveSubItem == "Bed and Ward Hub";
@@ -34,7 +42,7 @@ else
 
     private bool IsWardOperationsPage =>
         NavigationState.ActivePrimaryKey == "bed" &&
-        NavigationState.ActiveSubItem == "Ward Operations";
+        NavigationState.ActiveSubItem == "Ward View";
 
     private bool IsAllocationCentrePage =>
         NavigationState.ActivePrimaryKey == "bed" &&

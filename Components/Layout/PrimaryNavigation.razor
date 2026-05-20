@@ -52,14 +52,14 @@
         new("myhub", "MyHub", false, []),
         new("hospital", "Hospital Overview", false, []),
         new("dd", "Delayed Discharge", true, ["DD Hub", "Patient Management", "Census Management", "DDP Census"]),
-        new("bed", "Bed & Ward", true, ["Bed and Ward Hub", "Bed Management", "Ward Operations", "Allocation Centre"]),
+        new("bed", "Bed & Ward", true, ["Bed and Ward Hub", "Bed Management", "Ward View", "Allocation Centre"]),
         new("scenario", "Scenario Mapping", false, []),
         new("journey", "Patient Journey", false, []),
         new("apps", "Connected Apps", false, [])
     ];
 
-    private string _activePrimaryKey = "dd";
-    private string _activeSubItem = "DD Hub";
+    private string _activePrimaryKey = "home";
+    private string _activeSubItem = string.Empty;
 
     private IReadOnlyList<string> CurrentSubItems => GetSubItemsForKey(_activePrimaryKey);
 
@@ -101,7 +101,7 @@
             {
                 "Bed and Ward Hub" => "bed-and-ward-hub",
                 "Bed Management" => "bed-management",
-                "Ward Operations" => "ward-operations",
+                "Ward View" => "ward-operations",
                 "Allocation Centre" => "allocation-centre",
                 _ => string.Empty
             },
