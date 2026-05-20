@@ -2,7 +2,7 @@
 @using QHPFH_ConceptPrototype.Data
 @using MudBlazor
 
-<section class="page-shell-card bed-mgmt-page bm-overview-page">
+<section class="page-shell-card bed-mgmt-page bm-overview-page" @onclick="CloseKpiInfo" @onkeydown="HandleKeydown" tabindex="0">
     <header class="bm-overview-header">
         <h3>Bed Management</h3>
     </header>
@@ -19,18 +19,12 @@
             <article class="bm-kpi-card @kpi.ColorClass">
                 @if (kpi.ShowInfoIcon)
                 {
-                    <div class="bm-kpi-info-wrap">
-                        <MudMenu Dense="true"
-                                 AnchorOrigin="Origin.BottomRight"
-                                 TransformOrigin="Origin.TopRight"
-                                 Class="bm-kpi-info-menu"
-                                 CloseOnClick="true"
-                                 OffsetY="true">
-                            <ActivatorContent>
-                                <button type="button" class="bm-kpi-info-btn" aria-label="More information about @kpi.Title">i</button>
-                            </ActivatorContent>
-                            <MudMenuItem Disabled="true" Class="bm-kpi-info-item">@kpi.InfoText</MudMenuItem>
-                        </MudMenu>
+                    <div class="bm-kpi-info-wrap" @onclick:stopPropagation="true">
+                        <button type="button" class="bm-kpi-info-btn" aria-label="More information about @kpi.Title" @onclick="() => ToggleKpiInfo(kpi.Title)">i</button>
+                        @if (OpenKpiInfoTitle == kpi.Title)
+                        {
+                            <div class="bm-kpi-info-popover" role="tooltip">@kpi.InfoText</div>
+                        }
                     </div>
                 }
                 <div class="bm-kpi-top"><span class="bm-kpi-icon"><MudIcon Icon="@kpi.Icon" Size="Size.Small" /></span><p>@kpi.Title</p></div>
@@ -159,6 +153,20 @@
     private void SortBy(string key) { if (key is "Actions" or "Admissions" or "Discharges" or "Constraints" or "Capacity" or "Staffing") return; if (SortColumn == key) SortAsc = !SortAsc; else { SortColumn = key; SortAsc = true; } }
     private void SetView(string view) { SelectedView = view; CurrentPage = 1; }
     private void SetVersion(string version) => SelectedVersion = version;
+    private string? OpenKpiInfoTitle;
+
+    private void ToggleKpiInfo(string title)
+    {
+        OpenKpiInfoTitle = OpenKpiInfoTitle == title ? null : title;
+    }
+
+    private void CloseKpiInfo() => OpenKpiInfoTitle = null;
+
+    private void HandleKeydown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Escape") OpenKpiInfoTitle = null;
+    }
+
 
     private readonly List<KpiItem> Kpis =
     [
