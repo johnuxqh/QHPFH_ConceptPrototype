@@ -195,7 +195,9 @@
     private void CloseKpiInfo() => OpenKpiInfoTitle = null;
     private void HandleKeydown(KeyboardEventArgs args) { if (args.Key == "Escape") OpenKpiInfoTitle = null; }
     private string ActiveInsightTitle => ActiveInsights.FirstOrDefault(x => x.InsightKey == ActiveInsightFilter)?.Title ?? string.Empty;
-    private HashSet<string> ActiveInsightWardIds => ActiveInsights.FirstOrDefault(x => x.InsightKey == ActiveInsightFilter)?.RelatedWardIds ?? [];
+    private HashSet<string> ActiveInsightWardIds =>
+    ActiveInsights.FirstOrDefault(x => x.InsightKey == ActiveInsightFilter)?.RelatedWardIds
+    ?? new HashSet<string>();
     private void OnAccessViewChanged() { ApplyAccessScope(); ClearInsightFilter(); }
     private void OnHhsChanged() { if (SelectedHhs != QchHhs && SelectedFacility == QchFacility) SelectedFacility = DemoReferenceData.All; }
     private void ApplyAccessScope() { if (IsQchAccess) { SelectedHhs = QchHhs; SelectedFacility = QchFacility; SelectedWard = AllWards; } else { SelectedHhs = DemoReferenceData.All; SelectedFacility = DemoReferenceData.All; SelectedWard = AllWards; } }
