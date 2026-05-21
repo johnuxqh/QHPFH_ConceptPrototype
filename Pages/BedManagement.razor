@@ -176,7 +176,17 @@
     private const string AllWards = "All wards";
     private bool IsQchAccess => SelectedAccessView == AccessQchBedManager;
     private IReadOnlyList<string> HhsOptions => DemoReferenceData.HhsOptions;
-    private IReadOnlyList<string> FacilityOptions => [DemoReferenceData.All, ..(SelectedHhs == DemoReferenceData.All ? DemoReferenceData.FacilitiesByHhs.SelectMany(x => x.Value).Distinct().Order() : DemoReferenceData.FacilitiesByHhs.GetValueOrDefault(SelectedHhs, []).Order())];
+    private IReadOnlyList<string> FacilityOptions =>
+    new List<string>
+    {
+        DemoReferenceData.All
+    }
+    .Concat(
+        SelectedHhs == DemoReferenceData.All
+            ? DemoReferenceData.FacilitiesByHhs.SelectMany(x => x.Value).Distinct().Order()
+            : DemoReferenceData.FacilitiesByHhs.GetValueOrDefault(SelectedHhs, new List<string>()).Order()
+    )
+    .ToList();
     private IReadOnlyList<string> WardOptions => GetAvailableWardOptions();
     private List<BedOverviewRow> FilteredRows => GetScopedBedManagementRows();
     private List<BedOverviewRow> SortedRows => SortAsc ? FilteredRows.OrderBy(GetSortValue).ToList() : FilteredRows.OrderByDescending(GetSortValue).ToList();
