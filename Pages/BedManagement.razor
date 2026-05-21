@@ -99,6 +99,52 @@
         </section>
     }
 
+
+    @if (SelectedVersion == "V2" && IsQchAccess)
+    {
+        <section class="bm-orchestration-panel">
+            <header>
+                <div>
+                    <h4>Operational Orchestration Panel</h4>
+                    <p>Coordinate flow across admissions, transfers, staffing and predicted capacity windows.</p>
+                </div>
+                <div class="bm-orch-actions">
+                    <button type="button" class="bm-ghost">Open Bed Managers Chat</button>
+                    <button type="button" class="bm-ghost">On-call &amp; escalation</button>
+                </div>
+            </header>
+            <div class="bm-orch-grid">
+                <article>
+                    <h5>Forward Look (next 6h)</h5>
+                    <ul>
+                        @foreach (var insight in GetPredictiveInsights())
+                        {
+                            <li><span class="bm-pressure-pill @insight.PressureClass">@insight.Window</span> @insight.Message</li>
+                        }
+                    </ul>
+                </article>
+                <article>
+                    <h5>Staffing Impact</h5>
+                    <ul>
+                        @foreach (var staffing in GetStaffingImpacts())
+                        {
+                            <li><strong>@staffing.Ward:</strong> @staffing.Message</li>
+                        }
+                    </ul>
+                </article>
+                <article>
+                    <h5>Transfer Coordination Queue</h5>
+                    <ul>
+                        @foreach (var transfer in GetTransferRisks())
+                        {
+                            <li><strong>@transfer.Ward</strong> — @transfer.Status <em>@transfer.WaitingState</em></li>
+                        }
+                    </ul>
+                </article>
+            </div>
+        </section>
+    }
+
     <section class="bm-ward-table-wrap bm-overview-table-wrap">
         <div class="bm-table-toolbar">
             <div class="bm-view-row">
@@ -122,6 +168,17 @@
                         <header><strong title="@row.WardType">@row.Ward (@row.PhysicalBeds)</strong><span>@row.PostcodeCatchment</span></header>
                         <p>Open @row.OpenBeds • Occupied @row.OccupiedBeds • Elective @row.Elective • ED @row.EdAddons</p>
                         <p>Add-on @row.AddOnPatients • Outliers @row.Outliers • Predicted discharges @row.PredictedDischarges</p>
+                        @if (SelectedVersion == "V2" && IsQchAccess)
+                        {
+                            var orchestration = GetWardOrchestrationSnapshot(row.Ward);
+                            <div class="bm-grid-orchestration">
+                                <span class="bm-state-chip">Now: @orchestration.CurrentState</span>
+                                <span class="bm-state-chip">Discharge window: @orchestration.DischargeWindow</span>
+                                <span class="bm-state-chip">Next: @orchestration.NextPlannedPatient</span>
+                                <span class="bm-state-chip warning">Transfer: @orchestration.TransferState</span>
+                                <span class="bm-state-chip critical">Staffing: @orchestration.StaffingState</span>
+                            </div>
+                        }
                         <div class="bm-grid-foot"><span>Delayed @row.DelayedDischarge</span><span>Actual discharges @row.ActualDischarges</span><span class="bm-action-icon-wrap"><img src="/QHPFH_ConceptPrototype/images/show.png" alt="View" class="bm-action-icon" /></span></div>
                     </article>
                 }
@@ -143,7 +200,16 @@
                     @foreach (var row in PagedRows)
                     {
                         <tr>
-                            <td title="@row.WardType">@row.Ward (@row.PhysicalBeds)</td><td>@row.OpenBeds</td><td>@row.OccupiedBeds</td><td>@row.Elective</td><td>@row.EdAddons</td><td>@row.AddOnPatients</td><td>@row.Outliers</td><td>@row.PredictedDischarges</td><td>@row.ActualDischarges</td><td>@row.DelayedDischarge</td><td>@row.PostcodeCatchment</td><td><span class="bm-action-icon-wrap"><img src="/QHPFH_ConceptPrototype/images/show.png" alt="View" class="bm-action-icon" /></span><span class="bm-action-icon-wrap"><img src="/QHPFH_ConceptPrototype/images/edit.png" alt="Edit" class="bm-action-icon" /></span></td>
+                            <td title="@row.WardType">@row.Ward (@row.PhysicalBeds)</td><td>@row.OpenBeds</td><td>@row.OccupiedBeds</td><td>@row.Elective</td><td>@row.EdAddons</td><td>@row.AddOnPatients</td><td>@row.Outliers</td><td>@row.PredictedDischarges</td><td>@row.ActualDischarges</td><td>@row.DelayedDischarge</td>
+                            @if (SelectedVersion == "V2" && IsQchAccess)
+                            {
+                                var future = GetPredictedAvailability(row.Ward);
+                                <td>
+                                    <div class="bm-inline-stack"><span>@future.CurrentState</span><span>Discharge @future.PredictedDischargeTime</span><span>Next @future.NextPlannedPatient</span></div>
+                                </td>
+                                <td>@future.CleaningEta</td>
+                            }
+                            <td>@row.PostcodeCatchment</td><td><span class="bm-action-icon-wrap"><img src="/QHPFH_ConceptPrototype/images/show.png" alt="View" class="bm-action-icon" /></span><span class="bm-action-icon-wrap"><img src="/QHPFH_ConceptPrototype/images/edit.png" alt="Edit" class="bm-action-icon" /></span></td>
                         </tr>
                     }
                 </tbody>
@@ -194,8 +260,13 @@
             ("Ward", "Ward"), ("OpenBeds", "Open Beds"), ("OccupiedBeds", "Occupied Beds"), ("Elective", "Elective Admissions"),
             ("EdAddons", "ED Admissions"), ("AddOnPatients", "Add-On Patients"), ("Outliers", "Outliers"),
             ("PredictedDischarges", "Predicted Discharges"), ("ActualDischarges", "Actual Discharges"),
-            ("DelayedDischarge", "Delayed Discharges"), ("PostcodeCatchment", "Postcode / Catchment"), ("Actions", "Actions")
-        };
+            ("DelayedDischarge", "Delayed Discharges")
+        }
+        .Concat(SelectedVersion == "V2" && IsQchAccess
+            ? new List<(string Key, string Label)> { ("FuturePlan", "Future Bed Plan"), ("CleaningEta", "Cleaning/Transfer ETA") }
+            : new List<(string Key, string Label)>())
+        .Concat(new List<(string Key, string Label)> { ("PostcodeCatchment", "Postcode / Catchment"), ("Actions", "Actions") })
+        .ToList();
 
     private object GetSortValue(BedOverviewRow x) => SortColumn switch { "Ward" => x.Ward, "OpenBeds" => x.OpenBeds, "OccupiedBeds" => x.OccupiedBeds, "Elective" => x.Elective, "EdAddons" => x.EdAddons, "AddOnPatients" => x.AddOnPatients, "Outliers" => x.Outliers, "PredictedDischarges" => x.PredictedDischarges, "ActualDischarges" => x.ActualDischarges, "DelayedDischarge" => x.DelayedDischarge, "PostcodeCatchment" => x.PostcodeCatchment, _ => x.Ward };
     private void SortBy(string key) { if (key is "Actions") return; if (SortColumn == key) SortAsc = !SortAsc; else { SortColumn = key; SortAsc = true; } }
@@ -251,6 +322,19 @@
         return new SituationalInsight(key, title, description, severityClass, matchedRows.Select(x => x.Ward).ToHashSet(), filterType, matchedRows.Count, icon, actionLabel);
     }
 
+
+    private PredictedBedState GetPredictedAvailability(string ward) =>
+        PredictedBedStates.FirstOrDefault(x => x.Ward == ward)
+        ?? new PredictedBedState(ward, "Occupied", "16:00", "Awaiting allocation", "TBC", "None", "Low");
+    private WardOrchestrationSnapshot GetWardOrchestrationSnapshot(string ward) =>
+        WardSnapshots.FirstOrDefault(x => x.Ward == ward)
+        ?? new WardOrchestrationSnapshot(ward, "Occupied", "15:00-17:00", "General admission", "Awaiting transport", "Stable");
+    private IReadOnlyList<OperationalEscalation> GetOperationalEscalations() => OperationalEscalations;
+    private IReadOnlyList<TransferStatus> GetTransferRisks() => TransferStatuses;
+    private IReadOnlyList<StaffingImpact> GetStaffingImpacts() => StaffingImpacts;
+    private IReadOnlyList<FutureAvailabilityWindow> GetFutureDischargeOpportunities() => FutureWindows;
+    private IReadOnlyList<PredictiveOperationalInsight> GetPredictiveInsights() => PredictiveInsights;
+
     private readonly List<KpiItem> Kpis = new List<KpiItem>
     {
         new("Physical Capacity", "5,643", "Total beds", Icons.Material.Filled.Bed, "kpi-blue", "The count of physically placed beds in the selected ward, facility or view."),
@@ -288,8 +372,54 @@
         new(QchHhs, QchFacility, "8A", "Specialist Paediatrics", 16, 2, 14, "88%", "High", "high", 1, 2, 0, 2, 1, 2, "Specialist wait", 1, 0, "Local")
     };
 
+
+    private static readonly List<PredictedBedState> PredictedBedStates = new()
+    {
+        new("PICU", "Occupied", "14:00", "ED escalation allocation", "14:45 clean complete", "Transfer clean required", "high"),
+        new("12A", "Occupied", "13:30", "Elective post-op", "14:10 clean complete", "Awaiting porter", "medium"),
+        new("11B", "Occupied", "15:00", "Cardiology step-down", "15:40 clean complete", "Awaiting accepting team", "high")
+    };
+    private static readonly List<TransferStatus> TransferStatuses = new()
+    {
+        new("PICU", "Pending repatriation", "Awaiting accepting team"),
+        new("ED SSTA", "Transfer to home catchment", "Delayed transport"),
+        new("4C", "Intra-hospital transfer", "Awaiting bed clean before transfer")
+    };
+    private static readonly List<StaffingImpact> StaffingImpacts = new()
+    {
+        new("PICU", "3 beds unavailable due to staffing (NUM escalation active)"),
+        new("11B", "Reduced overnight staffing; agency cover confirmed"),
+        new("ED SSTA", "2 surge spaces contingent on evening staffing uplift")
+    };
+    private static readonly List<OperationalEscalation> OperationalEscalations = new()
+    {
+        new("Staffing escalation", "Executive review suggested for PICU night shift"),
+        new("Discharge escalation", "11B requires consultant-led discharge unblock"),
+        new("Operational bottleneck", "ED SSTA delayed transfer queue > 90 mins")
+    };
+    private static readonly List<FutureAvailabilityWindow> FutureWindows = new()
+    {
+        new("12A", "13:30-14:30", "2 potential discharge opportunities"),
+        new("11A", "14:00-16:00", "1 likely transfer-to-home catchment release"),
+        new("9A", "16:00-18:00", "Cleaning dependent availability")
+    };
+    private static readonly List<PredictiveOperationalInsight> PredictiveInsights = new()
+    {
+        new("By 17:00", "Predicted Tier 3 pressure if transfer queue persists.", "critical"),
+        new("By 15:00", "Expected discharge opportunity in 12A and 11A.", "high"),
+        new("Overnight", "Likely capacity constraint without staffing uplift.", "warning")
+    };
+
     private record KpiItem(string Title, string Value, string Subtitle, string Icon, string ColorClass, string InfoText, bool ShowInfoIcon = true);
     private record SituationalInsight(string InsightKey, string Title, string Description, string SeverityClass, HashSet<string> RelatedWardIds, string FilterType, int Count, string Icon, string ActionLabel);
+    private record PredictedBedState(string Ward, string CurrentState, string PredictedDischargeTime, string NextPlannedPatient, string CleaningEta, string TransferState, string PressureClass);
+    private record TransferStatus(string Ward, string Status, string WaitingState);
+    private record StaffingImpact(string Ward, string Message);
+    private record OperationalEscalation(string Type, string Message);
+    private record FutureAvailabilityWindow(string Ward, string Window, string Detail);
+    private record PredictiveOperationalInsight(string Window, string Message, string PressureClass);
+    private record WardOrchestrationSnapshot(string Ward, string CurrentState, string DischargeWindow, string NextPlannedPatient, string TransferState, string StaffingState);
+
     private record BedOverviewRow(string Hhs, string Facility, string Ward, string WardType, int PhysicalBeds, int OpenBeds, int OccupiedBeds, string Occupancy, string Pressure, string PressureClass, int Elective, int EdAddons, int HithReturns, int PredictedDischarges, int ActualDischarges, int DelayedDischarge, string Constraints, int AddOnPatients, int Outliers, string PostcodeCatchment)
     {
         public int OccupancyValue => int.TryParse(Occupancy.Replace("%", string.Empty), out var value) ? value : 0;
