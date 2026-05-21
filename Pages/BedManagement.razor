@@ -372,6 +372,20 @@
         new(QchHhs, QchFacility, "8A", "Specialist Paediatrics", 16, 2, 14, "88%", "High", "high", 1, 2, 0, 2, 1, 2, "Specialist wait", 1, 0, "Local")
     };
 
+    private static readonly List<WardOrchestrationSnapshot> WardSnapshots = new()
+    {
+        new("PICU", "Occupied", "14:00-15:00", "ED escalation allocation", "Awaiting accepting team", "3 beds unavailable"),
+        new("12A", "Occupied", "13:30-14:30", "Elective post-op", "Awaiting porter", "Stable"),
+        new("11A", "Occupied", "14:00-16:00", "General medical admission", "No active transfer issue", "Stable"),
+        new("11B", "Occupied", "15:00-16:00", "Cardiology step-down", "Awaiting accepting team", "Reduced overnight staffing"),
+        new("10A", "Occupied", "15:30-17:00", "Respiratory admission", "No active transfer issue", "Stable"),
+        new("9A", "Occupied", "16:00-18:00", "Oncology admission", "Cleaning dependent", "Stable"),
+        new("4C", "Occupied", "15:00-17:00", "Infant medical admission", "Awaiting bed clean before transfer", "Stable"),
+        new("Ellen Barron Centre", "Available", "Planned", "Sleep study admission", "No active transfer issue", "Stable"),
+        new("ED SSTA", "Occupied", "Now-14:30", "ED short stay", "Delayed transport", "2 surge spaces staffing dependent"),
+        new("8A", "Occupied", "16:00-18:00", "Specialist paediatrics admission", "No active transfer issue", "Stable")
+    };
+
 
     private static readonly List<PredictedBedState> PredictedBedStates = new()
     {
