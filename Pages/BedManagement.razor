@@ -219,18 +219,20 @@
     private bool IsInsightActive(string insightKey) => ActiveInsightFilter == insightKey;
 
     private List<SituationalInsight> ActiveInsights => BuildSituationalInsights(GetBaseScopedRows().ToList());
-    private static List<SituationalInsight> BuildSituationalInsights(List<BedOverviewRow> rows)
+private static List<SituationalInsight> BuildSituationalInsights(List<BedOverviewRow> rows)
+{
+    var insights = new List<SituationalInsight>
     {
-        return
-        [
-            CreateInsight("wards-over-capacity", "Wards Over Capacity", "Wards operating above safe occupancy threshold and requiring immediate focus.", "critical", "capacity", rows.Where(r => r.OccupancyValue >= 95 || r.OpenBeds <= 1), Icons.Material.Filled.Warning, "View wards"),
-            CreateInsight("delayed-discharge-risk", "Delayed Discharge Risk", "Delayed flow and discharge barriers are constraining throughput.", "warning", "delayed-discharge", rows.Where(r => r.DelayedDischarge >= 3), Icons.Material.Filled.PersonOff, "Review delayed discharge"),
-            CreateInsight("high-ed-pressure", "High ED Admission Pressure", "Elevated ED admission activity is loading inpatient capacity.", "high", "ed-admissions", rows.Where(r => r.EdAddons >= 3), Icons.Material.Filled.LocalHospital, "View wards"),
-            CreateInsight("high-outlier-load", "Outlier Pressure", "Outlier cohorts are impacting placement flexibility.", "high", "outliers", rows.Where(r => r.Outliers >= 2), Icons.Material.Filled.SwapHoriz, "Review outliers"),
-            CreateInsight("predicted-discharge-opportunity", "Predicted Discharge Opportunity", "Wards with immediate discharge opportunities to recover capacity.", "info", "predicted-discharges", rows.Where(r => r.PredictedDischarges >= 4 && r.DelayedDischarge <= 3), Icons.Material.Filled.TrendingDown, "Review predicted discharges"),
-            CreateInsight("operational-escalation-risk", "Operational Escalation Risk", "Wards approaching Tier 3 pressure due to occupancy and constraints.", "critical", "escalation", rows.Where(r => (r.Pressure == "Critical" || r.Pressure == "High") && (r.OccupancyValue >= 92 || r.DelayedDischarge >= 4)), Icons.Material.Filled.CrisisAlert, "Open escalation")
-        ].Where(x => x.Count > 0).ToList();
-    }
+        CreateInsight("wards-over-capacity", "Wards Over Capacity", "Wards operating above safe occupancy threshold and requiring immediate focus.", "critical", "capacity", rows.Where(r => r.OccupancyValue >= 95 || r.OpenBeds <= 1), Icons.Material.Filled.Warning, "View wards"),
+        CreateInsight("delayed-discharge-risk", "Delayed Discharge Risk", "Delayed flow and discharge barriers are constraining throughput.", "warning", "delayed-discharge", rows.Where(r => r.DelayedDischarge >= 3), Icons.Material.Filled.PersonOff, "Review delayed discharge"),
+        CreateInsight("high-ed-pressure", "High ED Admission Pressure", "Elevated ED admission activity is loading inpatient capacity.", "high", "ed-admissions", rows.Where(r => r.EdAddons >= 3), Icons.Material.Filled.LocalHospital, "View wards"),
+        CreateInsight("high-outlier-load", "Outlier Pressure", "Outlier cohorts are impacting placement flexibility.", "high", "outliers", rows.Where(r => r.Outliers >= 2), Icons.Material.Filled.SwapHoriz, "Review outliers"),
+        CreateInsight("predicted-discharge-opportunity", "Predicted Discharge Opportunity", "Wards with immediate discharge opportunities to recover capacity.", "info", "predicted-discharges", rows.Where(r => r.PredictedDischarges >= 4 && r.DelayedDischarge <= 3), Icons.Material.Filled.TrendingDown, "Review predicted discharges"),
+        CreateInsight("operational-escalation-risk", "Operational Escalation Risk", "Wards approaching Tier 3 pressure due to occupancy and constraints.", "critical", "escalation", rows.Where(r => (r.Pressure == "Critical" || r.Pressure == "High") && (r.OccupancyValue >= 92 || r.DelayedDischarge >= 4)), Icons.Material.Filled.CrisisAlert, "Open escalation")
+    };
+
+    return insights.Where(x => x.Count > 0).ToList();
+}
 
     private static SituationalInsight CreateInsight(string key, string title, string description, string severityClass, string filterType, IEnumerable<BedOverviewRow> rows, string icon, string actionLabel)
     {
