@@ -1,9 +1,10 @@
 @page "/ward-operations"
 @using Microsoft.AspNetCore.Components.Web
 @using MudBlazor
+@using QHPFH_ConceptPrototype.Components.Shared
 @inject NavigationManager Navigation
 
-<section class="page-shell-card bed-mgmt-page ward-ops">
+<section class="page-shell-card bed-mgmt-page ward-ops ward-view-page" @onclick="CloseKpiInfo">
     <header>
         <h2>Ward View</h2>
     </header>
@@ -20,41 +21,12 @@
             <span>High demand across ED and inpatient flow. Prioritise confirmed discharges before 11:00. Escalate blocked beds to NUM.</span>
         </section>
 
-        <section class="bm-summary-strip five ward-summary-strip">
-            <article class="bm-summary-item">
-                <p>Total physical beds</p>
-                <strong>24</strong>
-                <small>All physical beds in this ward.</small>
-            </article>
-
-            <article class="bm-summary-item">
-                <p>
-                    Open beds
-                    <MudTooltip Text="Open beds are beds available for use today. This may be lower than total physical beds due to staffing, maintenance, closure, infection control or operational constraints.">
-                        <MudIcon Class="bm-info-icon" Icon="@Icons.Material.Outlined.Info" Size="Size.Small" />
-                    </MudTooltip>
-                </p>
-                <strong class="tone-ready">20</strong>
-                <small>Open beds refers to beds open for operational use today, not currently empty beds.</small>
-            </article>
-
-            <article class="bm-summary-item">
-                <p>Occupied beds</p>
-                <strong class="tone-occupied">19</strong>
-                <small>Beds currently occupied by patients.</small>
-            </article>
-
-            <article class="bm-summary-item">
-                <p>Pending beds</p>
-                <strong>5</strong>
-                <small>Cleaning: 1 • Maintenance: 1 • Closed: 3</small>
-            </article>
-
-            <article class="bm-summary-item">
-                <p>Isolation beds available</p>
-                <strong>0</strong>
-                <small>Ward-level isolation capacity available now.</small>
-            </article>
+        <section class="bm-overview-cards ward-summary-strip">
+            <SituationalKpiTile Title="Total Physical Beds" Value="24" Subtitle="All physical beds in this ward." IconName="bed-default" ColorClass="kpi-blue" InfoText="All physical beds configured in this ward." IsInfoOpen="@(OpenWardKpiInfo == \"Total Physical Beds\")" OnInfoClick="() => ToggleWardKpiInfo(\"Total Physical Beds\")" AdditionalClasses="ward-kpi-card" />
+            <SituationalKpiTile Title="Open Beds" Value="20" Subtitle="Open beds refers to beds open for operational use today." IconName="open-bed-green" ColorClass="kpi-green" InfoText="Open beds are beds available for operational use today." IsInfoOpen="@(OpenWardKpiInfo == \"Open Beds\")" OnInfoClick="() => ToggleWardKpiInfo(\"Open Beds\")" AdditionalClasses="ward-kpi-card" />
+            <SituationalKpiTile Title="Occupied Beds" Value="19" Subtitle="Beds currently occupied by patients." IconName="occupied-bed-default" ColorClass="kpi-gray" InfoText="Beds currently occupied by admitted patients receiving care." IsInfoOpen="@(OpenWardKpiInfo == \"Occupied Beds\")" OnInfoClick="() => ToggleWardKpiInfo(\"Occupied Beds\")" AdditionalClasses="ward-kpi-card" />
+            <SituationalKpiTile Title="Pending Beds" Value="5" Subtitle="Total Beds Pending" IconName="cleaning-default" ColorClass="kpi-orange" TileType="breakdown" BreakdownItems="@WardPendingBreakdown" InfoText="Beds pending return due to cleaning, maintenance or closure." IsInfoOpen="@(OpenWardKpiInfo == \"Pending Beds\")" OnInfoClick="() => ToggleWardKpiInfo(\"Pending Beds\")" AdditionalClasses="ward-kpi-card" />
+            <SituationalKpiTile Title="Isolation Beds Available" Value="0" Subtitle="Ward-level isolation capacity available now." IconName="isolation-bed-default" ColorClass="kpi-blue" InfoText="Isolation-enabled beds currently available in this ward." IsInfoOpen="@(OpenWardKpiInfo == \"Isolation Beds Available\")" OnInfoClick="() => ToggleWardKpiInfo(\"Isolation Beds Available\")" AdditionalClasses="ward-kpi-card" />
         </section>
 
         <section class="ward-allocation-highlight">
@@ -333,6 +305,7 @@
     private string WardVersion { get; set; } = "V1";
     private string IncomingTab { get; set; } = "ED";
     private string V2IncomingTab { get; set; } = "ED";
+    private string? OpenWardKpiInfo { get; set; }
 
     private string? _hoverAction;
     private string _dragMode = string.Empty;
@@ -386,6 +359,15 @@
 
     private List<BedRow> BedRows = new();
     private List<BedRow> V2BedRows = new();
+    private static readonly IReadOnlyList<SituationalKpiTile.KpiBreakdownItem> WardPendingBreakdown = new[]
+    {
+        new SituationalKpiTile.KpiBreakdownItem("Cleaning", "1"),
+        new SituationalKpiTile.KpiBreakdownItem("Maintenance", "1"),
+        new SituationalKpiTile.KpiBreakdownItem("Closed", "3")
+    };
+
+    private void ToggleWardKpiInfo(string title) => OpenWardKpiInfo = OpenWardKpiInfo == title ? null : title;
+    private void CloseKpiInfo() => OpenWardKpiInfo = null;
 
     protected override void OnInitialized()
     {
