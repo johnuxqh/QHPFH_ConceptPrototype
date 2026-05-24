@@ -4,17 +4,6 @@
 @using QHPFH_ConceptPrototype.Components.Shared
 
 <section class="page-shell-card bed-mgmt-page bm-overview-page" @onclick="CloseKpiInfo" @onkeydown="HandleKeydown" tabindex="0">
-    <header class="bm-overview-header bm-overview-header-row">
-        <h3>Bed Management</h3>
-        <div class="bm-access-selector">
-            <label>Access view</label>
-            <select @bind="SelectedAccessView" @bind:after="OnAccessViewChanged">
-                <option value="statewide">Statewide</option>
-                <option value="qch-bed-manager">QCH Bed Manager</option>
-            </select>
-        </div>
-    </header>
-
     @if (IsQchAccess)
     {
         <section class="bm-qch-banner">
@@ -31,12 +20,21 @@
     }
 
     <section class="bm-filter-row bm-filter-row-compact">
-        @if (!IsQchAccess)
-        {
-            <div class="bm-filter"><label>HHS</label><select @bind="SelectedHhs" @bind:after="OnHhsChanged">@foreach (var hhs in HhsOptions){<option value="@hhs">@hhs</option>}</select></div>
-            <div class="bm-filter"><label>Facility</label><select @bind="SelectedFacility">@foreach (var facility in FacilityOptions){<option value="@facility">@facility</option>}</select></div>
-        }
-        <div class="bm-filter"><label>Ward</label><select @bind="SelectedWard">@foreach (var ward in WardOptions){<option value="@ward">@ward</option>}</select></div>
+        <div class="bm-filter-group">
+            @if (!IsQchAccess)
+            {
+                <div class="bm-filter"><label>HHS</label><select @bind="SelectedHhs" @bind:after="OnHhsChanged">@foreach (var hhs in HhsOptions){<option value="@hhs">@hhs</option>}</select></div>
+                <div class="bm-filter"><label>Facility</label><select @bind="SelectedFacility">@foreach (var facility in FacilityOptions){<option value="@facility">@facility</option>}</select></div>
+            }
+            <div class="bm-filter"><label>Ward</label><select @bind="SelectedWard">@foreach (var ward in WardOptions){<option value="@ward">@ward</option>}</select></div>
+        </div>
+        <div class="bm-access-selector">
+            <label>Access view</label>
+            <select @bind="SelectedAccessView" @bind:after="OnAccessViewChanged">
+                <option value="statewide">Statewide</option>
+                <option value="qch-bed-manager">QCH Bed Manager</option>
+            </select>
+        </div>
     </section>
 
     <section class="bm-overview-cards">

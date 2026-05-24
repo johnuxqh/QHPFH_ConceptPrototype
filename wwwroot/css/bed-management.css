@@ -447,3 +447,40 @@
 .situational-kpi-card.kpi-type-activity .situational-kpi-main,.situational-kpi-card.kpi-type-breakdown .situational-kpi-main{justify-content:flex-start}
 .situational-kpi-card.kpi-type-activity .situational-kpi-icon,.situational-kpi-card.kpi-type-breakdown .situational-kpi-icon{width:36px;height:36px;margin-top:4px}
 
+
+/* Bed & Ward refinement overrides */
+.bm-overview-header,.bm-overview-header-row{display:none !important}
+.bm-filter-row.bm-filter-row-compact{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;flex-wrap:nowrap}
+.bm-filter-row-compact .bm-filter-group{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap;min-width:0}
+.bm-filter-row-compact .bm-access-selector{margin-left:auto;align-items:flex-end;min-width:170px}
+
+.bm-overview-cards,.ward-summary-strip{width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;align-items:stretch}
+.situational-kpi-card{max-width:none;min-height:118px;padding:10px 12px}
+.situational-kpi-main{justify-content:center;gap:12px;min-height:44px}
+.situational-kpi-value{font-size:2.55rem}
+.situational-kpi-subtitle{font-size:.88rem;line-height:1.2}
+.situational-kpi-card.kpi-type-standard .situational-kpi-main{justify-content:center}
+.situational-kpi-card.kpi-type-breakdown .situational-kpi-main,
+.situational-kpi-card.kpi-type-activity .situational-kpi-main{justify-content:flex-start}
+.situational-kpi-breakdown-values{gap:2px}
+.situational-kpi-breakdown-row{font-size:.92rem;line-height:1.15}
+.situational-kpi-breakdown-row strong{font-size:.98rem}
+.situational-kpi-breakdown-total{font-size:1rem;line-height:1.2}
+.situational-kpi-breakdown-total strong{font-size:1.45rem}
+.situational-kpi-tabs button{font-size:.92rem;line-height:1.1;padding:3px 8px}
+
+.ward-view-page .situational-kpi-card.kpi-type-breakdown .situational-kpi-breakdown-row,
+.ward-view-page .situational-kpi-card.kpi-type-activity .situational-kpi-breakdown-row{font-size:.82rem;line-height:1.1}
+.ward-view-page .situational-kpi-card.kpi-type-breakdown .situational-kpi-breakdown-total{font-size:.9rem}
+.ward-view-page .situational-kpi-card.kpi-type-breakdown .situational-kpi-breakdown-total strong{font-size:1.2rem}
+.ward-view-page .situational-kpi-card.kpi-type-activity .situational-kpi-tabs button{font-size:.8rem;padding:2px 6px}
+
+.bm-insight-grid.actionable{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(220px,1fr);grid-template-columns:none;gap:8px;overflow-x:auto;padding-bottom:2px}
+.bm-insight-grid.actionable .bm-insight-card{min-height:104px;padding:8px 9px;border-radius:12px}
+.bm-insight-grid.actionable .bm-insight-card h4{font-size:.8rem;margin-bottom:4px}
+.bm-insight-grid.actionable .bm-insight-card p{font-size:.7rem;line-height:1.25;margin-bottom:6px}
+
+@media (max-width: 980px){
+  .bm-filter-row.bm-filter-row-compact{flex-wrap:wrap}
+  .bm-filter-row-compact .bm-access-selector{margin-left:0}
+}
