@@ -1,3 +1,6 @@
+@inject NavigationManager Navigation
+@implements IDisposable
+
 <header class="concept-header" role="banner">
     @if (_isProfileOpen)
     {
@@ -8,7 +11,13 @@
         <div class="qld-brand" aria-label="Queensland Health Patient Flow Hub">
             <img class="qld-logo" src="@(IsDarkMode ? DarkLogoPath : LightLogoPath)" alt="Queensland Government" />
             <div class="qld-divider" aria-hidden="true"></div>
-            <div class="qld-title"><strong>QH</strong> Patient Flow Hub</div>
+            <div class="qld-title-wrap">
+                <div class="qld-title"><strong>QH</strong> Patient Flow Hub</div>
+                @if (!string.IsNullOrWhiteSpace(CurrentPageTitle))
+                {
+                    <div class="qld-page-title">- @CurrentPageTitle</div>
+                }
+            </div>
         </div>
 
         <div class="qld-actions">
@@ -60,6 +69,7 @@
 
 @code {
     private bool _isProfileOpen;
+    private string CurrentPageTitle = string.Empty;
     private const string LightLogoPath = "images/logos/CoAlight.svg";
     private const string DarkLogoPath = "images/logos/CoAdark.svg";
 
@@ -71,4 +81,33 @@
 
     private void ToggleProfile() => _isProfileOpen = !_isProfileOpen;
     private void CloseProfile() => _isProfileOpen = false;
+
+    protected override void OnInitialized()
+    {
+        UpdatePageTitle();
+        Navigation.LocationChanged += HandleLocationChanged;
+    }
+
+    private void HandleLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        UpdatePageTitle();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void UpdatePageTitle()
+    {
+        var path = Navigation.ToBaseRelativePath(Navigation.Uri).Split('?', '#')[0].Trim('/');
+        CurrentPageTitle = path switch
+        {
+            "bed-management" => "Bed Management",
+            "ward-operations" => "Ward View",
+            "allocation-centre" => "Allocation Centre",
+            _ => string.Empty
+        };
+    }
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= HandleLocationChanged;
+    }
 }

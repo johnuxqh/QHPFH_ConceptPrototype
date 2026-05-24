@@ -418,3 +418,69 @@
 .bm-state-chip{display:inline-flex;border:1px solid #cddaea;background:#f4f8fe;color:#2d4f72;border-radius:999px;padding:2px 6px;font-size:.64rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bm-state-chip.warning{border-color:#e3c892;background:#fff4e1;color:#8b5b06}.bm-state-chip.critical{border-color:#ebbdc4;background:#fff0f2;color:#9f2532}
 .bm-inline-stack{display:grid;gap:2px;font-size:.67rem;color:#3f566f}
+
+.bm-overview-cards,.ward-summary-strip{display:flex;flex-wrap:wrap;gap:10px}
+.situational-kpi-card{position:relative;background:#fff;border:1px solid #d7dee8;border-radius:14px;padding:10px 12px;min-width:180px;min-height:120px;flex:1 1 180px;max-width:260px;display:flex;flex-direction:column;gap:8px;justify-content:space-between}
+.situational-kpi-title{text-align:center;font-weight:800;font-size:12px;letter-spacing:.4px;text-transform:uppercase;color:#2a5fba}
+.situational-kpi-main{display:flex;align-items:center;justify-content:center;gap:10px}
+.situational-kpi-icon{width:40px;height:40px;object-fit:contain;flex:0 0 auto}
+.situational-kpi-value{font-size:3rem;line-height:1;font-weight:800;color:#1f63d5}
+.situational-kpi-subtitle{text-align:center;font-size:.95rem;color:#364454}
+.situational-kpi-info-wrap{position:absolute;top:6px;right:6px;z-index:2}
+.situational-kpi-info-btn{border:none;background:transparent;padding:0;cursor:pointer;display:inline-flex}
+.situational-kpi-info-btn img{width:16px;height:16px}
+.situational-kpi-info-popover{position:absolute;top:22px;right:0;z-index:1700;width:min(280px,75vw);padding:10px 12px;border:1px solid #2f78d6;border-radius:14px;background:#eaf4ff;box-shadow:0 8px 20px rgba(20,45,78,.16);font-size:.98rem;line-height:1.3;color:#1658af}
+.situational-kpi-breakdown-main{justify-content:flex-start;align-items:flex-start}
+.situational-kpi-breakdown-values{display:flex;flex-direction:column;gap:3px;flex:1}
+.situational-kpi-breakdown-row{display:flex;justify-content:space-between;gap:8px;font-size:1.05rem;color:#3e3e3e}
+.situational-kpi-breakdown-row strong{font-size:1.05rem;color:inherit}
+.situational-kpi-breakdown-total{margin-top:auto;text-align:center;font-weight:700;color:#f67900;font-size:1.15rem}
+.situational-kpi-breakdown-total strong{margin-left:10px;font-size:1.8rem}
+.situational-kpi-tabs{display:flex;gap:4px;justify-content:center}
+.situational-kpi-tabs button{border:0;border-bottom:3px solid #0e5abd;background:#f0f0f0;color:#0e5abd;padding:3px 8px;font-size:1.05rem;cursor:pointer}
+.situational-kpi-tabs button.active{background:#e4eefb;font-weight:700}
+.situational-kpi-card.kpi-green .situational-kpi-title,.situational-kpi-card.kpi-green .situational-kpi-value{color:#1c9f5e}
+.situational-kpi-card.kpi-orange .situational-kpi-title,.situational-kpi-card.kpi-orange .situational-kpi-value{color:#ff7a00}
+.situational-kpi-card.kpi-red .situational-kpi-title,.situational-kpi-card.kpi-red .situational-kpi-value{color:#d32727}
+.situational-kpi-card.kpi-gray .situational-kpi-title,.situational-kpi-card.kpi-gray .situational-kpi-value{color:#3f3f46}
+.situational-kpi-card.kpi-type-activity .situational-kpi-title,.situational-kpi-card.kpi-type-breakdown .situational-kpi-title{color:#3e3e3e}
+.situational-kpi-card.kpi-type-activity .situational-kpi-main,.situational-kpi-card.kpi-type-breakdown .situational-kpi-main{justify-content:flex-start}
+.situational-kpi-card.kpi-type-activity .situational-kpi-icon,.situational-kpi-card.kpi-type-breakdown .situational-kpi-icon{width:36px;height:36px;margin-top:4px}
+
+
+/* Bed & Ward refinement overrides */
+.bm-overview-header,.bm-overview-header-row{display:none !important}
+.bm-filter-row.bm-filter-row-compact{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;flex-wrap:nowrap}
+.bm-filter-row-compact .bm-filter-group{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap;min-width:0}
+.bm-filter-row-compact .bm-access-selector{margin-left:auto;align-items:flex-end;min-width:170px}
+
+.bm-overview-cards,.ward-summary-strip{width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;align-items:stretch}
+.situational-kpi-card{max-width:none;min-height:118px;padding:10px 12px}
+.situational-kpi-main{justify-content:center;gap:12px;min-height:44px}
+.situational-kpi-value{font-size:2.55rem}
+.situational-kpi-subtitle{font-size:.88rem;line-height:1.2}
+.situational-kpi-card.kpi-type-standard .situational-kpi-main{justify-content:center}
+.situational-kpi-card.kpi-type-breakdown .situational-kpi-main,
+.situational-kpi-card.kpi-type-activity .situational-kpi-main{justify-content:flex-start}
+.situational-kpi-breakdown-values{gap:2px}
+.situational-kpi-breakdown-row{font-size:.92rem;line-height:1.15}
+.situational-kpi-breakdown-row strong{font-size:.98rem}
+.situational-kpi-breakdown-total{font-size:1rem;line-height:1.2}
+.situational-kpi-breakdown-total strong{font-size:1.45rem}
+.situational-kpi-tabs button{font-size:.92rem;line-height:1.1;padding:3px 8px}
+
+.ward-view-page .situational-kpi-card.kpi-type-breakdown .situational-kpi-breakdown-row,
+.ward-view-page .situational-kpi-card.kpi-type-activity .situational-kpi-breakdown-row{font-size:.82rem;line-height:1.1}
+.ward-view-page .situational-kpi-card.kpi-type-breakdown .situational-kpi-breakdown-total{font-size:.9rem}
+.ward-view-page .situational-kpi-card.kpi-type-breakdown .situational-kpi-breakdown-total strong{font-size:1.2rem}
+.ward-view-page .situational-kpi-card.kpi-type-activity .situational-kpi-tabs button{font-size:.8rem;padding:2px 6px}
+
+.bm-insight-grid.actionable{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(220px,1fr);grid-template-columns:none;gap:8px;overflow-x:auto;padding-bottom:2px}
+.bm-insight-grid.actionable .bm-insight-card{min-height:104px;padding:8px 9px;border-radius:12px}
+.bm-insight-grid.actionable .bm-insight-card h4{font-size:.8rem;margin-bottom:4px}
+.bm-insight-grid.actionable .bm-insight-card p{font-size:.7rem;line-height:1.25;margin-bottom:6px}
+
+@media (max-width: 980px){
+  .bm-filter-row.bm-filter-row-compact{flex-wrap:wrap}
+  .bm-filter-row-compact .bm-access-selector{margin-left:0}
+}
