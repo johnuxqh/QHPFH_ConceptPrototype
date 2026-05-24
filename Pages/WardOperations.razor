@@ -5,6 +5,10 @@
 @inject NavigationManager Navigation
 
 <section class="page-shell-card bed-mgmt-page ward-ops ward-view-page" @onclick="CloseKpiInfo">
+    <header>
+        <h2>Ward View</h2>
+    </header>
+
     <div class="bm-view-row">
         <button class="bm-ghost version @(WardVersion == "V1" ? "active" : null)" @onclick='() => WardVersion = "V1"'>Version 1</button>
         <button class="bm-ghost version @(WardVersion == "V2" ? "active" : null)" @onclick='() => WardVersion = "V2"'>Version 2 (Interactive)</button>
@@ -18,7 +22,7 @@
         </section>
 
         <section class="bm-overview-cards ward-summary-strip">
-            <SituationalKpiTile Title="Total Physical Beds" Value="24" Subtitle="All physical beds in this ward." IconName="open-bed-default" ColorClass="kpi-blue" InfoText="All physical beds configured in this ward." IsInfoOpen='@(OpenWardKpiInfo == "Total Physical Beds")' OnInfoClick='() => ToggleWardKpiInfo("Total Physical Beds")' AdditionalClasses="ward-kpi-card" />
+            <SituationalKpiTile Title="Total Physical Beds" Value="24" Subtitle="All physical beds in this ward." IconName="bed-default" ColorClass="kpi-blue" InfoText="All physical beds configured in this ward." IsInfoOpen='@(OpenWardKpiInfo == "Total Physical Beds")' OnInfoClick='() => ToggleWardKpiInfo("Total Physical Beds")' AdditionalClasses="ward-kpi-card" />
             <SituationalKpiTile Title="Open Beds" Value="20" Subtitle="Open beds refers to beds open for operational use today." IconName="open-bed-green" ColorClass="kpi-green" InfoText="Open beds are beds available for operational use today." IsInfoOpen='@(OpenWardKpiInfo == "Open Beds")' OnInfoClick='() => ToggleWardKpiInfo("Open Beds")' AdditionalClasses="ward-kpi-card" />
             <SituationalKpiTile Title="Occupied Beds" Value="19" Subtitle="Beds currently occupied by patients." IconName="occupied-bed-default" ColorClass="kpi-gray" InfoText="Beds currently occupied by admitted patients receiving care." IsInfoOpen='@(OpenWardKpiInfo == "Occupied Beds")' OnInfoClick='() => ToggleWardKpiInfo("Occupied Beds")' AdditionalClasses="ward-kpi-card" />
             <SituationalKpiTile Title="Pending Beds" Value="5" Subtitle="Total Beds Pending" IconName="cleaning-default" ColorClass="kpi-orange" TileType="breakdown" BreakdownItems="@WardPendingBreakdown" InfoText="Beds pending return due to cleaning, maintenance or closure." IsInfoOpen='@(OpenWardKpiInfo == "Pending Beds")' OnInfoClick='() => ToggleWardKpiInfo("Pending Beds")' AdditionalClasses="ward-kpi-card" />
