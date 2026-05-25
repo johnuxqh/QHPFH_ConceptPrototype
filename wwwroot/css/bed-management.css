@@ -476,7 +476,7 @@
 .ward-view-page .situational-kpi-card.kpi-type-activity .situational-kpi-tabs button{font-size:.8rem;padding:2px 6px}
 
 .bm-insight-grid.actionable{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(220px,1fr);grid-template-columns:none;gap:8px;overflow-x:auto;padding-bottom:2px}
-.bm-insight-grid.actionable .bm-insight-card {padding:8px 9px;border-radius:12px}
+.bm-insight-grid.actionable .bm-insight-card{min-height:104px;padding:8px 9px;border-radius:12px}
 .bm-insight-grid.actionable .bm-insight-card h4{font-size:.8rem;margin-bottom:4px}
 .bm-insight-grid.actionable .bm-insight-card p{font-size:.7rem;line-height:1.25;margin-bottom:6px}
 
@@ -521,3 +521,9 @@
 .bm-insight-grid.actionable .bm-insight-foot{margin-top:1px;display:flex;align-items:center;justify-content:space-between;gap:8px}
 .bm-insight-grid.actionable .bm-insight-foot strong{font-size:.68rem;white-space:nowrap}
 .bm-insight-grid.actionable .bm-insight-action{font-size:.68rem;line-height:1.1;white-space:nowrap}
+
+.bm-v2-operational-shell{display:grid;gap:8px;margin-bottom:10px}
+.bm-v2-status-row{grid-template-columns:repeat(auto-fit,minmax(170px,1fr)) auto;align-items:stretch}
+.bm-system-insights-trigger{border:1px solid #cad7e7;background:#f4f8ff;border-radius:12px;padding:8px 10px;display:grid;gap:4px;min-width:170px;cursor:pointer;color:#1f4f8d;font-weight:700}
+.bm-system-insights-count{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#1f63d5;color:#fff;font-size:.82rem}
+.bm-insight-panel-drawer{border:1px solid #cdd9e8;border-radius:12px;background:#fff;padding:8px;display:grid;gap:6px}

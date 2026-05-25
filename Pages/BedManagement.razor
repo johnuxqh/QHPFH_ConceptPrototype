@@ -75,29 +75,87 @@
         </div>
     </section>
 
-    <section class="bm-overview-cards">
-        @foreach (var kpi in (IsQchAccess ? QchKpis : Kpis))
-        {
-            <SituationalKpiTile
-                Title="@kpi.Title"
-                Value="@kpi.Value"
-                Subtitle="@kpi.Subtitle"
-                IconName="@kpi.IconName"
-                ColorClass="@kpi.ColorClass"
-                InfoText="@kpi.InfoText"
-                TileType="@kpi.TileType"
-                ShowInfoIcon="@kpi.ShowInfoIcon"
-                IsInfoOpen="@(OpenKpiInfoTitle == kpi.Title)"
-                OnInfoClick="() => ToggleKpiInfo(kpi.Title)"
-                BreakdownItems="@kpi.BreakdownItems"
-                Tabs="@kpi.Tabs"
-                ActiveTab="@QchActivityView"
-                OnTabChanged="OnQchActivityTabChanged"
-                AdditionalClasses="bm-kpi-card" />
-        }
-    </section>
-
-    <section class="bm-insight-grid actionable">
+    @if (SelectedVersion == "V2")
+    {
+        <section class="bm-v2-operational-shell">
+            @if (!ShowInsightsPanel)
+            {
+                <section class="bm-overview-cards bm-v2-status-row">
+                    @foreach (var kpi in (IsQchAccess ? QchKpis : Kpis))
+                    {
+                        <SituationalKpiTile
+                            Title="@kpi.Title"
+                            Value="@kpi.Value"
+                            Subtitle="@kpi.Subtitle"
+                            IconName="@kpi.IconName"
+                            ColorClass="@kpi.ColorClass"
+                            InfoText="@kpi.InfoText"
+                            TileType="@kpi.TileType"
+                            ShowInfoIcon="@kpi.ShowInfoIcon"
+                            IsInfoOpen="@(OpenKpiInfoTitle == kpi.Title)"
+                            OnInfoClick="() => ToggleKpiInfo(kpi.Title)"
+                            BreakdownItems="@kpi.BreakdownItems"
+                            Tabs="@kpi.Tabs"
+                            ActiveTab="@QchActivityView"
+                            OnTabChanged="OnQchActivityTabChanged"
+                            AdditionalClasses="bm-kpi-card" />
+                    }
+                    <button type="button" class="bm-system-insights-trigger" @onclick="() => ShowInsightsPanel = true">
+                        <span class="bm-system-insights-count">@ActiveInsights.Count</span>
+                        <span>System Insights</span>
+                    </button>
+                </section>
+            }
+            else
+            {
+                <section class="bm-insight-panel-drawer">
+                    <button type="button" class="bm-ghost bm-mini-btn" @onclick="() => ShowInsightsPanel = false">Back to System Status</button>
+                    <section class="bm-insight-grid actionable">
+                        @foreach (var insight in ActiveInsights.Take(10))
+                        {
+                            <article class="bm-insight-card @insight.SeverityClass @(IsInsightActive(insight.InsightKey) ? "selected" : null)" @onclick='() => ApplyInsightFilter(insight.InsightKey)'>
+                                <div class="bm-insight-main">
+                                    <div class="bm-insight-icon"><MudIcon Icon="@insight.Icon" Size="Size.Small" /></div>
+                                    <div class="bm-insight-text">
+                                        <h4>@insight.Title</h4>
+                                        <p>@insight.Description</p>
+                                        <div class="bm-insight-foot">
+                                            <strong>Wards: @insight.Count</strong>
+                                            <button type="button" class="bm-insight-action" @onclick:stopPropagation="true" @onclick='() => ApplyInsightFilter(insight.InsightKey)'>@insight.ActionLabel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                        }
+                    </section>
+                </section>
+            }
+        </section>
+    }
+    else
+    {
+        <section class="bm-overview-cards">
+            @foreach (var kpi in (IsQchAccess ? QchKpis : Kpis))
+            {
+                <SituationalKpiTile
+                    Title="@kpi.Title"
+                    Value="@kpi.Value"
+                    Subtitle="@kpi.Subtitle"
+                    IconName="@kpi.IconName"
+                    ColorClass="@kpi.ColorClass"
+                    InfoText="@kpi.InfoText"
+                    TileType="@kpi.TileType"
+                    ShowInfoIcon="@kpi.ShowInfoIcon"
+                    IsInfoOpen="@(OpenKpiInfoTitle == kpi.Title)"
+                    OnInfoClick="() => ToggleKpiInfo(kpi.Title)"
+                    BreakdownItems="@kpi.BreakdownItems"
+                    Tabs="@kpi.Tabs"
+                    ActiveTab="@QchActivityView"
+                    OnTabChanged="OnQchActivityTabChanged"
+                    AdditionalClasses="bm-kpi-card" />
+            }
+        </section>
+        <section class="bm-insight-grid actionable">
         @foreach (var insight in ActiveInsights)
         {
             <article class="bm-insight-card @insight.SeverityClass @(IsInsightActive(insight.InsightKey) ? "selected" : null)" @onclick='() => ApplyInsightFilter(insight.InsightKey)'>
@@ -115,6 +173,7 @@
             </article>
         }
     </section>
+    }
 
     @if (!string.IsNullOrWhiteSpace(ActiveInsightTitle))
     {
@@ -266,6 +325,7 @@
     private string ActiveInsightFilter = string.Empty;
     private string SelectedView = "List";
     private string SelectedVersion = "V1";
+    private bool ShowInsightsPanel;
     private string SortColumn = "Ward";
     private bool SortAsc = true;
     private int CurrentPage = 1;
@@ -302,7 +362,7 @@
     private object GetSortValue(BedOverviewRow x) => SortColumn switch { "Ward" => x.Ward, "OpenBeds" => x.OpenBeds, "OccupiedBeds" => x.OccupiedBeds, "Elective" => x.Elective, "EdAddons" => x.EdAddons, "AddOnPatients" => x.AddOnPatients, "Outliers" => x.Outliers, "PredictedDischarges" => x.PredictedDischarges, "ActualDischarges" => x.ActualDischarges, "DelayedDischarge" => x.DelayedDischarge, "PostcodeCatchment" => x.PostcodeCatchment, _ => x.Ward };
     private void SortBy(string key) { if (key is "Actions") return; if (SortColumn == key) SortAsc = !SortAsc; else { SortColumn = key; SortAsc = true; } }
     private void SetView(string view) { SelectedView = view; CurrentPage = 1; }
-    private void SetVersion(string version) => SelectedVersion = version;
+    private void SetVersion(string version) { SelectedVersion = version; if (version != "V2") ShowInsightsPanel = false; }
     private string? OpenKpiInfoTitle;
     private void StartCreateNotification() { EditingNotificationId = -1; IsCreatingNotification = true; DraftNotification = new EditableNotification(); }
     private void CancelCreateNotification() { IsCreatingNotification = false; DraftNotification = new EditableNotification(); }
@@ -429,7 +489,14 @@
         new(QchHhs, QchFacility, "4C", "Infant Medical Ward", 22, 2, 20, "91%", "High", "high", 2, 3, 0, 3, 2, 4, "Delayed family support", 2, 1, "Metro North"),
         new(QchHhs, QchFacility, "Ellen Barron Centre", "Sleep Centre", 20, 4, 16, "80%", "Medium", "medium", 1, 1, 0, 3, 2, 1, "Planned throughput", 1, 0, "Local"),
         new(QchHhs, QchFacility, "ED SSTA", "Emergency Department Short Stay Treatment Area", 18, 1, 17, "94%", "Critical", "critical", 1, 6, 0, 2, 1, 4, "ED flow backlog", 3, 2, "Out of catchment"),
-        new(QchHhs, QchFacility, "8A", "Specialist Paediatrics", 16, 2, 14, "88%", "High", "high", 1, 2, 0, 2, 1, 2, "Specialist wait", 1, 0, "Local")
+        new(QchHhs, QchFacility, "8A", "Specialist Paediatrics", 16, 2, 14, "88%", "High", "high", 1, 2, 0, 2, 1, 2, "Specialist wait", 1, 0, "Local"),
+        new("Gold Coast", "Gold Coast University Hospital", "ED", "Emergency Department", 54, 6, 48, "89%", "High", "high", 6, 7, 1, 8, 4, 5, "High ED arrivals", 4, 3, "Gold Coast"),
+        new("Gold Coast", "Gold Coast University Hospital", "Surgical", "Surgical", 40, 5, 35, "88%", "High", "high", 7, 3, 0, 6, 3, 3, "Elective surge", 3, 1, "Gold Coast"),
+        new("Metro South", "Logan Hospital", "General Medicine", "Medical", 38, 4, 34, "89%", "High", "high", 4, 5, 1, 5, 2, 4, "Outlier pressure", 2, 2, "Logan"),
+        new("Cairns and Hinterland", "Cairns Hospital", "ICU", "Critical Care", 22, 2, 20, "91%", "Critical", "critical", 2, 3, 0, 3, 1, 2, "Staffing impact", 1, 1, "Far North"),
+        new("Mackay", "Mackay Base Hospital", "Medical Assessment Unit", "Assessment", 28, 5, 23, "82%", "Medium", "medium", 3, 2, 0, 4, 3, 2, "Stable flow", 2, 1, "Mackay"),
+        new("Townsville", "Townsville University Hospital", "Respiratory", "Respiratory", 30, 3, 27, "90%", "High", "high", 3, 4, 0, 4, 2, 3, "Transfer delays", 2, 2, "Townsville"),
+        new("Wide Bay", "Bundaberg Hospital", "General Medicine", "Medical", 26, 4, 22, "85%", "Medium", "medium", 2, 3, 1, 5, 4, 2, "Cleaning backlog", 1, 1, "Wide Bay")
     };
 
     private static readonly List<WardOrchestrationSnapshot> WardSnapshots = new()

@@ -480,10 +480,18 @@
 
         var ews = (n % 5) + 1;
 
+        var fictionalNames = new[]
+        {
+            "Clark Kent","Diana Prince","Bruce Wayne","Peter Parker","Natasha Romanoff","Tony Stark","Leia Organa","Ellen Ripley",
+            "Sarah Connor","Marty McFly","Wanda Maximoff","Jean Grey","Hermione Granger","Indiana Jones","Dana Scully","Neo Anderson",
+            "Katniss Everdeen","Bruce Banner","Selina Kyle","Luke Skywalker","Arthur Curry","Logan Howlett","Barry Allen","Padme Amidala"
+        };
+        var patientName = fictionalNames[(n - 1) % fictionalNames.Length];
+
         return new(
             $"Bed {n}",
             "Occupied",
-            $"DEMO-PAT-{n:000}",
+            patientName,
             $"MRN DEMO{n:000} | {(30 + n % 35)}y | {(n % 2 == 0 ? "F" : "M")}",
             "General Surgery",
             n % 4 == 0 ? "Penicillin" : "NKA",
