@@ -457,7 +457,7 @@
 
     private readonly List<KpiItem> Kpis = new List<KpiItem>
     {
-        new("Physical Capacity", "5,643", "Total beds", "open-bed-default", "kpi-blue", "The count of physically placed beds in the selected ward, facility or view."),
+        new("Physical Capacity", "5,643", "Total beds", "bed-default", "kpi-blue", "The count of physically placed beds in the selected ward, facility or view."),
         new("Open Operational Beds", "1,243", "22% of capacity", "open-bed-green", "kpi-green", "Beds that are open and available for use today."),
         new("Beds Returning", "142", "Awaiting cleaning", "cleaning-default", "kpi-orange", "Beds waiting to be cleaned."),
         new("Operational Pressure", "87%", "High", "operation-pressure-orange", "kpi-red", "The percentage of open operational beds currently occupied by patients."),
@@ -467,7 +467,7 @@
     };
     private readonly List<KpiItem> QchKpis = new List<KpiItem>
     {
-        new("Physical Capacity", "206", "Total Beds", "open-bed-default", "kpi-blue", "The count of physically placed beds across the selected facility or ward scope."),
+        new("Physical Capacity", "206", "Total Beds", "bed-default", "kpi-blue", "The count of physically placed beds across the selected facility or ward scope."),
         new("Open Operational Beds", "185", "89% of Capacity", "open-bed-green", "kpi-green", "Beds operationally open and available for use today."),
         new("Occupied Beds", "175", "94% occupancy", "occupied-bed-default", "kpi-gray", "Beds currently occupied by admitted patients receiving care."),
         new("Beds Pending", "21", "Total Beds Pending", "cleaning-default", "kpi-orange", "Beds temporarily unavailable due to cleaning, maintenance, closure or operational constraints.", TileType: "breakdown", BreakdownItems: new[] { new SituationalKpiTile.KpiBreakdownItem("Cleaning", "6"), new SituationalKpiTile.KpiBreakdownItem("Maintenance", "5"), new SituationalKpiTile.KpiBreakdownItem("Closed", "10") }),

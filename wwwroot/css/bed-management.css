@@ -206,8 +206,8 @@
 
 .bm-overview-header h3{margin:2px 0 6px;font-size:1.1rem;color:#1c2f49}
 .bm-overview-header-row{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
-.bm-access-selector{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
-.bm-access-selector label{font-size:.68rem;color:#597089}
+.bm-access-selector{display:inline; flex-direction:column;gap:4px;align-items:flex-start}
+.bm-access-selector label{font-size:.68rem;color:#597089; padding: 0px 5px;}
 .bm-access-selector select{height:30px;min-width:150px;border:1px solid #cfd9e6;background:#fff;border-radius:6px;padding:0 8px;font-size:.74rem}
 .bm-scope-context{margin:0 0 8px;font-size:.72rem;color:#486483;font-weight:600}
 .bm-filter-row-compact{gap:8px;margin-bottom:8px}.bm-filter-row-compact .bm-filter{gap:4px}.bm-filter-row-compact .bm-filter label{font-size:.68rem;color:#597089}.bm-filter-row-compact .bm-filter select{height:30px;min-width:130px;max-width:150px;border:1px solid #cfd9e6;background:#fff;border-radius:6px;padding:0 8px;font-size:.74rem}
@@ -513,8 +513,8 @@
 
 /* Insight panel compact aligned layout */
 .bm-insight-grid.actionable .bm-insight-card{display:flex;align-items:stretch}
-.bm-insight-grid.actionable .bm-insight-main{display:grid;grid-template-columns:22px 1fr;gap:8px;width:100%;align-items:start}
-.bm-insight-grid.actionable .bm-insight-icon{width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;margin-top:1px}
+.bm-insight-grid.actionable .bm-insight-main{display:grid;grid-template-columns:40px 1fr;gap:8px;width:100%;align-items:start}
+.bm-insight-grid.actionable .bm-insight-icon{width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;margin-top:1px}
 .bm-insight-grid.actionable .bm-insight-text{display:grid;gap:3px;min-width:0}
 .bm-insight-grid.actionable .bm-insight-text h4{margin:0;font-size:.78rem;line-height:1.2;font-weight:700}
 .bm-insight-grid.actionable .bm-insight-text p{margin:0;font-size:.69rem;line-height:1.2;color:#556a80;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
