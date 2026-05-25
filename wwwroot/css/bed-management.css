@@ -572,3 +572,64 @@
   --bm-action-icon-size: 14px;
   --bm-action-icon-size-compact: 11px;
 }
+
+/* Requested sizing correction: increase action icons ~30% from current reduced size */
+.bed-mgmt-page{
+  --bm-action-icon-size: 18px;
+  --bm-action-icon-size-compact: 14px;
+}
+
+/* Operational row density: prefer up to 8 tiles per row on large screens */
+.bed-mgmt-page .bm-overview-cards,
+.bed-mgmt-page .bm-insight-grid.actionable{
+  width:100%;
+}
+@media (min-width: 1440px){
+  .bed-mgmt-page .bm-overview-cards{
+    display:grid;
+    grid-template-columns:repeat(8, minmax(0,1fr));
+    gap:10px;
+    overflow:visible;
+  }
+  .bed-mgmt-page .bm-overview-cards .situational-kpi-card{min-width:0;max-width:none}
+
+  .bed-mgmt-page .bm-insight-grid.actionable{
+    display:grid;
+    grid-template-columns:repeat(8, minmax(0,1fr));
+    grid-auto-flow:column;
+    grid-auto-columns:minmax(0,1fr);
+    overflow-x:auto;
+    gap:8px;
+  }
+  .bed-mgmt-page .bm-insight-grid.actionable .bm-insight-card{min-width:0;}
+}
+
+/* 1000-1439: keep single-row operational horizontal strip with scroll */
+@media (min-width:1000px) and (max-width:1439px){
+  .bed-mgmt-page .bm-overview-cards{
+    display:flex;
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    gap:10px;
+  }
+  .bed-mgmt-page .bm-overview-cards .situational-kpi-card{flex:0 0 180px;max-width:260px}
+
+  .bed-mgmt-page .bm-insight-grid.actionable{
+    display:flex;
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    gap:8px;
+  }
+  .bed-mgmt-page .bm-insight-grid.actionable .bm-insight-card{flex:0 0 280px}
+}
+
+/* Ensure long insight titles/text wrap inside tile frame */
+.bm-insight-grid.actionable .bm-insight-text h4,
+.bm-insight-grid.actionable .bm-insight-text p{
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+.bm-insight-grid.actionable .bm-insight-text p{
+  -webkit-line-clamp:unset;
+  display:block;
+}
