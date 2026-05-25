@@ -550,3 +550,8 @@
 .bm-insight-panel-drawer .bm-system-insights-trigger{margin-bottom:2px}
 .bm-insight-panel-drawer .bm-insight-grid.actionable{display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto;grid-auto-flow:unset;grid-auto-columns:unset}
 .bm-insight-panel-drawer .bm-insight-grid.actionable .bm-insight-card{flex:0 0 320px;min-height:92px}
+
+.bm-insight-inline-row{display:flex;align-items:stretch;gap:8px;width:100%;overflow-x:auto}
+.bm-insight-inline-row .bm-system-insights-trigger{flex:0 0 70px}
+.bm-insight-inline-row .bm-insight-grid.actionable{flex:1 1 auto;min-width:0}
+.bm-insight-panel-drawer .bm-insight-grid.actionable{margin:0}
