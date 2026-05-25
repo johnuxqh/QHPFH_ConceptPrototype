@@ -527,3 +527,15 @@
 .bm-system-insights-trigger{border:1px solid #cad7e7;background:#f4f8ff;border-radius:12px;padding:8px 10px;display:grid;gap:4px;min-width:170px;cursor:pointer;color:#1f4f8d;font-weight:700}
 .bm-system-insights-count{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#1f63d5;color:#fff;font-size:.82rem}
 .bm-insight-panel-drawer{border:1px solid #cdd9e8;border-radius:12px;background:#fff;padding:8px;display:grid;gap:6px}
+
+.bm-v2-operational-shell{position:relative;overflow:hidden;min-height:138px}
+.bm-v2-pane{transition:transform .22s ease, opacity .22s ease;will-change:transform,opacity}
+.bm-v2-pane.is-hidden{opacity:0;transform:translateX(24px);pointer-events:none;position:absolute;inset:0}
+.bm-v2-pane.is-active{opacity:1;transform:translateX(0);position:relative}
+.bm-system-insights-trigger{max-width:70px;min-width:70px;width:70px;justify-items:center;text-align:center;padding:8px 4px;font-size:.66rem;line-height:1.1}
+.bm-system-insights-trigger span:last-child{word-break:break-word}
+.situational-kpi-card.kpi-blue .situational-kpi-title,.situational-kpi-card.kpi-blue .situational-kpi-value,.situational-kpi-card.kpi-blue .situational-kpi-subtitle{color:#1f63d5}
+.situational-kpi-card.kpi-green .situational-kpi-title,.situational-kpi-card.kpi-green .situational-kpi-value,.situational-kpi-card.kpi-green .situational-kpi-subtitle{color:#1c9f5e}
+.situational-kpi-card.kpi-orange .situational-kpi-title,.situational-kpi-card.kpi-orange .situational-kpi-value,.situational-kpi-card.kpi-orange .situational-kpi-subtitle{color:#ff7a00}
+.situational-kpi-card.kpi-red .situational-kpi-title,.situational-kpi-card.kpi-red .situational-kpi-value,.situational-kpi-card.kpi-red .situational-kpi-subtitle{color:#d32727}
+.situational-kpi-card.kpi-gray .situational-kpi-title,.situational-kpi-card.kpi-gray .situational-kpi-value,.situational-kpi-card.kpi-gray .situational-kpi-subtitle{color:#3f3f46}

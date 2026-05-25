@@ -78,58 +78,55 @@
     @if (SelectedVersion == "V2")
     {
         <section class="bm-v2-operational-shell">
-            @if (!ShowInsightsPanel)
-            {
-                <section class="bm-overview-cards bm-v2-status-row">
-                    @foreach (var kpi in (IsQchAccess ? QchKpis : Kpis))
+            <section class="bm-overview-cards bm-v2-status-row bm-v2-pane @(ShowInsightsPanel ? "is-hidden" : "is-active")">
+                @foreach (var kpi in (IsQchAccess ? QchKpis : Kpis))
+                {
+                    <SituationalKpiTile
+                        Title="@kpi.Title"
+                        Value="@kpi.Value"
+                        Subtitle="@kpi.Subtitle"
+                        IconName="@kpi.IconName"
+                        ColorClass="@kpi.ColorClass"
+                        InfoText="@kpi.InfoText"
+                        TileType="@kpi.TileType"
+                        ShowInfoIcon="@kpi.ShowInfoIcon"
+                        IsInfoOpen="@(OpenKpiInfoTitle == kpi.Title)"
+                        OnInfoClick="() => ToggleKpiInfo(kpi.Title)"
+                        BreakdownItems="@kpi.BreakdownItems"
+                        Tabs="@kpi.Tabs"
+                        ActiveTab="@QchActivityView"
+                        OnTabChanged="OnQchActivityTabChanged"
+                        AdditionalClasses="bm-kpi-card" />
+                }
+                <button type="button" class="bm-system-insights-trigger" @onclick="() => ShowInsightsPanel = true">
+                    <span class="bm-system-insights-count">@ActiveInsights.Count</span>
+                    <span>System Insights</span>
+                </button>
+            </section>
+            <section class="bm-insight-panel-drawer bm-v2-pane @(ShowInsightsPanel ? "is-active" : "is-hidden")">
+                <button type="button" class="bm-system-insights-trigger" @onclick="() => ShowInsightsPanel = false">
+                    <span class="bm-system-insights-count">←</span>
+                    <span>Back to System Status</span>
+                </button>
+                <section class="bm-insight-grid actionable">
+                    @foreach (var insight in ActiveInsights.Take(10))
                     {
-                        <SituationalKpiTile
-                            Title="@kpi.Title"
-                            Value="@kpi.Value"
-                            Subtitle="@kpi.Subtitle"
-                            IconName="@kpi.IconName"
-                            ColorClass="@kpi.ColorClass"
-                            InfoText="@kpi.InfoText"
-                            TileType="@kpi.TileType"
-                            ShowInfoIcon="@kpi.ShowInfoIcon"
-                            IsInfoOpen="@(OpenKpiInfoTitle == kpi.Title)"
-                            OnInfoClick="() => ToggleKpiInfo(kpi.Title)"
-                            BreakdownItems="@kpi.BreakdownItems"
-                            Tabs="@kpi.Tabs"
-                            ActiveTab="@QchActivityView"
-                            OnTabChanged="OnQchActivityTabChanged"
-                            AdditionalClasses="bm-kpi-card" />
-                    }
-                    <button type="button" class="bm-system-insights-trigger" @onclick="() => ShowInsightsPanel = true">
-                        <span class="bm-system-insights-count">@ActiveInsights.Count</span>
-                        <span>System Insights</span>
-                    </button>
-                </section>
-            }
-            else
-            {
-                <section class="bm-insight-panel-drawer">
-                    <button type="button" class="bm-ghost bm-mini-btn" @onclick="() => ShowInsightsPanel = false">Back to System Status</button>
-                    <section class="bm-insight-grid actionable">
-                        @foreach (var insight in ActiveInsights.Take(10))
-                        {
-                            <article class="bm-insight-card @insight.SeverityClass @(IsInsightActive(insight.InsightKey) ? "selected" : null)" @onclick='() => ApplyInsightFilter(insight.InsightKey)'>
-                                <div class="bm-insight-main">
-                                    <div class="bm-insight-icon"><MudIcon Icon="@insight.Icon" Size="Size.Small" /></div>
-                                    <div class="bm-insight-text">
-                                        <h4>@insight.Title</h4>
-                                        <p>@insight.Description</p>
-                                        <div class="bm-insight-foot">
-                                            <strong>Wards: @insight.Count</strong>
-                                            <button type="button" class="bm-insight-action" @onclick:stopPropagation="true" @onclick='() => ApplyInsightFilter(insight.InsightKey)'>@insight.ActionLabel</button>
-                                        </div>
+                        <article class="bm-insight-card @insight.SeverityClass @(IsInsightActive(insight.InsightKey) ? "selected" : null)" @onclick='() => ApplyInsightFilter(insight.InsightKey)'>
+                            <div class="bm-insight-main">
+                                <div class="bm-insight-icon"><MudIcon Icon="@insight.Icon" Size="Size.Small" /></div>
+                                <div class="bm-insight-text">
+                                    <h4>@insight.Title</h4>
+                                    <p>@insight.Description</p>
+                                    <div class="bm-insight-foot">
+                                        <strong>Wards: @insight.Count</strong>
+                                        <button type="button" class="bm-insight-action" @onclick:stopPropagation="true" @onclick='() => ApplyInsightFilter(insight.InsightKey)'>@insight.ActionLabel</button>
                                     </div>
                                 </div>
-                            </article>
-                        }
-                    </section>
+                            </div>
+                        </article>
+                    }
                 </section>
-            }
+            </section>
         </section>
     }
     else
