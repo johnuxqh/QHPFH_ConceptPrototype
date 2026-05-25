@@ -101,11 +101,16 @@
         @foreach (var insight in ActiveInsights)
         {
             <article class="bm-insight-card @insight.SeverityClass @(IsInsightActive(insight.InsightKey) ? "selected" : null)" @onclick='() => ApplyInsightFilter(insight.InsightKey)'>
-                <div class="bm-insight-head"><span class="bm-insight-icon"><MudIcon Icon="@insight.Icon" Size="Size.Small" /></span><h4>@insight.Title</h4></div>
-                <p>@insight.Description</p>
-                <div class="bm-insight-foot">
-                    <strong>@insight.Count wards</strong>
-                    <button type="button" class="bm-insight-action" @onclick:stopPropagation="true" @onclick='() => ApplyInsightFilter(insight.InsightKey)'>@insight.ActionLabel</button>
+                <div class="bm-insight-main">
+                    <div class="bm-insight-icon"><MudIcon Icon="@insight.Icon" Size="Size.Small" /></div>
+                    <div class="bm-insight-text">
+                        <h4>@insight.Title</h4>
+                        <p>@insight.Description</p>
+                        <div class="bm-insight-foot">
+                            <strong>Wards: @insight.Count</strong>
+                            <button type="button" class="bm-insight-action" @onclick:stopPropagation="true" @onclick='() => ApplyInsightFilter(insight.InsightKey)'>@insight.ActionLabel</button>
+                        </div>
+                    </div>
                 </div>
             </article>
         }
