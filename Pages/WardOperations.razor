@@ -5,6 +5,10 @@
 @inject NavigationManager Navigation
 
 <section class="page-shell-card bed-mgmt-page ward-ops ward-view-page" @onclick="CloseKpiInfo">
+    <header>
+        <h2>Ward View</h2>
+    </header>
+
     <div class="bm-view-row">
         <button class="bm-ghost version @(WardVersion == "V1" ? "active" : null)" @onclick='() => WardVersion = "V1"'>Version 1</button>
         <button class="bm-ghost version @(WardVersion == "V2" ? "active" : null)" @onclick='() => WardVersion = "V2"'>Version 2 (Interactive)</button>
