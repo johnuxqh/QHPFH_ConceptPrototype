@@ -555,3 +555,20 @@
 .bm-insight-inline-row .bm-system-insights-trigger{flex:0 0 70px}
 .bm-insight-inline-row .bm-insight-grid.actionable{flex:1 1 auto;min-width:0}
 .bm-insight-panel-drawer .bm-insight-grid.actionable{margin:0}
+
+/* keep insights drawer cards stretched and aligned across the same row */
+.bm-insight-inline-row .bm-insight-grid.actionable{
+  display:flex;
+  flex-wrap:nowrap;
+  width:100%;
+}
+.bm-insight-inline-row .bm-insight-grid.actionable .bm-insight-card{
+  flex:1 1 0;
+  min-width:260px;
+}
+
+/* action icons ~30% smaller */
+.bed-mgmt-page{
+  --bm-action-icon-size: 14px;
+  --bm-action-icon-size-compact: 11px;
+}
