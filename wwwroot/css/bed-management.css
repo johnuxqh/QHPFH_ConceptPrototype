@@ -539,3 +539,14 @@
 .situational-kpi-card.kpi-orange .situational-kpi-title,.situational-kpi-card.kpi-orange .situational-kpi-value,.situational-kpi-card.kpi-orange .situational-kpi-subtitle{color:#ff7a00}
 .situational-kpi-card.kpi-red .situational-kpi-title,.situational-kpi-card.kpi-red .situational-kpi-value,.situational-kpi-card.kpi-red .situational-kpi-subtitle{color:#d32727}
 .situational-kpi-card.kpi-gray .situational-kpi-title,.situational-kpi-card.kpi-gray .situational-kpi-value,.situational-kpi-card.kpi-gray .situational-kpi-subtitle{color:#3f3f46}
+
+/* V2 row should consume full width without right-side dead space */
+.bm-v2-status-row{display:flex;flex-wrap:nowrap;align-items:stretch;gap:10px;width:100%;overflow-x:auto}
+.bm-v2-status-row .situational-kpi-card{flex:1 1 180px;min-width:180px;max-width:none}
+.bm-v2-status-row .bm-system-insights-trigger{flex:0 0 70px}
+
+/* Insight drawer uses same inline panel behaviour with no large trailing gap */
+.bm-insight-panel-drawer{width:100%}
+.bm-insight-panel-drawer .bm-system-insights-trigger{margin-bottom:2px}
+.bm-insight-panel-drawer .bm-insight-grid.actionable{display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto;grid-auto-flow:unset;grid-auto-columns:unset}
+.bm-insight-panel-drawer .bm-insight-grid.actionable .bm-insight-card{flex:0 0 320px;min-height:92px}
