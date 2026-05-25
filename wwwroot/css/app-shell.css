@@ -614,3 +614,7 @@ button, input { font: inherit; }
 .theme-dark .chat-avatar-option { background:#101a2e; border-color:#2d4f78; color:#dce7f4; }
 .theme-dark .utility-kicker, .theme-dark .utility-subtitle, .theme-dark .chat-bubble-content header { color:#a9bfdc; }
 .theme-dark .chat-compose input { background:#101a2e; color:#dce7f4; border-color:#3d5f88; }
+
+.qld-title-wrap{display:flex;align-items:baseline;gap:8px;white-space:nowrap}
+.qld-page-title{font-size:clamp(.72rem,.78vw,.9rem);font-weight:500;color:#51627d}
+.theme-dark .qld-page-title{color:#b9c8de}
