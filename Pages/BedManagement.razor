@@ -6,16 +6,54 @@
 <section class="page-shell-card bed-mgmt-page bm-overview-page" @onclick="CloseKpiInfo" @onkeydown="HandleKeydown" tabindex="0">
     @if (IsQchAccess)
     {
-        <section class="bm-qch-banner">
-            <div class="bm-qch-banner-header">
-                <h4>QCH Operational Information</h4>
-                <span class="bm-pressure-pill high">Tier 2 — Moderate — Amber</span>
+        <section class="bm-notification-banner">
+            <div class="bm-notification-banner-head">
+                <strong>Facility notifications</strong>
+                <button type="button" class="bm-ghost bm-mini-btn" @onclick="StartCreateNotification">Create notification</button>
             </div>
-            <div class="bm-qch-message-edit">
-                <textarea @bind="QchOperationalMessage"></textarea>
-                <button type="button" class="bm-ghost" @onclick="SaveQchMessage">Save update</button>
-            </div>
-            <small>Updated @QchMessageTimestamp by Bed Management</small>
+            @if (IsCreatingNotification)
+            {
+                <div class="bm-notification-editor">
+                    <input @bind="DraftNotification.Title" placeholder="Title/status" />
+                    <textarea @bind="DraftNotification.Message" placeholder="Operational message"></textarea>
+                    <select @bind="DraftNotification.Severity">
+                        <option value="green">Tier 1 / BAU</option>
+                        <option value="amber">Tier 2 / Amber</option>
+                        <option value="red">Tier 3 / Extreme</option>
+                        <option value="dark">Incident Management</option>
+                        <option value="blue">Standard Info</option>
+                    </select>
+                    <div class="bm-notification-actions"><button type="button" class="bm-ghost bm-mini-btn" @onclick="SaveCreateNotification">Save</button><button type="button" class="bm-ghost bm-mini-btn" @onclick="CancelCreateNotification">Cancel</button></div>
+                </div>
+            }
+            @if (QchNotifications.Count == 0)
+            {
+                <div class="bm-notification-empty">No active facility notifications</div>
+            }
+            else
+            {
+                @foreach (var note in QchNotifications)
+                {
+                    <div class="bm-notification-row @($"sev-{note.Severity}")">
+                        @if (EditingNotificationId == note.Id)
+                        {
+                            <div class="bm-notification-editor inline">
+                                <input @bind="DraftNotification.Title" />
+                                <textarea @bind="DraftNotification.Message"></textarea>
+                                <select @bind="DraftNotification.Severity">
+                                    <option value="green">Tier 1 / BAU</option><option value="amber">Tier 2 / Amber</option><option value="red">Tier 3 / Extreme</option><option value="dark">Incident Management</option><option value="blue">Standard Info</option>
+                                </select>
+                                <div class="bm-notification-actions"><button type="button" class="bm-ghost bm-mini-btn" @onclick="() => SaveUpdateNotification(note.Id)">Save</button><button type="button" class="bm-ghost bm-mini-btn" @onclick="CancelUpdateNotification">Cancel</button></div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="bm-notification-content"><strong>@note.Title</strong><span>@note.Message</span></div>
+                            <div class="bm-notification-actions"><button type="button" class="bm-ghost bm-mini-btn" @onclick="() => StartUpdateNotification(note.Id)">Update</button><button type="button" class="bm-ghost bm-mini-btn" @onclick="() => RemoveNotification(note.Id)">Remove</button></div>
+                        }
+                    </div>
+                }
+            }
         </section>
     }
 
@@ -161,7 +199,7 @@
                                 <span class="bm-state-chip critical">Staffing: @orchestration.StaffingState</span>
                             </div>
                         }
-                        <div class="bm-grid-foot"><span>Delayed @row.DelayedDischarge</span><span>Actual discharges @row.ActualDischarges</span><span class="bm-action-icon-wrap"><img src="/QHPFH_ConceptPrototype/images/show.png" alt="View" class="bm-action-icon" /></span></div>
+                        <div class="bm-grid-foot"><span>Delayed @row.DelayedDischarge</span><span>Actual discharges @row.ActualDischarges</span><span class="bm-action-icon-wrap"><img src="images/icons/show-blackish.png" alt="View" class="bm-action-icon" /></span></div>
                     </article>
                 }
             </div>
@@ -191,7 +229,7 @@
                                 </td>
                                 <td>@future.CleaningEta</td>
                             }
-                            <td>@row.PostcodeCatchment</td><td><span class="bm-action-icon-wrap"><img src="/QHPFH_ConceptPrototype/images/show.png" alt="View" class="bm-action-icon" /></span><span class="bm-action-icon-wrap"><img src="/QHPFH_ConceptPrototype/images/edit.png" alt="Edit" class="bm-action-icon" /></span></td>
+                            <td>@row.PostcodeCatchment</td><td><span class="bm-action-icon-wrap"><img src="images/icons/show-blackish.png" alt="View" class="bm-action-icon" /></span><span class="bm-action-icon-wrap"><img src="images/icons/edit-blackish.png" alt="Edit" class="bm-action-icon" /></span></td>
                         </tr>
                     }
                 </tbody>
@@ -206,8 +244,14 @@
     private const string AccessQchBedManager = "qch-bed-manager";
     private const string QchHhs = "Children's Health Queensland";
     private const string QchFacility = "Queensland Children's Hospital";
-    private string QchOperationalMessage = "Fire alarm testing scheduled at 3pm. Please minimise non-essential patient transfers during testing window.";
-    private string QchMessageTimestamp = "10:42am";
+    private int EditingNotificationId = -1;
+    private bool IsCreatingNotification;
+    private EditableNotification DraftNotification = new();
+    private List<FacilityNotification> QchNotifications = new()
+    {
+        new FacilityNotification(1, "Tier 2 — Amber", "Fire alarm testing scheduled at 3pm. Please minimise non-essential patient transfers during testing window.", "amber"),
+        new FacilityNotification(2, "Hospital Capacity Status: Red", "High demand across ED and inpatient flow. Prioritise confirmed discharges before 11:00.", "red")
+    };
     private string QchActivityView = "Today";
 
     private string SelectedAccessView = AccessStatewide;
@@ -255,7 +299,35 @@
     private void SetView(string view) { SelectedView = view; CurrentPage = 1; }
     private void SetVersion(string version) => SelectedVersion = version;
     private string? OpenKpiInfoTitle;
-    private void SaveQchMessage() => QchMessageTimestamp = DateTime.Now.ToString("h:mmtt").ToLowerInvariant();
+    private void StartCreateNotification() { EditingNotificationId = -1; IsCreatingNotification = true; DraftNotification = new EditableNotification(); }
+    private void CancelCreateNotification() { IsCreatingNotification = false; DraftNotification = new EditableNotification(); }
+    private void SaveCreateNotification()
+    {
+        if (string.IsNullOrWhiteSpace(DraftNotification.Title) || string.IsNullOrWhiteSpace(DraftNotification.Message)) return;
+        var nextId = QchNotifications.Count == 0 ? 1 : QchNotifications.Max(x => x.Id) + 1;
+        QchNotifications.Add(new FacilityNotification(nextId, DraftNotification.Title.Trim(), DraftNotification.Message.Trim(), DraftNotification.Severity));
+        CancelCreateNotification();
+    }
+    private void StartUpdateNotification(int id)
+    {
+        var note = QchNotifications.First(x => x.Id == id);
+        EditingNotificationId = id;
+        DraftNotification = new EditableNotification { Title = note.Title, Message = note.Message, Severity = note.Severity };
+        IsCreatingNotification = false;
+    }
+    private void SaveUpdateNotification(int id)
+    {
+        var index = QchNotifications.FindIndex(x => x.Id == id);
+        if (index < 0 || string.IsNullOrWhiteSpace(DraftNotification.Title) || string.IsNullOrWhiteSpace(DraftNotification.Message)) return;
+        QchNotifications[index] = new FacilityNotification(id, DraftNotification.Title.Trim(), DraftNotification.Message.Trim(), DraftNotification.Severity);
+        CancelUpdateNotification();
+    }
+    private void CancelUpdateNotification() { EditingNotificationId = -1; DraftNotification = new EditableNotification(); }
+    private void RemoveNotification(int id)
+    {
+        QchNotifications.RemoveAll(x => x.Id == id);
+        if (EditingNotificationId == id) CancelUpdateNotification();
+    }
     private void ToggleKpiInfo(string title) => OpenKpiInfoTitle = OpenKpiInfoTitle == title ? null : title;
     private void OnQchActivityTabChanged(string tab) => QchActivityView = tab;
     private void CloseKpiInfo() => OpenKpiInfoTitle = null;
@@ -420,6 +492,13 @@
     private record FutureAvailabilityWindow(string Ward, string Window, string Detail);
     private record PredictiveOperationalInsight(string Window, string Message, string PressureClass);
     private record WardOrchestrationSnapshot(string Ward, string CurrentState, string DischargeWindow, string NextPlannedPatient, string TransferState, string StaffingState);
+    private record FacilityNotification(int Id, string Title, string Message, string Severity);
+    private sealed class EditableNotification
+    {
+        public string Title { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+        public string Severity { get; set; } = "blue";
+    }
 
     private record BedOverviewRow(string Hhs, string Facility, string Ward, string WardType, int PhysicalBeds, int OpenBeds, int OccupiedBeds, string Occupancy, string Pressure, string PressureClass, int Elective, int EdAddons, int HithReturns, int PredictedDischarges, int ActualDischarges, int DelayedDischarge, string Constraints, int AddOnPatients, int Outliers, string PostcodeCatchment)
     {
