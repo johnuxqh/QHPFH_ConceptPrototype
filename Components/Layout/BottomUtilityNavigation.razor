@@ -156,6 +156,45 @@
         </section>
     }
 
+    @if (_isSupportOpen)
+    {
+        <section class="utility-overlay support-drawer" aria-label="Support and FAQs">
+            <header class="support-header">
+                <MudIcon Icon="@Icons.Material.Outlined.HelpOutline" Size="Size.Small" />
+                <h3>Support</h3>
+                <button type="button" class="oncall-close" aria-label="Close support" @onclick="CloseSupport">×</button>
+            </header>
+
+            <div class="support-search">
+                <span><MudIcon Icon="@Icons.Material.Outlined.Search" Size="Size.Small" /></span>
+                <input type="search" placeholder="Search FAQs" @bind="_supportSearch" @bind:event="oninput" />
+                <button type="button">Find</button>
+            </div>
+
+            <section class="support-summary">
+                <p>Browse frequently asked operational questions or contact support for assistance.</p>
+                <button type="button" class="standard-btn">Contact support</button>
+            </section>
+
+            <section class="support-list" role="list">
+                @foreach (var faq in FilteredFaqs)
+                {
+                    var isOpen = _openFaqId == faq.Id;
+                    <article class="faq-item" role="listitem">
+                        <button type="button" class="faq-trigger" @onclick="() => ToggleFaq(faq.Id)">
+                            <span>@faq.Question</span>
+                            <MudIcon Icon="@(isOpen ? Icons.Material.Outlined.ExpandLess : Icons.Material.Outlined.ExpandMore)" Size="Size.Small" />
+                        </button>
+                        @if (isOpen)
+                        {
+                            <div class="faq-answer">@faq.Answer</div>
+                        }
+                    </article>
+                }
+            </section>
+        </section>
+    }
+
     <div class="utility-bar" role="tablist" aria-label="Footer utilities">
         @foreach (var item in Items)
         {
@@ -178,6 +217,8 @@
     private string _selectedAvatar = "👩‍⚕️";
     private string _draftMessage = string.Empty;
     private string _directorySearch = string.Empty;
+    private string _supportSearch = string.Empty;
+    private int _openFaqId = 1;
     private readonly string[] AvatarOptions = ["🤣", "😎", "🚑", "👩‍⚕️", "🛏️"];
 
     private readonly List<ChatMessage> _chatMessages =
@@ -233,10 +274,24 @@
         new("Allied Health", [new("R. Mason", "Allied Health Coordinator", "45388")])
     ];
 
+    private readonly List<FaqItem> Faqs =
+    [
+        new(1, "How do I update bed status quickly?", "Use List/Grid/Compact actions or Ward View drag interactions to update operational states."),
+        new(2, "What does Open Operational Beds mean?", "Beds currently available for operational use; this differs from total physical beds."),
+        new(3, "How do I filter wards from insights?", "Click an insight card to filter the ward list. Use Clear to reset."),
+        new(4, "How do I report an issue with data?", "Use Contact support from this panel and include ward/facility plus timestamp."),
+        new(5, "Can I print downtime summaries?", "Use the Downtime utility item for printable continuity summaries.")
+    ];
+
     private IEnumerable<DirectoryGroup> FilteredDirectoryGroups =>
         DirectoryGroups
             .Select(group => new DirectoryGroup(group.Name, group.People.Where(MatchesSearch).ToList()))
             .Where(group => group.People.Count != 0 || string.IsNullOrWhiteSpace(_directorySearch));
+
+    private IEnumerable<FaqItem> FilteredFaqs =>
+        string.IsNullOrWhiteSpace(_supportSearch)
+            ? Faqs
+            : Faqs.Where(f => f.Question.Contains(_supportSearch, StringComparison.OrdinalIgnoreCase) || f.Answer.Contains(_supportSearch, StringComparison.OrdinalIgnoreCase));
 
     [Parameter] public bool IsDarkMode { get; set; }
 
@@ -278,11 +333,14 @@
     private void CloseReports() { _isReportsOpen = false; if (_activeItem == "Reports") _activeItem = string.Empty; }
     private void CloseDowntime() { _isDowntimeOpen = false; if (_activeItem == "Downtime") _activeItem = string.Empty; }
     private void CloseDirectory() => _isDirectoryOpen = false;
+    private void CloseSupport() { _isSupportOpen = false; if (_activeItem == "Support") _activeItem = string.Empty; }
     private void OpenDirectory() => _isDirectoryOpen = true;
+    private void ToggleFaq(int id) => _openFaqId = _openFaqId == id ? -1 : id;
 
     private sealed record ChatMessage(string Sender, string Text, string Timestamp, string Avatar, bool IsMine);
     private sealed record ReportItem(string Title, string Description);
     private sealed record OnCallContact(string Role, string Name, string Status, string Availability, string Extension);
     private sealed record DirectoryGroup(string Name, List<DirectoryPerson> People);
     private sealed record DirectoryPerson(string Name, string Role, string Extension);
+    private sealed record FaqItem(int Id, string Question, string Answer);
 }
